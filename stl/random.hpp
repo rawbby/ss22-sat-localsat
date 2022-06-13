@@ -20,7 +20,7 @@ struct random_type
   [[maybe_unused]] [[nodiscard]] inline bool_type randBool() noexcept;
 
   [[maybe_unused]] [[nodiscard]] inline i32_type randInt(i32_type upper) noexcept;
-  
+
   [[maybe_unused]] [[nodiscard]] inline i32_type randInt(i32_type lower, i32_type upper) noexcept;
 };
 

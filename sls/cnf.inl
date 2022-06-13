@@ -2,7 +2,6 @@
 #define SLS_CNF_INL
 
 #include "cnf.hpp"
-#include "sls.hpp"
 
 namespace sls {
 using namespace stl;
@@ -44,16 +43,12 @@ cnf_type::PostProcess() noexcept
 
   {
     auto clause_index = Size(0);
-    auto cnf_iter = Iterator(&cnf);
-    while (cnf_iter.HasNext()) {
-      auto clause = cnf_iter.Next();
-      auto clause_iter = Iterator(clause);
 
-      while (clause_iter.HasNext()) {
-        auto literal = clause_iter.Next();
+    for (auto clause : cnf) {
+      for (auto literal : clause) {
 
-        auto view = vc.At(Size(*literal));
-        auto index = (*(i.At(Size(*literal))))++;
+        auto view = vc.At(literal);
+        auto index = (*i.At(literal))++;
 
         *(view.At(index)) = clause_index;
       }
@@ -73,6 +68,18 @@ cnf_type::NumResolvingClauses(literal_type literal) const noexcept
 cnf_type::ResolvingClauses(literal_type literal) const noexcept
 {
   return vc.At(literal);
+}
+
+[[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<literal_type>
+cnf_type::begin() noexcept
+{
+  return cnf.begin();
+}
+
+[[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<literal_type>
+cnf_type::end() noexcept
+{
+  return cnf.end();
 }
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
@@ -102,18 +109,6 @@ CnfExtended(size_type num_variables, size_type num_clauses) noexcept
     View(&(cnf.num_clauses_for_literals), Size(0), cnf.num_literals).MemSet(I32(0));
 
   return cnf;
-}
-
-//  ___   _____   _____   ____       _      _____    ___    ____
-// |_ _| |_   _| | ____| |  _ \     / \    |_   _|  / _ \  |  _ \
-//  | |    | |   |  _|   | |_) |   / _ \     | |   | | | | | |_) |
-//  | |    | |   | |___  |  _ <   / ___ \    | |   | |_| | |  _ <
-// |___|   |_|   |_____| |_| \_\ /_/   \_\   |_|    \___/  |_| \_\
-
-[[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iterator_type<literal_type, MAX_CLAUSES, MAX_CNF_LITERALS>
-Iterator(cnf_type* cnf) noexcept
-{
-  return Iterator(&(cnf->cnf));
 }
 
 }

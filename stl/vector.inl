@@ -79,6 +79,20 @@ vector_type<type_type, capacity>::Peak() noexcept
   return At(Count() - Size(1));
 }
 
+template<typename type_type, size_type capacity>
+[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+vector_type<type_type, capacity>::begin() noexcept
+{
+  return View(this).begin();
+}
+
+template<typename type_type, size_type capacity>
+[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+vector_type<type_type, capacity>::end() noexcept
+{
+  return View(this).end();
+}
+
 //  _____      _       ____   _____    ___    ____    ___   _____   ____
 // |  ___|    / \     / ___| |_   _|  / _ \  |  _ \  |_ _| | ____| / ___|
 // | |_      / _ \   | |       | |   | | | | | |_) |  | |  |  _|   \___ \
@@ -100,26 +114,6 @@ Vector() noexcept
   vector_type<type_type, capacity> vector;
   vector.count = Size(0);
   return vector;
-}
-
-//   ___   _____   _____   ____       _      _____    ___    ____
-//  |_ _| |_   _| | ____| |  _ \     / \    |_   _|  / _ \  |  _ \
-//   | |    | |   |  _|   | |_) |   / _ \     | |   | | | | | |_) |
-//   | |    | |   | |___  |  _ <   / ___ \    | |   | |_| | |  _ <
-//  |___|   |_|   |_____| |_| \_\ /_/   \_\   |_|    \___/  |_| \_\
-
-template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_iterator_type<type_type>
-Iterator(vector_type<type_type, capacity>* vector) noexcept
-{
-  return Iterator(View(vector));
-}
-
-template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_iterator_type<const type_type>
-Iterator(const vector_type<type_type, capacity>* vector) noexcept
-{
-  return Iterator(View(vector));
 }
 
 //   ____    ___    _   _  __     __  _____   ____    ____    ___    ___    _   _   ____

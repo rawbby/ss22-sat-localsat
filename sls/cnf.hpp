@@ -1,12 +1,11 @@
 #ifndef SLS_CNF_EXTENDED_HPP
 #define SLS_CNF_EXTENDED_HPP
 
-#include "sls.hpp"
 #include "def.hpp"
 
+#include <stl/scl/vector_stack.hpp>
 #include <stl/stl.hpp>
 #include <stl/vector.hpp>
-#include <stl/scl/vector_stack.hpp>
 
 #include <iostream>
 #include <type_traits>
@@ -47,11 +46,17 @@ struct cnf_type
 
   [[maybe_unused]] constexpr inline void PostProcess() noexcept;
 
-  // === build methods ===
+  // === statistic methods ===
 
   [[maybe_unused]] [[nodiscard]] constexpr inline size_type NumResolvingClauses(literal_type literal) const noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const size_type> ResolvingClauses(literal_type literal) const noexcept;
+
+  // ==- iterator support ===
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<literal_type> begin() noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<literal_type> end() noexcept;
 };
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
@@ -62,15 +67,6 @@ struct cnf_type
 
 [[maybe_unused]] [[nodiscard]] constexpr inline cnf_type
 CnfExtended(size_type num_variables, size_type num_clauses) noexcept;
-
-//  ___   _____   _____   ____       _      _____    ___    ____
-// |_ _| |_   _| | ____| |  _ \     / \    |_   _|  / _ \  |  _ \
-//  | |    | |   |  _|   | |_) |   / _ \     | |   | | | | | |_) |
-//  | |    | |   | |___  |  _ <   / ___ \    | |   | |_| | |  _ <
-// |___|   |_|   |_____| |_| \_\ /_/   \_\   |_|    \___/  |_| \_\
-
-[[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iterator_type<literal_type, MAX_CLAUSES, MAX_CNF_LITERALS>
-Iterator(cnf_type* cnf) noexcept;
 
 }
 

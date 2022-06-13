@@ -1,7 +1,7 @@
-#include <sls/sls.hpp>
-#include <sls/cnf.hpp>
 #include <sls/assignment.hpp>
+#include <sls/cnf.hpp>
 #include <sls/dimacs.hpp>
+#include <sls/sls.hpp>
 
 #include <iostream>
 
@@ -11,6 +11,7 @@ using namespace sls;
 int
 main(int argc, char** argv)
 {
+  Assert(argc > 1, "No Parameter passed!");
   FILE* f = fopen(argv[1], "r");
   Assert(f, "Failed to open File!");
 
@@ -18,46 +19,27 @@ main(int argc, char** argv)
   ParseDimacs(f, &cnf);
   cnf.PostProcess();
 
-  {
-    std::cout << "cnf[";
-    [[maybe_unused]] auto vector_stack_iter = Iterator(&cnf);
-    while (vector_stack_iter.HasNext()) {
-      [[maybe_unused]] auto view = vector_stack_iter.Next();
-      [[maybe_unused]] auto view_iter = Iterator(view);
-      std::cout << "[";
-      while (view_iter.HasNext()) {
-        std::cout << *view_iter.Next() << ',';
-      }
-      std::cout << "],";
-    }
-    std::cout << ']' << std::endl;
-  }
-
-  {
-    std::cout << "vc[";
-    [[maybe_unused]] auto vector_stack_iter = Iterator(&cnf.vc);
-    while (vector_stack_iter.HasNext()) {
-      [[maybe_unused]] auto view = vector_stack_iter.Next();
-      [[maybe_unused]] auto view_iter = Iterator(view);
-      std::cout << "[";
-      while (view_iter.HasNext()) {
-        std::cout << *view_iter.Next() << ',';
-      }
-      std::cout << "],";
-    }
-    std::cout << ']' << std::endl;
-  }
-
   auto assign = SLS(&cnf);
 
-  std::cout << "assign[";
-  auto var = Variable(0);
-  auto assign_iter = Iterator(&assign);
-  while (assign_iter.HasNext()) {
-    std::cout << I32(Literal(var, *assign_iter.Next())) << ',';
-    var++;
+  std::cout << "p cnf " << cnf.num_variables << ' ' << cnf.num_clauses << '\n';
+  std::cout << "s SATISFIABLE\n";
+
+  {
+    std::cout << "v ";
+    auto var = Variable(0);
+    for (auto sign : assign)
+      std::cout << (sign ? "-" : "") << ++var << ' ';
+    std::cout << "0\n";
   }
-  std::cout << ']' << std::endl;
+
+  for (auto clause : cnf) {
+    for (auto lit : clause) {
+      auto sign = lit & 1;
+      auto var = (lit >> 1) + 1;
+      std::cout << (sign ? "-" : "") << var << ' ';
+    }
+    std::cout << "0\n";
+  }
 
   return assign.Score();
 }

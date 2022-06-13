@@ -8,6 +8,58 @@
 
 namespace stl {
 
+//  ___   _____   _____   ____       _      _____    ___    ____
+// |_ _| |_   _| | ____| |  _ \     / \    |_   _|  / _ \  |  _ \
+//  | |    | |   |  _|   | |_) |   / _ \     | |   | | | | | |_) |
+//  | |    | |   | |___  |  _ <   / ___ \    | |   | |_| | |  _ <
+// |___|   |_|   |_____| |_| \_\ /_/   \_\   |_|    \___/  |_| \_\
+
+template<typename type_type>
+struct vector_stack_iter_type
+{
+  type_type* data;
+  size_type* range;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type(const vector_stack_iter_type& iter) noexcept
+    : data(iter.data)
+    , range(iter.range)
+  {
+  }
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type(type_type* data, size_type* range) noexcept
+    : data(data)
+    , range(range)
+  {
+  }
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> operator*() const noexcept
+  {
+    return View(data, range[0], range[1]);
+  }
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> operator*() noexcept { return View(data, range[0], range[1]); }
+
+  [[maybe_unused]] constexpr inline vector_stack_iter_type& operator++() noexcept
+  {
+    range++;
+    return *this;
+  }
+
+  [[maybe_unused]] constexpr inline vector_stack_iter_type operator++(int) noexcept { return { data, range++ }; }
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator==(const vector_stack_iter_type& other) const noexcept
+  {
+    Assert(data == other.data, "Invalid iterator comparison!");
+    return range == other.range;
+  };
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator!=(const vector_stack_iter_type& other) const noexcept
+  {
+    Assert(data == other.data, "Invalid iterator comparison!");
+    return range != other.range;
+  };
+};
+
 //  ____    _____    ____   _          _      ____       _      _____   ___    ___    _   _
 // |  _ \  | ____|  / ___| | |        / \    |  _ \     / \    |_   _| |_ _|  / _ \  | \ | |
 // | | | | |  _|   | |     | |       / _ \   | |_) |   / _ \     | |    | |  | | | | |  \| |
@@ -46,11 +98,11 @@ struct vector_stack_type
     return View(&buffer, lower, upper);
   }
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline void Push(type_type type) noexcept { buffer.Push(type); }
+  [[maybe_unused]] constexpr inline void Push(type_type type) noexcept { buffer.Push(type); }
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline void Push() noexcept { ranges.Push(buffer.Count()); }
+  [[maybe_unused]] constexpr inline void Push() noexcept { ranges.Push(buffer.Count()); }
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline void Pop() noexcept { ranges.Pop(); }
+  [[maybe_unused]] constexpr inline void Pop() noexcept { ranges.Pop(); }
 
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>* Peak() const noexcept
   {
@@ -66,6 +118,13 @@ struct vector_stack_type
     const auto lower = ranges.At(ranges.Count() - Size(2));
     const auto upper = ranges.At(ranges.Count() - Size(1));
     return View(&buffer, lower, upper);
+  }
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<type_type> begin() noexcept { return { buffer.data, ranges.data }; }
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<type_type> end() noexcept
+  {
+    return { buffer.data, &(ranges.data[Count()]) };
   }
 };
 
@@ -84,44 +143,6 @@ VectorStack() noexcept
   stack.ranges = Vector<size_type, Size(1) + stack_capacity>();
   stack.ranges.Push(Size(0));
   return stack;
-}
-
-//  ___   _____   _____   ____       _      _____    ___    ____
-// |_ _| |_   _| | ____| |  _ \     / \    |_   _|  / _ \  |  _ \
-//  | |    | |   |  _|   | |_) |   / _ \     | |   | | | | | |_) |
-//  | |    | |   | |___  |  _ <   / ___ \    | |   | |_| | |  _ <
-// |___|   |_|   |_____| |_| \_\ /_/   \_\   |_|    \___/  |_| \_\
-
-template<typename type_type, size_type stack_capacity, size_type buffer_capacity>
-struct vector_stack_iterator_type
-{
-  vector_stack_type<type_type, stack_capacity, buffer_capacity>* p_stack;
-  size_type i;
-  size_type n;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> Next()
-  {
-    Assert(HasNext(), "Can not fetch Next from empty Iterator!");
-    return p_stack->At(i++);
-
-    // const auto lower = p_stack->ranges.At(i + Size(0));
-    // const auto upper = p_stack->ranges.At(i + Size(1));
-    // ++i;
-    // return View(&p_stack->buffer, lower, upper);
-  }
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline bool HasNext() const { return i < n; }
-};
-
-template<typename type_type, size_type stack_capacity, size_type buffer_capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iterator_type<type_type, stack_capacity, buffer_capacity>
-Iterator(vector_stack_type<type_type, stack_capacity, buffer_capacity>* stack) noexcept
-{
-  return {
-    .p_stack = stack,
-    .i = Size(0),
-    .n = stack->Count(),
-  };
 }
 
 }

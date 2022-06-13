@@ -49,6 +49,10 @@ struct vector_type
   [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* Peak() const noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* Peak() noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* begin() noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* end() noexcept;
 };
 
 //  _____      _       ____   _____    ___    ____    ___   _____   ____
@@ -60,20 +64,6 @@ struct vector_type
 template<typename type_type, size_type capacity>
 [[maybe_unused]] [[nodiscard]] constexpr inline vector_type<type_type, capacity>
 Vector() noexcept;
-
-//   ___   _____   _____   ____       _      _____    ___    ____
-//  |_ _| |_   _| | ____| |  _ \     / \    |_   _|  / _ \  |  _ \
-//   | |    | |   |  _|   | |_) |   / _ \     | |   | | | | | |_) |
-//   | |    | |   | |___  |  _ <   / ___ \    | |   | |_| | |  _ <
-//  |___|   |_|   |_____| |_| \_\ /_/   \_\   |_|    \___/  |_| \_\
-
-template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_iterator_type<type_type>
-Iterator(vector_type<type_type, capacity>* vector) noexcept;
-
-template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_iterator_type<const type_type>
-Iterator(const vector_type<type_type, capacity>* vector) noexcept;
 
 //   ____    ___    _   _  __     __  _____   ____    ____    ___    ___    _   _   ____
 //  / ___|  / _ \  | \ | | \ \   / / | ____| |  _ \  / ___|  |_ _|  / _ \  | \ | | / ___|

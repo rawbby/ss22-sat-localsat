@@ -16,7 +16,7 @@ template<typename type_type>
 struct view_type
 {
   type_type* data;
-  size_type size;
+  size_type count;
 
   //  __  __   _____   _____   _   _    ___    ____    ____
   // |  \/  | | ____| |_   _| | | | |  / _ \  |  _ \  / ___|
@@ -35,6 +35,10 @@ struct view_type
   [[maybe_unused]] constexpr inline void MemSet(i32_type value) noexcept;
 
   [[maybe_unused]] constexpr inline void MemCopy(view_type<type_type> dst) const noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* begin() noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* end() noexcept;
 };
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
@@ -42,6 +46,14 @@ struct view_type
 // | |     | | | | |  \| | \___ \    | |   | |_) | | | | | | |       | |   | | | | | |_) | \___ \
 // | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+View(const type_type* data, size_type upper) noexcept;
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+View(type_type* data, size_type upper) noexcept;
 
 template<typename type_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
@@ -54,27 +66,6 @@ View(type_type* data, size_type lower, size_type upper) noexcept;
 template<typename type_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
 View(view_type<type_type> view, size_type lower, size_type upper) noexcept;
-
-//  ___   _____   _____   ____       _      _____    ___    ____
-// |_ _| |_   _| | ____| |  _ \     / \    |_   _|  / _ \  |  _ \
-//  | |    | |   |  _|   | |_) |   / _ \     | |   | | | | | |_) |
-//  | |    | |   | |___  |  _ <   / ___ \    | |   | |_| | |  _ <
-// |___|   |_|   |_____| |_| \_\ /_/   \_\   |_|    \___/  |_| \_\
-
-template<typename type_type>
-struct view_iterator_type
-{
-  type_type* data;
-  size_type count;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* Next();
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline bool HasNext();
-};
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_iterator_type<type_type>
-Iterator(view_type<type_type> view) noexcept;
 
 }
 

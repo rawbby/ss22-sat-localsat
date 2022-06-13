@@ -1,6 +1,7 @@
 #ifndef SLS_DEF_HPP
 #define SLS_DEF_HPP
 
+#include <stl/random.hpp>
 #include <stl/stl.hpp>
 
 namespace sls {

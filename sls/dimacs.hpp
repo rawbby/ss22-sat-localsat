@@ -24,6 +24,14 @@ ParseDimacs(FILE* f, cnf_type* cnf)
     while (ReadChar(f) != '\n')
       ;
 
+  while (ReadChar(f) == 's')
+    while (ReadChar(f) != '\n')
+      ;
+
+  while (ReadChar(f) == 'v')
+    while (ReadChar(f) != '\n')
+      ;
+
   Assert((c = ReadChar(f)) != 'p', "Invalid DIMACS. Expected Problem Line after Comments!");
 
   // read num_variables
