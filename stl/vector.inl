@@ -43,7 +43,7 @@ vector_type<type_type, capacity>::At(size_type index) noexcept
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline void
+[[maybe_unused]] constexpr inline void
 vector_type<type_type, capacity>::Push(type_type type) noexcept
 {
   Count(Count() + Size(1));
@@ -51,14 +51,14 @@ vector_type<type_type, capacity>::Push(type_type type) noexcept
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline void
+[[maybe_unused]] constexpr inline void
 vector_type<type_type, capacity>::Pop() noexcept
 {
   Count(Count() - Size(1));
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline void
+[[maybe_unused]] constexpr inline void
 vector_type<type_type, capacity>::Remove(size_type index) noexcept
 {
   *At(index) = *Peak();

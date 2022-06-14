@@ -12,7 +12,7 @@ namespace sls {
 using namespace stl;
 
 [[maybe_unused]] inline assignment_type
-SLS(const cnf_type* cnf);
+SLS(const cnf_type* cnf) noexcept;
 
 }
 

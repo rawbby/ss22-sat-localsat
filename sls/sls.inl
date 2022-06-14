@@ -7,17 +7,13 @@ namespace sls {
 using namespace stl;
 
 [[maybe_unused]] inline assignment_type
-SLS(const cnf_type* cnf)
+SLS(const cnf_type* cnf) noexcept
 {
-  using namespace detail;
-
-  auto num_threads = Size(omp_get_max_threads());
-
   assignment_type result;
 
   volatile bool found = false;
 
-  omp_set_num_threads(num_threads);
+  omp_set_num_threads(omp_get_max_threads());
 #pragma omp parallel
   {
     auto id = omp_get_thread_num();
@@ -29,12 +25,14 @@ SLS(const cnf_type* cnf)
 
       const auto n = I32(cnf->num_variables) + I32(cnf->num_clauses);
       for (auto i = I32(0); (!found && i < n); ++i) {
+
         assign.BestFlip(cnf, &random);
         // assign.BestFlip(cnf);
+
         if (!assign.Score()) {
 #pragma omp critical
           {
-            found = 1 + id;
+            found = true;
             std::swap(result, assign);
           }
           break;

@@ -17,13 +17,6 @@
 #define DebugBreak() ((void)0)
 #endif
 
-#define stl_foreach(collection, lambda)                                                                                                        \
-  {                                                                                                                                            \
-    for (auto iter = Iterator(collection); iter.HasNext();)                                                                                    \
-      lambda(*(iter.Next()));                                                                                                                  \
-  }                                                                                                                                            \
-  ((void)0)
-
 namespace stl {
 
 namespace detail {

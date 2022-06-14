@@ -17,18 +17,10 @@ ReadChar(FILE* f)
 void
 ParseDimacs(FILE* f, cnf_type* cnf)
 {
-  int c;
+  char c;
 
   // skip comments
   while (ReadChar(f) == 'c')
-    while (ReadChar(f) != '\n')
-      ;
-
-  while (ReadChar(f) == 's')
-    while (ReadChar(f) != '\n')
-      ;
-
-  while (ReadChar(f) == 'v')
     while (ReadChar(f) != '\n')
       ;
 
@@ -82,10 +74,7 @@ ParseDimacs(FILE* f, cnf_type* cnf)
     }
   } while (true);
 
-#ifdef SLS_SANITIZE
-  fclose(f); // <- windows can have the file back
-             //    when the solver has finished :)
-#endif
+  fclose(f);
 }
 
 }

@@ -47,9 +47,9 @@ struct assignment_type
 
   // === iterator support ===
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline i8_type* begin() noexcept { return assign.begin(); }
+  [[maybe_unused]] [[nodiscard]] constexpr inline i8_type* begin() noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline i8_type* end() noexcept { return assign.end(); }
+  [[maybe_unused]] [[nodiscard]] constexpr inline i8_type* end() noexcept;
 };
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____

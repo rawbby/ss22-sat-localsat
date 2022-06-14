@@ -12,8 +12,13 @@ int
 main(int argc, char** argv)
 {
   Assert(argc > 1, "No Parameter passed!");
+#ifdef WIN32
+  FILE* f;
+  Assert(!fopen_s(&f, argv[1], "r"), "Failed to open File!");
+#else
   FILE* f = fopen(argv[1], "r");
   Assert(f, "Failed to open File!");
+#endif
 
   cnf_type cnf;
   ParseDimacs(f, &cnf);

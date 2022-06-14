@@ -156,6 +156,18 @@ assignment_type::FlipStat(const cnf_type* cnf, variable_type variable) noexcept
   return stat;
 }
 
+[[maybe_unused]] [[nodiscard]] constexpr inline i8_type*
+assignment_type::begin() noexcept
+{
+  return assign.begin();
+}
+
+[[maybe_unused]] [[nodiscard]] constexpr inline i8_type*
+assignment_type::end() noexcept
+{
+  return assign.end();
+}
+
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
 //  / ___|  / _ \  | \ | | / ___|  |_   _| |  _ \  | | | |  / ___| |_   _|  / _ \  |  _ \  / ___|
 // | |     | | | | |  \| | \___ \    | |   | |_) | | | | | | |       | |   | | | | | |_) | \___ \

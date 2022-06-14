@@ -18,29 +18,19 @@ struct range_iter_type
 {
   size_type i;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type(const range_iter_type& iter) noexcept
-    : i(iter.i)
-  {
-  }
+  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type(const range_iter_type& iter) noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type(size_type i) noexcept
-    : i(i)
-  {
-  }
+  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type(size_type i) noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline size_type operator*() const noexcept { return i; }
+  [[maybe_unused]] [[nodiscard]] constexpr inline size_type operator*() const noexcept;
 
-  [[maybe_unused]] constexpr inline range_iter_type& operator++() noexcept
-  {
-    i++;
-    return *this;
-  }
+  [[maybe_unused]] constexpr inline range_iter_type& operator++() noexcept;
 
-  [[maybe_unused]] constexpr inline range_iter_type operator++(int) noexcept { return { i++ }; }
+  [[maybe_unused]] constexpr inline range_iter_type operator++(int) noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator==(const range_iter_type& other) const noexcept { return i == other.i; };
+  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator==(const range_iter_type& other) const noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator!=(const range_iter_type& other) const noexcept { return i != other.i; };
+  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator!=(const range_iter_type& other) const noexcept;
 };
 
 //  ____    _____    ____   _          _      ____       _      _____   ___    ___    _   _
@@ -54,9 +44,9 @@ struct range_type
   size_type lower;
   size_type upper;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type begin() noexcept { return { lower }; }
+  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type begin() noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type end() noexcept { return { upper }; }
+  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type end() noexcept;
 };
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____

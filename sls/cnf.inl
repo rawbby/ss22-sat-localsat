@@ -106,7 +106,7 @@ CnfExtended(size_type num_variables, size_type num_clauses) noexcept
   // if constexpr context the whole
   // vec is already zero initialized
   if (!std::is_constant_evaluated())
-    View(&(cnf.num_clauses_for_literals), Size(0), cnf.num_literals).MemSet(I32(0));
+    View(&cnf.num_clauses_for_literals, Size(0), cnf.num_literals).MemSet(I32(0));
 
   return cnf;
 }

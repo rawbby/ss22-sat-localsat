@@ -4,6 +4,8 @@
 #include "stl.hpp"
 #include "view.hpp"
 
+#include <cstring>
+
 namespace stl {
 
 template<typename type_type>
