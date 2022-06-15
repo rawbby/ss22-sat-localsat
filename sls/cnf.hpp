@@ -68,6 +68,9 @@ struct cnf_type
 [[maybe_unused]] [[nodiscard]] constexpr inline cnf_type
 CnfExtended(size_type num_variables, size_type num_clauses) noexcept;
 
+[[maybe_unused]] [[nodiscard]] constexpr inline cnf_type
+CnfExtended(size_type num_variables) noexcept;
+
 }
 
 // include implementation

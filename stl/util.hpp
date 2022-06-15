@@ -48,7 +48,7 @@ Swap(type_type* a, type_type* b) noexcept
 Assert(bool_type condition, const char_type* message) noexcept
 {
 #ifndef NDEBUG
-  if (condition)
+  [[likely]] if (condition)
     return;
 
   detail::EXPANDING_CONSTANT_EXPRESSION_FAILED();

@@ -22,6 +22,9 @@ cnf_type::Push() noexcept
 [[maybe_unused]] constexpr inline void
 cnf_type::PostProcess() noexcept
 {
+  Assert(!num_clauses || num_clauses == cnf.Count(), "Cnf was initialized with an invalid Number of Clauses!");
+  num_clauses = cnf.Count();
+
   // for each sub vector create an index counter
   auto i = Vector<size_type, MAX_LITERALS>();
   i.Count(num_literals);
@@ -92,23 +95,24 @@ cnf_type::end() noexcept
 CnfExtended(size_type num_variables, size_type num_clauses) noexcept
 {
   cnf_type cnf;
-
   cnf.num_variables = num_variables;
   cnf.num_literals = num_variables << 1;
   cnf.num_clauses = num_clauses;
 
-  cnf.cnf = VectorStack<literal_type, MAX_CLAUSES, MAX_CNF_LITERALS>();
-  cnf.vc = VectorStack<size_type, MAX_LITERALS, MAX_CNF_LITERALS>();
+  VectorStack<literal_type, MAX_CLAUSES, MAX_CNF_LITERALS>(&cnf.cnf);
+  VectorStack<size_type, MAX_LITERALS, MAX_CNF_LITERALS>(&cnf.vc);
 
-  cnf.num_clauses_for_literals = Vector<size_type, MAX_LITERALS>();
+  Vector<size_type, MAX_LITERALS>(&cnf.num_clauses_for_literals);
   cnf.num_clauses_for_literals.Count(cnf.num_literals);
-
-  // if constexpr context the whole
-  // vec is already zero initialized
-  if (!std::is_constant_evaluated())
-    View(&cnf.num_clauses_for_literals, Size(0), cnf.num_literals).MemSet(I32(0));
+  View(&cnf.num_clauses_for_literals).MemSet(I32(0));
 
   return cnf;
+}
+
+[[maybe_unused]] [[nodiscard]] constexpr inline cnf_type
+CnfExtended(size_type num_variables) noexcept
+{
+  return CnfExtended(num_variables, Size(0));
 }
 
 }

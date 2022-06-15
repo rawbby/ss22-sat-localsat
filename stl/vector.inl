@@ -21,7 +21,7 @@ vector_type<type_type, capacity>::Count() const noexcept
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline void
+[[maybe_unused]] constexpr inline void
 vector_type<type_type, capacity>::Count(size_type new_count) noexcept
 {
   Assert(count <= capacity, "Can not count Vector beyond its Capacity!");
@@ -100,19 +100,26 @@ vector_type<type_type, capacity>::end() noexcept
 // |_|     /_/   \_\  \____|   |_|    \___/  |_| \_\ |___| |_____| |____/
 
 template<typename type_type, size_type capacity>
+[[maybe_unused]] constexpr inline void
+Vector(vector_type<type_type, capacity>* vector) noexcept
+{
+  vector->count = Size(0);
+}
+
+template<typename type_type, size_type capacity>
 [[maybe_unused]] [[nodiscard]] constexpr inline vector_type<type_type, capacity>
 Vector() noexcept
 {
-  // in a [[maybe_unused]] [[nodiscard]] constexpr inline environment
+  // in a constexpr inline environment
   // zero initialize the whole s_vector->
   if (std::is_constant_evaluated())
     return {};
 
   // as zero initialization is not needed
   // we do not take the effort in a non
-  // [[maybe_unused]] [[nodiscard]] constexpr inline environment.
+  // constexpr environment.
   vector_type<type_type, capacity> vector;
-  vector.count = Size(0);
+  Vector(&vector);
   return vector;
 }
 

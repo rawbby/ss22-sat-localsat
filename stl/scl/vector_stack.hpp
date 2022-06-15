@@ -135,13 +135,20 @@ struct vector_stack_type
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
 
 template<typename type_type, size_type stack_capacity, size_type buffer_capacity>
+[[maybe_unused]] constexpr inline void
+VectorStack(vector_stack_type<type_type, stack_capacity, buffer_capacity>* stack) noexcept
+{
+  Vector(&stack->buffer);
+  Vector(&stack->ranges);
+  stack->ranges.Push(Size(0));
+}
+
+template<typename type_type, size_type stack_capacity, size_type buffer_capacity>
 [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_type<type_type, stack_capacity, buffer_capacity>
 VectorStack() noexcept
 {
   vector_stack_type<type_type, stack_capacity, buffer_capacity> stack;
-  stack.buffer = Vector<type_type, buffer_capacity>();
-  stack.ranges = Vector<size_type, Size(1) + stack_capacity>();
-  stack.ranges.Push(Size(0));
+  VectorStack(&stack);
   return stack;
 }
 

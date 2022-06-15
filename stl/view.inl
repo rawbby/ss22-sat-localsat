@@ -103,7 +103,8 @@ View(view_type<type_type> view, size_type lower, size_type upper) noexcept
   Assert(upper >= lower, "View can not be initialized in reverse Order!");
   Assert(upper >= Size(0), "View Can not be access with a negative Index!");
   Assert(upper <= view.Count(), "View Can not be access with an Index larger its Count!");
-  return { view.At(lower), upper - lower };
+  // At can not be used as a range from end to end is allowed but At(end) is undefined!
+  return { &(view.data[lower]), upper - lower };
 }
 
 }

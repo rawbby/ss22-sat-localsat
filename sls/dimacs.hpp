@@ -60,9 +60,9 @@ ParseDimacs(FILE* f, cnf_type* cnf)
       literal += c - '0';
     }
 
-    if (!literal) {
+    [[unlikely]] if (!literal) {
       cnf->Push();
-      if (cnf->cnf.Count() >= num_clauses)
+      [[unlikely]] if (cnf->cnf.Count() >= num_clauses)
         break;
 
     } else {
@@ -74,7 +74,8 @@ ParseDimacs(FILE* f, cnf_type* cnf)
     }
   } while (true);
 
-  fclose(f);
+  // Do not block the solver by freeing resources :-P
+  //fclose(f);
 }
 
 }

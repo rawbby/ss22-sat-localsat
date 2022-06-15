@@ -79,6 +79,7 @@ range_type::end() noexcept
 [[maybe_unused]] [[nodiscard]] constexpr inline range_type
 Range(size_type lower, size_type upper) noexcept
 {
+  Assert(lower <= upper, "Invalid Parameter for Range! lower > upper.");
   return { lower, upper };
 }
 

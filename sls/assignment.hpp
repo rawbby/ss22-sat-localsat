@@ -58,8 +58,14 @@ struct assignment_type
 // | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
 
+[[maybe_unused]] constexpr inline void
+Assignment(assignment_type* assign, const cnf_type* cnf) noexcept;
+
 [[maybe_unused]] [[nodiscard]] constexpr inline assignment_type
 Assignment(const cnf_type* cnf) noexcept;
+
+[[maybe_unused]] inline void
+Assignment(assignment_type* assign, const cnf_type* cnf, random_type* random) noexcept;
 
 [[maybe_unused]] [[nodiscard]] inline assignment_type
 Assignment(const cnf_type* cnf, random_type* random) noexcept;

@@ -174,41 +174,51 @@ assignment_type::end() noexcept
 // | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
 
+[[maybe_unused]] constexpr inline void
+Assignment(assignment_type* assignment, const cnf_type* cnf) noexcept
+{
+  assignment->loop_offset = Size(0);
+
+  assignment->assign = Vector<i8_type, MAX_VARIABLES>();
+  assignment->assign.Count(cnf->num_variables);
+  View(&assignment->assign).MemSet(I32(0));
+
+  assignment->satisfied_counts = Vector<size_type, MAX_CLAUSES>();
+  assignment->satisfied_counts.Count(cnf->num_clauses);
+  View(&assignment->satisfied_counts).MemSet(I32(0));
+
+  assignment->UpdateStats(cnf);
+}
+
 [[maybe_unused]] [[nodiscard]] constexpr inline assignment_type
 Assignment(const cnf_type* cnf) noexcept
 {
   assignment_type assignment;
-  assignment.loop_offset = Size(0);
-
-  assignment.assign = Vector<i8_type, MAX_VARIABLES>();
-  assignment.assign.Count(cnf->num_variables);
-  View(&assignment.assign).MemSet(I32(0));
-
-  assignment.satisfied_counts = Vector<size_type, MAX_CLAUSES>();
-  assignment.satisfied_counts.Count(cnf->num_clauses);
-  View(&assignment.satisfied_counts).MemSet(I32(0));
-
-  assignment.UpdateStats(cnf);
-
+  Assignment(&assignment, cnf);
   return assignment;
+}
+
+[[maybe_unused]] inline void
+Assignment(assignment_type* assignment, const cnf_type* cnf, random_type* random) noexcept
+{
+  assignment->loop_offset = Size(0);
+
+  assignment->assign = Vector<i8_type, MAX_VARIABLES>();
+  assignment->assign.Count(cnf->num_variables);
+  View(&assignment->assign).MemSet(I32(0));
+
+  assignment->satisfied_counts = Vector<size_type, MAX_CLAUSES>();
+  assignment->satisfied_counts.Count(cnf->num_clauses);
+  View(&assignment->satisfied_counts).MemSet(I32(0));
+
+  assignment->RandomReset(cnf, random);
 }
 
 [[maybe_unused]] [[nodiscard]] inline assignment_type
 Assignment(const cnf_type* cnf, random_type* random) noexcept
 {
   assignment_type assignment;
-  assignment.loop_offset = Size(0);
-
-  assignment.assign = Vector<i8_type, MAX_VARIABLES>();
-  assignment.assign.Count(cnf->num_variables);
-  View(&assignment.assign).MemSet(I32(0));
-
-  assignment.satisfied_counts = Vector<size_type, MAX_CLAUSES>();
-  assignment.satisfied_counts.Count(cnf->num_clauses);
-  View(&assignment.satisfied_counts).MemSet(I32(0));
-
-  assignment.RandomReset(cnf, random);
-
+  Assignment(&assignment, cnf, random);
   return assignment;
 }
 

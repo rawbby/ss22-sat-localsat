@@ -32,7 +32,7 @@ struct vector_type
 
   [[maybe_unused]] [[nodiscard]] constexpr inline size_type Count() const noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline void Count(size_type new_count) noexcept;
+  [[maybe_unused]] constexpr inline void Count(size_type new_count) noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* At(size_type index) const noexcept;
 
@@ -40,11 +40,11 @@ struct vector_type
 
   // === transparent methods ===
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline void Push(type_type type) noexcept;
+  [[maybe_unused]] constexpr inline void Push(type_type type) noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline void Pop() noexcept;
+  [[maybe_unused]] constexpr inline void Pop() noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline void Remove(size_type index) noexcept;
+  [[maybe_unused]] constexpr inline void Remove(size_type index) noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* Peak() const noexcept;
 
