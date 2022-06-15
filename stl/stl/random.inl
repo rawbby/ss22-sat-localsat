@@ -12,14 +12,14 @@ namespace stl {
 // |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
 
 [[maybe_unused]] [[nodiscard]] inline bool
-random_type::randBool() noexcept
+random_type::RandBool() noexcept
 {
   auto distribution = std::uniform_int_distribution<std::mt19937::result_type>(0, 1);
   return distribution(engine);
 }
 
 [[maybe_unused]] [[nodiscard]] inline i32_type
-random_type::randInt(i32_type upper) noexcept
+random_type::RandInt(i32_type upper) noexcept
 {
   Assert(0 <= upper - 1, "Can not create Distribution with 0 > Upper-1!");
   auto distribution = std::uniform_int_distribution<std::mt19937::result_type>(0, upper - 1);
@@ -27,7 +27,7 @@ random_type::randInt(i32_type upper) noexcept
 }
 
 [[maybe_unused]] [[nodiscard]] inline i32_type
-random_type::randInt(i32_type lower, i32_type upper) noexcept
+random_type::RandInt(i32_type lower, i32_type upper) noexcept
 {
   Assert(lower <= upper - 1, "Can not create Distribution with Lower > Upper-1!");
   auto distribution = std::uniform_int_distribution<std::mt19937::result_type>(lower, upper - 1);

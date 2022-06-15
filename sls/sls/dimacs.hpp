@@ -4,13 +4,12 @@
 #include "sls.hpp"
 
 namespace sls {
-using namespace stl;
 
 inline int32_t
 ReadChar(FILE* f)
 {
   int32_t c = getc(f);
-  Assert(c != EOF, "Unexpected EOF. The DIMACS File is invalid!");
+  stl::Assert(c != EOF, "Unexpected EOF. The DIMACS File is invalid!");
   return c;
 }
 
@@ -24,7 +23,7 @@ ParseDimacs(FILE* f, cnf_type* cnf)
     while (ReadChar(f) != '\n')
       ;
 
-  Assert((c = ReadChar(f)) != 'p', "Invalid DIMACS. Expected Problem Line after Comments!");
+  stl::Assert((c = ReadChar(f)) != 'p', "Invalid DIMACS. Expected Problem Line after Comments!");
 
   // read num_variables
   while (!isdigit(c = ReadChar(f)))
@@ -48,9 +47,9 @@ ParseDimacs(FILE* f, cnf_type* cnf)
 
   int32_t literal;
   do {
-    int32_t sig = 0;
+    auto sig = stl::I32(0);
     while (!isdigit(c = ReadChar(f)))
-      sig = c;
+      sig = stl::I32(c);
 
     sig = (sig == '-') ? 0 : 1;
 
@@ -60,12 +59,13 @@ ParseDimacs(FILE* f, cnf_type* cnf)
       literal += c - '0';
     }
 
-    [[unlikely]] if (!literal) {
+    [[unlikely]] if (!literal)
+    {
       cnf->Push();
-      [[unlikely]] if (cnf->cnf.Count() >= num_clauses)
-        break;
-
-    } else {
+      [[unlikely]] if (cnf->cnf.Count() >= num_clauses) break;
+    }
+    else
+    {
       literal -= 1;
       literal <<= 1;
       literal = sig ? literal : literal | 1;
@@ -75,7 +75,7 @@ ParseDimacs(FILE* f, cnf_type* cnf)
   } while (true);
 
   // Do not block the solver by freeing resources :-P
-  //fclose(f);
+  // fclose(f);
 }
 
 }

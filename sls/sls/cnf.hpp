@@ -11,7 +11,6 @@
 #include <type_traits>
 
 namespace sls {
-using namespace stl;
 
 //  ____    _____    ____   _          _      ____       _      _____   ___    ___    _   _
 // |  _ \  | ____|  / ___| | |        / \    |  _ \     / \    |_   _| |_ _|  / _ \  | \ | |
@@ -22,15 +21,15 @@ using namespace stl;
 struct cnf_type
 {
   // base cnf formula
-  vector_stack_type<literal_type, MAX_CLAUSES, MAX_CNF_LITERALS> cnf;
+  stl::vector_stack_type<literal_type, SLS_MAX_CLAUSES, SLS_MAX_CNF_LITERALS> cnf;
 
   // statistical lookup
-  vector_stack_type<size_type, MAX_LITERALS, MAX_CNF_LITERALS> vc;
-  vector_type<size_type, MAX_LITERALS> num_clauses_for_literals;
+  stl::vector_stack_type<stl::size_type, SLS_MAX_LITERALS, SLS_MAX_CNF_LITERALS> vc;
+  stl::vector_type<stl::size_type, SLS_MAX_LITERALS> num_clauses_for_literals;
 
-  size_type num_variables;
-  size_type num_literals;
-  size_type num_clauses;
+  stl::size_type num_variables;
+  stl::size_type num_literals;
+  stl::size_type num_clauses;
 
   //  __  __   _____   _____   _   _    ___    ____    ____
   // |  \/  | | ____| |_   _| | | | |  / _ \  |  _ \  / ___|
@@ -48,15 +47,15 @@ struct cnf_type
 
   // === statistic methods ===
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline size_type NumResolvingClauses(literal_type literal) const noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline stl::size_type NumResolvingClauses(literal_type literal) const noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const size_type> ResolvingClauses(literal_type literal) const noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<const stl::size_type> ResolvingClauses(literal_type literal) const noexcept;
 
   // ==- iterator support ===
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<literal_type> begin() noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline stl::vector_stack_iter_type<literal_type> begin() noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<literal_type> end() noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline stl::vector_stack_iter_type<literal_type> end() noexcept;
 };
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
@@ -66,10 +65,10 @@ struct cnf_type
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
 
 [[maybe_unused]] [[nodiscard]] constexpr inline cnf_type
-CnfExtended(size_type num_variables, size_type num_clauses) noexcept;
+CnfExtended(stl::size_type num_variables, stl::size_type num_clauses) noexcept;
 
 [[maybe_unused]] [[nodiscard]] constexpr inline cnf_type
-CnfExtended(size_type num_variables) noexcept;
+CnfExtended(stl::size_type num_variables) noexcept;
 
 }
 

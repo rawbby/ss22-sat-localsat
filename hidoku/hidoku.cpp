@@ -7,11 +7,11 @@
 // expect hidoku max 10x10
 // good luck for bigger problems ...
 // (might work, might fail)
-#define OPTION_ALLOCATE_HEAP
-#define OPTION_NO_FREE
-#define OPTION_MAX_VARIABLES 19'900
-#define OPTION_MAX_CLAUSES 39'402
-#define OPTION_MAX_CNF_LITERALS 157'904
+#define SLS_OPTION_ALLOCATE_HEAP
+#define SLS_OPTION_NO_FREE
+#define SLS_OPTION_MAX_VARIABLES 19'900
+#define SLS_OPTION_MAX_CLAUSES 39'402
+#define SLS_OPTION_MAX_CNF_LITERALS 157'904
 #endif
 #include <sls/sls.hpp>
 #endif
@@ -20,29 +20,26 @@
 #include <sls/cnf.hpp>
 #include <stl/range.hpp>
 
-using namespace stl;
-using namespace sls;
-
 struct hidoku_type
 {
-  vector_type<literal_type, 256> data;
-  cnf_type cnf;
-  size_type w;
-  size_type h;
-  size_type n;
+  stl::vector_type<sls::literal_type, 256> data;
+  sls::cnf_type cnf;
+  stl::size_type w;
+  stl::size_type h;
+  stl::size_type n;
 
-  size_type si; // counter for generated variables
+  stl::size_type si; // counter for generated variables
 
-  size_type num_variables;
-  size_type num_clauses;
+  stl::size_type num_variables;
+  stl::size_type num_clauses;
 
-  literal_type At(size_type x, size_type y) const { return *data.At(y * w + x); }
+  sls::literal_type At(stl::size_type x, stl::size_type y) const { return *data.At(y * w + x); }
 
   // get a variable from the one hot pool
-  literal_type Var(size_type x, size_type y, size_type i) { return Literal((x + y * w) * n + i); }
+  sls::literal_type Var(stl::size_type x, stl::size_type y, stl::size_type i) { return sls::Literal((x + y * w) * n + i); }
 
   // generate a new variable
-  literal_type SVar() { return Literal((w * h * n) + si++); }
+  sls::literal_type SVar() { return sls::Literal((w * h * n) + si++); }
 
   // always invoke after data, w, h and n are initialized
   void PostProcess()
@@ -52,8 +49,8 @@ struct hidoku_type
     num_variables = w * h * n; // one hot encoding
     num_clauses = n;           // at least every number
 
-    for (auto y : Range(0, h)) {
-      for (auto x : Range(0, w)) {
+    for (auto y : stl::Range(0, h)) {
+      for (auto x : stl::Range(0, w)) {
         [[unlikely]] if (At(x, y))
         {
           num_clauses += n;                     // base constraint
@@ -73,23 +70,23 @@ struct hidoku_type
       }
     }
 
-    cnf = CnfExtended(num_variables, num_clauses);
+    cnf = sls::CnfExtended(num_variables, num_clauses);
 
     // buffer for temporary / generated variables
-    auto tmp_vars = Vector<literal_type, MAX_LITERALS>();
+    auto tmp_vars = stl::Vector<sls::literal_type, sls::SLS_MAX_LITERALS>();
 
     // at least every number
-    for (auto i : Range(0, n)) {
-      for (auto y : Range(0, h)) {
-        for (auto x : Range(0, w)) {
+    for (auto i : stl::Range(0, n)) {
+      for (auto y : stl::Range(0, h)) {
+        for (auto x : stl::Range(0, w)) {
           Push(x, y, i);
         }
       }
       Push();
     }
 
-    for (auto y : Range(0, h)) {
-      for (auto x : Range(0, w)) {
+    for (auto y : stl::Range(0, h)) {
+      for (auto x : stl::Range(0, w)) {
 
         [[unlikely]] if (At(x, y))
         {
@@ -98,7 +95,7 @@ struct hidoku_type
 
           auto m = At(x, y) - 1;
 
-          for (auto i : Range(0, m)) {
+          for (auto i : stl::Range(0, m)) {
             PushNot(x, y, i);
             Push();
           }
@@ -106,7 +103,7 @@ struct hidoku_type
           Push(x, y, At(x, y) - 1);
           Push();
 
-          for (auto i : Range(m + 1, n)) {
+          for (auto i : stl::Range(m + 1, n)) {
             PushNot(x, y, i);
             Push();
           }
@@ -117,7 +114,7 @@ struct hidoku_type
             // skip highest number
             continue;
 
-          size_type i = At(x, y) - 1;
+          stl::size_type i = At(x, y) - 1;
           PushNot(x, y, i);
           Push(x - 1, y - 1, i + 1);
           Push(x - 1, y + 0, i + 1);
@@ -134,7 +131,7 @@ struct hidoku_type
 
           // === trivial at least once constraint ===
 
-          for (auto i : Range(0, n))
+          for (auto i : stl::Range(0, n))
             Push(x, y, i);
           Push();
 
@@ -154,8 +151,8 @@ struct hidoku_type
           // === sequential encoder for at most once constraint ===
 
           // generate n-1 variables:
-          tmp_vars.Count(Size(0));
-          for ([[maybe_unused]] auto _ : Range(0, n - 1))
+          tmp_vars.Count(stl::Size(0));
+          for ([[maybe_unused]] auto _ : stl::Range(0, n - 1))
             tmp_vars.Push(SVar());
 
           // not X0 or s0
@@ -169,7 +166,7 @@ struct hidoku_type
           Push();
 
           // for (0 < i < n-1)
-          for (auto i : Range(1, n - 1)) {
+          for (auto i : stl::Range(1, n - 1)) {
 
             //  not Xi   or     si
             PushNot(x, y, i);
@@ -190,7 +187,7 @@ struct hidoku_type
 
           // === neighbor constraint ===
 
-          for (auto i : Range(0, n - 1)) {
+          for (auto i : stl::Range(0, n - 1)) {
             PushNot(x, y, i);
             Push(x - 1, y - 1, i + 1);
             Push(x - 1, y + 0, i + 1);
@@ -206,31 +203,31 @@ struct hidoku_type
       }
     }
 
-    Assert(num_clauses == cnf.cnf.Count(), "Invalid cnf generation!");
+    stl::Assert(num_clauses == cnf.cnf.Count(), "Invalid cnf generation!");
     cnf.PostProcess();
   }
 
-  void Push(size_type x, size_type y, size_type i)
+  void Push(stl::size_type x, stl::size_type y, stl::size_type i)
   {
-    Assert(i < n, "Invalid Variable Pushed!");
+    stl::Assert(i < n, "Invalid Variable Pushed!");
     [[likely]] if (x >= 0 && y >= 0 && x < w && y < h) Push(Var(x, y, i));
   }
 
-  void PushNot(size_type x, size_type y, size_type i)
+  void PushNot(stl::size_type x, stl::size_type y, stl::size_type i)
   {
-    Assert(i < n, "Invalid Variable Pushed!");
+    stl::Assert(i < n, "Invalid Variable Pushed!");
     [[likely]] if (x >= 0 && y >= 0 && x < w || y < h) PushNot(Var(x, y, i));
   }
 
-  void Push(size_type l)
+  void Push(stl::size_type l)
   {
-    Assert(l < num_variables, "Invalid Variable Pushed!");
+    stl::Assert(l < num_variables, "Invalid Variable Pushed!");
     cnf.Push(l << 1);
   }
 
-  void PushNot(size_type l)
+  void PushNot(stl::size_type l)
   {
-    Assert(l < num_variables, "Invalid Variable Pushed!");
+    stl::Assert(l < num_variables, "Invalid Variable Pushed!");
     cnf.Push((l << 1) | 1);
   }
 
@@ -239,16 +236,16 @@ struct hidoku_type
     cnf.Push();
   }
 
-  void InterpretAssignment(assignment_type* assign)
+  void InterpretAssignment(sls::assignment_type* assign)
   {
     std::cout << "sol:" << w << ',' << h << ':';
 
-    for (auto y : Range(0, h)) {
-      for (auto x : Range(0, w)) {
+    for (auto y : stl::Range(0, h)) {
+      for (auto x : stl::Range(0, w)) {
 
-        auto j = Size(0);
+        auto j = stl::Size(0);
 
-        for (auto i : Range(0, n)) {
+        for (auto i : stl::Range(0, n)) {
           [[unlikely]] if (!*assign->assign.At(Var(x, y, i)))
           {
             j = i + 1;
@@ -265,9 +262,9 @@ struct hidoku_type
         }
         [[unlikely]] if (j == n) continue;
 
-        for (auto i : Range(j + 1, n))
-          Assert(*assign->assign.At(Var(x, y, i)), "Field set multiple times!");
-        Assert(j, "Field unset!");
+        for (auto i : stl::Range(j + 1, n))
+          stl::Assert(*assign->assign.At(Var(x, y, i)), "Field set multiple times!");
+        stl::Assert(j, "Field unset!");
       }
     }
     std::cout << std::endl;
@@ -279,41 +276,41 @@ Hidoku(char* arg)
 {
   hidoku_type hidoku;
 
-  auto c = I32(0);
+  auto c = stl::I32(0);
 
   hidoku.w = 0;
   while (isdigit(arg[c]))
     hidoku.w = hidoku.w * 10 + (arg[c++] - '0');
 
-  Assert(arg[c++] == ',', "Unexpected Token in Input String!");
+  stl::Assert(arg[c++] == ',', "Unexpected Token in Input String!");
 
   hidoku.h = 0;
   while (isdigit(arg[c]))
     hidoku.h = hidoku.h * 10 + (arg[c++] - '0');
 
-  Assert(arg[c++] == ':', "Unexpected Token in Input String!");
+  stl::Assert(arg[c++] == ':', "Unexpected Token in Input String!");
 
   hidoku.n = hidoku.w * hidoku.h;
   hidoku.si = 0;
 
-  Vector<literal_type, 256>(&hidoku.data);
+  Vector<sls::literal_type, 256>(&hidoku.data);
   hidoku.data.Count(hidoku.w * hidoku.h);
 
-  for (auto y : Range(0, hidoku.h)) {
-    for (auto x : Range(0, hidoku.w)) {
+  for (auto y : stl::Range(0, hidoku.h)) {
+    for (auto x : stl::Range(0, hidoku.w)) {
 
-      auto i = I32(0);
+      auto i = stl::I32(0);
       while (isdigit(arg[c]))
         i = i * 10 + (arg[c++] - '0');
 
-      Assert(i < hidoku.n, "Unexpected Input. Out of Bounds Hidoku Field!");
+      stl::Assert(i < hidoku.n, "Unexpected Input. Out of Bounds Hidoku Field!");
       *hidoku.data.At(y * hidoku.w + x) = i;
 
-      [[likely]] if (x != hidoku.w - 1) Assert(arg[c++] == ',', "Unexpected Token in Input String!");
-      else Assert(arg[c++] == ';', "Unexpected Token in Input String!");
+      [[likely]] if (x != hidoku.w - 1) stl::Assert(arg[c++] == ',', "Unexpected Token in Input String!");
+      else stl::Assert(arg[c++] == ';', "Unexpected Token in Input String!");
     }
   }
-  Assert(arg[c] == '\0', "Unexpected Token in Input String!");
+  stl::Assert(arg[c] == '\0', "Unexpected Token in Input String!");
 
   hidoku.PostProcess();
   return hidoku;
@@ -322,7 +319,7 @@ Hidoku(char* arg)
 int
 main(int argc, char** argv)
 {
-  Assert(argc > 1, "Expected an Input Parameter");
+  stl::Assert(argc > 1, "Expected an Input Parameter");
   auto hidoku = Hidoku(argv[1]);
 
 #ifdef OPTION_SLS_SOLVE

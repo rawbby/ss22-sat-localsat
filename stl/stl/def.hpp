@@ -6,6 +6,10 @@
 
 namespace stl {
 
+#ifndef NDEBUG
+#define STL_OPTION_DEBUG
+#endif
+
 #define STL_DEFINE_INTEGRAL_CONSTRUCTOR(base_type, integral_type, name)                                                                        \
   typedef base_type integral_type;                                                                                                             \
   static_assert(std::is_integral<integral_type>::value, "defined ill formed integral type " #integral_type ".");                               \

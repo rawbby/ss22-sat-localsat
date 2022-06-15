@@ -8,15 +8,6 @@
 #include "def.hpp"
 #include "sys.hpp" // Put, Exit
 
-// TODO: DebugBreak is a nice utility but
-//       it pollutes the global namespace
-
-#ifdef WIN32
-#include <windows.h> // DebugBreak()
-#else
-#define DebugBreak() ((void)0)
-#endif
-
 namespace stl {
 
 namespace detail {
@@ -47,13 +38,11 @@ Swap(type_type* a, type_type* b) noexcept
 [[maybe_unused]] constexpr inline void
 Assert(bool_type condition, const char_type* message) noexcept
 {
-#ifndef NDEBUG
-  [[likely]] if (condition)
-    return;
+#ifdef STL_OPTION_DEBUG
+  [[likely]] if (condition) return;
 
   detail::EXPANDING_CONSTANT_EXPRESSION_FAILED();
   Put(message);
-  DebugBreak();
   Exit(1);
 #endif
 }

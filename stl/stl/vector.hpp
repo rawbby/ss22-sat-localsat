@@ -18,7 +18,6 @@ template<typename type_type, size_type capacity>
 struct vector_type
 {
   // === member ===
-
   type_type data[capacity];
   size_type count;
 

@@ -4,13 +4,12 @@
 #include "cnf.hpp"
 
 namespace sls {
-using namespace stl;
 
 [[maybe_unused]] constexpr inline void
 cnf_type::Push(literal_type literal) noexcept
 {
   cnf.Push(literal);
-  *(num_clauses_for_literals.At(Size(literal))) += Size(1);
+  *(num_clauses_for_literals.At(stl::Size(literal))) += stl::Size(1);
 }
 
 [[maybe_unused]] constexpr inline void
@@ -22,13 +21,13 @@ cnf_type::Push() noexcept
 [[maybe_unused]] constexpr inline void
 cnf_type::PostProcess() noexcept
 {
-  Assert(!num_clauses || num_clauses == cnf.Count(), "Cnf was initialized with an invalid Number of Clauses!");
+  stl::Assert(!num_clauses || num_clauses == cnf.Count(), "Cnf was initialized with an invalid Number of Clauses!");
   num_clauses = cnf.Count();
 
   // for each sub vector create an index counter
-  auto i = Vector<size_type, MAX_LITERALS>();
+  auto i = stl::Vector<stl::size_type, SLS_MAX_LITERALS>();
   i.Count(num_literals);
-  View(&i).MemSet(I32(0));
+  View(&i).MemSet(stl::I32(0));
 
   auto n = num_clauses_for_literals;
   auto m = num_literals;
@@ -36,16 +35,16 @@ cnf_type::PostProcess() noexcept
   {
     // hack into cnf.vc
     vc.buffer.Count(cnf.buffer.Count());
-    vc.ranges.Count(num_literals + Size(1));
-    auto total_size = Size(0);
-    for (auto j = Size(0); j < m; ++j) {
+    vc.ranges.Count(num_literals + stl::Size(1));
+    auto total_size = stl::Size(0);
+    for (auto j = stl::Size(0); j < m; ++j) {
       total_size += *n.At(j);
-      *(vc.ranges.At(j + Size(1))) = total_size;
+      *(vc.ranges.At(j + stl::Size(1))) = total_size;
     }
   }
 
   {
-    auto clause_index = Size(0);
+    auto clause_index = stl::Size(0);
 
     for (auto clause : cnf) {
       for (auto literal : clause) {
@@ -56,30 +55,30 @@ cnf_type::PostProcess() noexcept
         *(view.At(index)) = clause_index;
       }
 
-      clause_index += Size(1);
+      clause_index += stl::Size(1);
     }
   }
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline size_type
+[[maybe_unused]] [[nodiscard]] constexpr inline stl::size_type
 cnf_type::NumResolvingClauses(literal_type literal) const noexcept
 {
   return *(num_clauses_for_literals.At(literal));
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const size_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<const stl::size_type>
 cnf_type::ResolvingClauses(literal_type literal) const noexcept
 {
   return vc.At(literal);
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<literal_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline stl::vector_stack_iter_type<literal_type>
 cnf_type::begin() noexcept
 {
   return cnf.begin();
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<literal_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline stl::vector_stack_iter_type<literal_type>
 cnf_type::end() noexcept
 {
   return cnf.end();
@@ -92,27 +91,27 @@ cnf_type::end() noexcept
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
 
 [[maybe_unused]] [[nodiscard]] constexpr inline cnf_type
-CnfExtended(size_type num_variables, size_type num_clauses) noexcept
+CnfExtended(stl::size_type num_variables, stl::size_type num_clauses) noexcept
 {
   cnf_type cnf;
   cnf.num_variables = num_variables;
   cnf.num_literals = num_variables << 1;
   cnf.num_clauses = num_clauses;
 
-  VectorStack<literal_type, MAX_CLAUSES, MAX_CNF_LITERALS>(&cnf.cnf);
-  VectorStack<size_type, MAX_LITERALS, MAX_CNF_LITERALS>(&cnf.vc);
+  VectorStack<literal_type, SLS_MAX_CLAUSES, SLS_MAX_CNF_LITERALS>(&cnf.cnf);
+  VectorStack<stl::size_type, SLS_MAX_LITERALS, SLS_MAX_CNF_LITERALS>(&cnf.vc);
 
-  Vector<size_type, MAX_LITERALS>(&cnf.num_clauses_for_literals);
+  Vector<stl::size_type, SLS_MAX_LITERALS>(&cnf.num_clauses_for_literals);
   cnf.num_clauses_for_literals.Count(cnf.num_literals);
-  View(&cnf.num_clauses_for_literals).MemSet(I32(0));
+  View(&cnf.num_clauses_for_literals).MemSet(stl::I32(0));
 
   return cnf;
 }
 
 [[maybe_unused]] [[nodiscard]] constexpr inline cnf_type
-CnfExtended(size_type num_variables) noexcept
+CnfExtended(stl::size_type num_variables) noexcept
 {
-  return CnfExtended(num_variables, Size(0));
+  return CnfExtended(num_variables, stl::Size(0));
 }
 
 }

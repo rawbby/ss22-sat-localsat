@@ -9,10 +9,9 @@
 #include "def.hpp"
 
 namespace sls {
-using namespace stl;
 
 [[maybe_unused]] inline void
-SLS(assignment_type *assignment, const cnf_type* cnf) noexcept;
+SLS(assignment_type* assignment, const cnf_type* cnf) noexcept;
 
 [[maybe_unused]] inline assignment_type
 SLS(const cnf_type* cnf) noexcept;

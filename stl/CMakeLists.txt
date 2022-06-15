@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.1)
+
+project(stl LANGUAGES CXX)
+find_package(OpenMP REQUIRED)
+
+file(GLOB_RECURSE PROJECT_HEADER *.hpp)
+file(GLOB_RECURSE PROJECT_INLINE *.inl)
+
+add_library(${PROJECT_NAME} INTERFACE)
+target_sources(${PROJECT_NAME} INTERFACE ${PROJECT_HEADER})
+target_sources(${PROJECT_NAME} INTERFACE ${PROJECT_INLINE})
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR})
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        LINKER_LANGUAGE CXX
+        CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED ON)

@@ -17,11 +17,11 @@ struct random_type
   // | |  | | | |___    | |   |  _  | | |_| | | |_| |  ___) |
   // |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
 
-  [[maybe_unused]] [[nodiscard]] inline bool_type randBool() noexcept;
+  [[maybe_unused]] [[nodiscard]] inline bool_type RandBool() noexcept;
 
-  [[maybe_unused]] [[nodiscard]] inline i32_type randInt(i32_type upper) noexcept;
+  [[maybe_unused]] [[nodiscard]] inline i32_type RandInt(i32_type upper) noexcept;
 
-  [[maybe_unused]] [[nodiscard]] inline i32_type randInt(i32_type lower, i32_type upper) noexcept;
+  [[maybe_unused]] [[nodiscard]] inline i32_type RandInt(i32_type lower, i32_type upper) noexcept;
 };
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____

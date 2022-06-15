@@ -9,7 +9,6 @@
 #include "def.hpp"
 
 namespace sls {
-using namespace stl;
 
 //  ____    _____    ____   _          _      ____       _      _____   ___    ___    _   _
 // |  _ \  | ____|  / ___| | |        / \    |  _ \     / \    |_   _| |_ _|  / _ \  | \ | |
@@ -19,9 +18,9 @@ using namespace stl;
 
 struct assignment_type
 {
-  vector_type<i8_type, MAX_VARIABLES> assign;
-  vector_type<size_type, MAX_CLAUSES> satisfied_counts;
-  size_type loop_offset;
+  stl::vector_type<stl::i8_type, SLS_MAX_VARIABLES> assign;
+  stl::vector_type<stl::size_type, SLS_MAX_CLAUSES> satisfied_counts;
+  stl::size_type loop_offset;
 
   //  __  __   _____   _____   _   _    ___    ____    ____
   // |  \/  | | ____| |_   _| | | | |  / _ \  |  _ \  / ___|
@@ -31,25 +30,25 @@ struct assignment_type
 
   [[maybe_unused]] constexpr inline void Flip(const cnf_type* cnf, variable_type variable) noexcept;
 
-  [[maybe_unused]] inline void RandomFlip(const cnf_type* cnf, random_type random) noexcept;
+  [[maybe_unused]] inline void RandomFlip(const cnf_type* cnf, stl::random_type random) noexcept;
 
   [[maybe_unused]] constexpr inline void BestFlip(const cnf_type* cnf) noexcept;
 
-  [[maybe_unused]] inline void BestFlip(const cnf_type* cnf, random_type* random) noexcept;
+  [[maybe_unused]] inline void BestFlip(const cnf_type* cnf, stl::random_type* random) noexcept;
 
-  [[maybe_unused]] constexpr inline void RandomReset(const cnf_type* cnf, random_type* random) noexcept;
+  [[maybe_unused]] constexpr inline void RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept;
 
   [[maybe_unused]] constexpr inline void UpdateStats(const cnf_type* cnf) noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline float Score() noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline size_type FlipStat(const cnf_type* cnf, variable_type variable) noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline stl::size_type FlipStat(const cnf_type* cnf, variable_type variable) noexcept;
 
   // === iterator support ===
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline i8_type* begin() noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline stl::i8_type* begin() noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline i8_type* end() noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline stl::i8_type* end() noexcept;
 };
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
@@ -65,10 +64,10 @@ Assignment(assignment_type* assign, const cnf_type* cnf) noexcept;
 Assignment(const cnf_type* cnf) noexcept;
 
 [[maybe_unused]] inline void
-Assignment(assignment_type* assign, const cnf_type* cnf, random_type* random) noexcept;
+Assignment(assignment_type* assign, const cnf_type* cnf, stl::random_type* random) noexcept;
 
 [[maybe_unused]] [[nodiscard]] inline assignment_type
-Assignment(const cnf_type* cnf, random_type* random) noexcept;
+Assignment(const cnf_type* cnf, stl::random_type* random) noexcept;
 
 }
 

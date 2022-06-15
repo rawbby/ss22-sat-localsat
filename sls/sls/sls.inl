@@ -4,7 +4,6 @@
 #include "sls.hpp"
 
 namespace sls {
-using namespace stl;
 
 [[maybe_unused]] inline void
 SLS(assignment_type* result, const cnf_type* cnf) noexcept
@@ -15,9 +14,9 @@ SLS(assignment_type* result, const cnf_type* cnf) noexcept
 #pragma omp parallel default(none) shared(cnf, found, result)
   {
     auto id = omp_get_thread_num();
-    auto random = Random(id);
+    auto random = stl::Random(id);
 
-#ifndef OPTION_ALLOCATE_HEAP
+#ifndef SLS_OPTION_ALLOCATE_HEAP
     assignment_type assign_;
     assignment_type* assign = &assign_;
 #else
@@ -27,13 +26,14 @@ SLS(assignment_type* result, const cnf_type* cnf) noexcept
     do {
       Assignment(assign, cnf, &random);
 
-      const auto n = I32(cnf->num_variables) + I32(cnf->num_clauses);
-      for (auto i = I32(0); (!found && i < n); ++i) {
+      const auto n = stl::I32(cnf->num_variables) + stl::I32(cnf->num_clauses);
+      for (auto i = stl::I32(0); (!found && i < n); ++i) {
 
         assign->BestFlip(cnf, &random);
         // assign.BestFlip(cnf);
 
-        [[unlikely]] if (!assign->Score()) {
+        [[unlikely]] if (!assign->Score())
+        {
 #pragma omp critical
           {
             found = true;
@@ -44,8 +44,8 @@ SLS(assignment_type* result, const cnf_type* cnf) noexcept
       }
     } while (!found);
 
-#ifdef OPTION_ALLOCATE_HEAP
-#ifndef OPTION_NO_FREE
+#ifdef SLS_OPTION_ALLOCATE_HEAP
+#ifndef SLS_OPTION_NO_FREE
     free(assign);
 #endif
 #endif
