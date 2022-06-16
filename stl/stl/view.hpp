@@ -2,7 +2,6 @@
 #define STL_VIEW_HPP
 
 #include "stl.hpp"
-#include "vector.hpp"
 
 namespace stl {
 
@@ -66,6 +65,14 @@ View(type_type* data, size_type lower, size_type upper) noexcept;
 template<typename type_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
 View(view_type<type_type> view, size_type lower, size_type upper) noexcept;
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+View(view_type<type_type> view, size_type upper) noexcept;
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+View(view_type<type_type> view) noexcept;
 
 }
 

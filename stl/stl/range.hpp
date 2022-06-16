@@ -3,8 +3,8 @@
 
 #include <limits>
 
+#include "static_vector.hpp"
 #include "stl.hpp"
-#include "vector.hpp"
 
 namespace stl {
 
@@ -20,13 +20,13 @@ struct range_iter_type
 
   [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type(const range_iter_type& iter) noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type(size_type i) noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline explicit range_iter_type(size_type i) noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline size_type operator*() const noexcept;
 
   [[maybe_unused]] constexpr inline range_iter_type& operator++() noexcept;
 
-  [[maybe_unused]] constexpr inline range_iter_type operator++(int) noexcept;
+  [[maybe_unused]] constexpr inline const range_iter_type operator++(int) noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline bool operator==(const range_iter_type& other) const noexcept;
 
@@ -44,9 +44,9 @@ struct range_type
   size_type lower;
   size_type upper;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type begin() noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type begin() const noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type end() noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type end() const noexcept;
 };
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____

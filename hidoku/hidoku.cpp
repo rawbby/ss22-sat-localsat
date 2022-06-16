@@ -22,7 +22,7 @@
 
 struct hidoku_type
 {
-  stl::vector_type<sls::literal_type, 256> data;
+  stl::static_vector_type<sls::literal_type, 256> data;
   sls::cnf_type cnf;
   stl::size_type w;
   stl::size_type h;
@@ -73,7 +73,7 @@ struct hidoku_type
     cnf = sls::CnfExtended(num_variables, num_clauses);
 
     // buffer for temporary / generated variables
-    auto tmp_vars = stl::Vector<sls::literal_type, sls::SLS_MAX_LITERALS>();
+    auto tmp_vars = stl::StaticVector<sls::literal_type, sls::SLS_MAX_LITERALS>();
 
     // at least every number
     for (auto i : stl::Range(0, n)) {
@@ -293,7 +293,7 @@ Hidoku(char* arg)
   hidoku.n = hidoku.w * hidoku.h;
   hidoku.si = 0;
 
-  Vector<sls::literal_type, 256>(&hidoku.data);
+  StaticVector<sls::literal_type, 256>(&hidoku.data);
   hidoku.data.Count(hidoku.w * hidoku.h);
 
   for (auto y : stl::Range(0, hidoku.h)) {

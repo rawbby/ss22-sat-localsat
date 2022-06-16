@@ -107,7 +107,7 @@ assignment_type::BestFlip(const cnf_type* cnf, stl::random_type* random) noexcep
 assignment_type::RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept
 {
   for (auto& sign : assign)
-    sign = random->RandBool();
+    sign = stl::I8(random->RandBool());
 
   UpdateStats(cnf);
 }
@@ -115,7 +115,7 @@ assignment_type::RandomReset(const cnf_type* cnf, stl::random_type* random) noex
 [[maybe_unused]] constexpr inline void
 assignment_type::UpdateStats(const cnf_type* cnf) noexcept
 {
-  View(&satisfied_counts).MemSet(0);
+  satisfied_counts.ToView().MemSet(0);
 
   auto variable = Variable(0);
   for (auto& sign : assign) {
@@ -136,7 +136,7 @@ assignment_type::Score() noexcept
   for (auto count : satisfied_counts)
     score -= count ? 1 : 0;
 
-  return score;
+  return stl::F32(score);
 }
 
 [[maybe_unused]] [[nodiscard]] constexpr inline stl::size_type
@@ -180,13 +180,13 @@ Assignment(assignment_type* assignment, const cnf_type* cnf) noexcept
 {
   assignment->loop_offset = stl::Size(0);
 
-  assignment->assign = stl::Vector<stl::i8_type, SLS_MAX_VARIABLES>();
+  assignment->assign = stl::StaticVector<stl::i8_type, SLS_MAX_VARIABLES>();
   assignment->assign.Count(cnf->num_variables);
-  View(&assignment->assign).MemSet(stl::I32(0));
+  assignment->assign.ToView().MemSet(stl::I32(0));
 
-  assignment->satisfied_counts = stl::Vector<stl::size_type, SLS_MAX_CLAUSES>();
+  assignment->satisfied_counts = stl::StaticVector<stl::size_type, SLS_MAX_CLAUSES>();
   assignment->satisfied_counts.Count(cnf->num_clauses);
-  View(&assignment->satisfied_counts).MemSet(stl::I32(0));
+  assignment->satisfied_counts.ToView().MemSet(stl::I32(0));
 
   assignment->UpdateStats(cnf);
 }
@@ -204,13 +204,13 @@ Assignment(assignment_type* assignment, const cnf_type* cnf, stl::random_type* r
 {
   assignment->loop_offset = stl::Size(0);
 
-  assignment->assign = stl::Vector<stl::i8_type, SLS_MAX_VARIABLES>();
+  assignment->assign = stl::StaticVector<stl::i8_type, SLS_MAX_VARIABLES>();
   assignment->assign.Count(cnf->num_variables);
-  View(&assignment->assign).MemSet(stl::I32(0));
+  assignment->assign.ToView().MemSet(stl::I32(0));
 
-  assignment->satisfied_counts = stl::Vector<stl::size_type, SLS_MAX_CLAUSES>();
+  assignment->satisfied_counts = stl::StaticVector<stl::size_type, SLS_MAX_CLAUSES>();
   assignment->satisfied_counts.Count(cnf->num_clauses);
-  View(&assignment->satisfied_counts).MemSet(stl::I32(0));
+  assignment->satisfied_counts.ToView().MemSet(stl::I32(0));
 
   assignment->RandomReset(cnf, random);
 }

@@ -10,6 +10,12 @@
 
 namespace stl {
 
+#ifndef STL_OPTION_SANITIZE
+#ifdef STL_OPTION_DEBUG
+#define STL_OPTION_SANITIZE
+#endif
+#endif
+
 namespace detail {
 
 /**
@@ -38,7 +44,7 @@ Swap(type_type* a, type_type* b) noexcept
 [[maybe_unused]] constexpr inline void
 Assert(bool_type condition, const char_type* message) noexcept
 {
-#ifdef STL_OPTION_DEBUG
+#ifdef STL_OPTION_SANITIZE
   [[likely]] if (condition) return;
 
   detail::EXPANDING_CONSTANT_EXPRESSION_FAILED();

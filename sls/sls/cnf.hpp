@@ -4,8 +4,8 @@
 #include "def.hpp"
 
 #include <stl/scl/vector_stack.hpp>
+#include <stl/static_vector.hpp>
 #include <stl/stl.hpp>
-#include <stl/vector.hpp>
 
 #include <iostream>
 #include <type_traits>
@@ -25,7 +25,7 @@ struct cnf_type
 
   // statistical lookup
   stl::vector_stack_type<stl::size_type, SLS_MAX_LITERALS, SLS_MAX_CNF_LITERALS> vc;
-  stl::vector_type<stl::size_type, SLS_MAX_LITERALS> num_clauses_for_literals;
+  stl::static_vector_type<stl::size_type, SLS_MAX_LITERALS> num_clauses_for_literals;
 
   stl::size_type num_variables;
   stl::size_type num_literals;

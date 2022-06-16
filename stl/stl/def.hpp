@@ -1,8 +1,9 @@
 #ifndef STL_DEF_HPP
 #define STL_DEF_HPP
 
+#include <cstddef>
 #include <cstdint>
-#include <type_traits> // std::is_integral, std::is_floating_point
+#include <cstring>
 
 namespace stl {
 
@@ -12,7 +13,6 @@ namespace stl {
 
 #define STL_DEFINE_INTEGRAL_CONSTRUCTOR(base_type, integral_type, name)                                                                        \
   typedef base_type integral_type;                                                                                                             \
-  static_assert(std::is_integral<integral_type>::value, "defined ill formed integral type " #integral_type ".");                               \
                                                                                                                                                \
   template<typename type_type>                                                                                                                 \
   [[maybe_unused]] [[nodiscard]] constexpr inline integral_type name(type_type type) noexcept                                                  \
@@ -22,7 +22,6 @@ namespace stl {
 
 #define STL_DEFINE_FLOATING_CONSTRUCTOR(base_type, floating_point_type, name)                                                                  \
   typedef base_type floating_point_type;                                                                                                       \
-  static_assert(std::is_floating_point<floating_point_type>::value, "defined ill formed floating point type " #floating_point_type ".");       \
                                                                                                                                                \
   template<typename type_type>                                                                                                                 \
   [[maybe_unused]] [[nodiscard]] constexpr inline floating_point_type name(type_type type) noexcept                                            \
@@ -41,9 +40,19 @@ STL_DEFINE_INTEGRAL_CONSTRUCTOR(std::uint64_t, u64_type, U64)
 STL_DEFINE_FLOATING_CONSTRUCTOR(float, f32_type, F32)
 STL_DEFINE_FLOATING_CONSTRUCTOR(double, f64_type, F64)
 
+STL_DEFINE_INTEGRAL_CONSTRUCTOR(std::byte, byte_type, Byte)
 STL_DEFINE_INTEGRAL_CONSTRUCTOR(bool, bool_type, Bool)
 STL_DEFINE_INTEGRAL_CONSTRUCTOR(char, char_type, Char)
 STL_DEFINE_INTEGRAL_CONSTRUCTOR(i32_type, size_type, Size)
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline u64_type U64(type_type* pointer) noexcept
+{
+  static_assert(sizeof(u64_type) >= sizeof(pointer), "Unexpected Pointer Size. Unable to handle Pointer bigger than 8 Bytes.");
+  u64_type address;
+  std::memcpy(&address, &pointer, sizeof(pointer));
+  return address;
+}
 
 }
 

@@ -25,9 +25,9 @@ cnf_type::PostProcess() noexcept
   num_clauses = cnf.Count();
 
   // for each sub vector create an index counter
-  auto i = stl::Vector<stl::size_type, SLS_MAX_LITERALS>();
+  auto i = stl::StaticVector<stl::size_type, SLS_MAX_LITERALS>();
   i.Count(num_literals);
-  View(&i).MemSet(stl::I32(0));
+  i.ToView().MemSet(stl::I32(0));
 
   auto n = num_clauses_for_literals;
   auto m = num_literals;
@@ -101,9 +101,9 @@ CnfExtended(stl::size_type num_variables, stl::size_type num_clauses) noexcept
   VectorStack<literal_type, SLS_MAX_CLAUSES, SLS_MAX_CNF_LITERALS>(&cnf.cnf);
   VectorStack<stl::size_type, SLS_MAX_LITERALS, SLS_MAX_CNF_LITERALS>(&cnf.vc);
 
-  Vector<stl::size_type, SLS_MAX_LITERALS>(&cnf.num_clauses_for_literals);
+  StaticVector<stl::size_type, SLS_MAX_LITERALS>(&cnf.num_clauses_for_literals);
   cnf.num_clauses_for_literals.Count(cnf.num_literals);
-  View(&cnf.num_clauses_for_literals).MemSet(stl::I32(0));
+  cnf.num_clauses_for_literals.ToView().MemSet(stl::I32(0));
 
   return cnf;
 }

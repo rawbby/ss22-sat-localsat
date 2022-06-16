@@ -15,7 +15,7 @@ namespace stl {
 // |____/  |_____|  \____| |_____| /_/   \_\ |_| \_\ /_/   \_\   |_|   |___|  \___/  |_| \_|
 
 template<typename type_type, size_type capacity>
-struct vector_type
+struct static_vector_type
 {
   // === member ===
   type_type data[capacity];
@@ -52,6 +52,24 @@ struct vector_type
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* begin() noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* end() noexcept;
+
+  //   ____    ___    _   _  __     __  _____   ____    ____    ___    ___    _   _
+  //  / ___|  / _ \  | \ | | \ \   / / | ____| |  _ \  / ___|  |_ _|  / _ \  | \ | |
+  // | |     | | | | |  \| |  \ \ / /  |  _|   | |_) | \___ \   | |  | | | | |  \| |
+  // | |___  | |_| | | |\  |   \ V /   | |___  |  _ <   ___) |  | |  | |_| | | |\  |
+  //  \____|  \___/  |_| \_|    \_/    |_____| |_| \_\ |____/  |___|  \___/  |_| \_|
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> ToView() noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> ToView() const noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> ToView(size_type upper) noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> ToView(size_type upper) const noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> ToView(size_type lower, size_type upper) noexcept;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> ToView(size_type lower, size_type upper) const noexcept;
 };
 
 //  _____      _       ____   _____    ___    ____    ___   _____   ____
@@ -61,34 +79,12 @@ struct vector_type
 // |_|     /_/   \_\  \____|   |_|    \___/  |_| \_\ |___| |_____| |____/
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline vector_type<type_type, capacity>
-Vector() noexcept;
-
-//   ____    ___    _   _  __     __  _____   ____    ____    ___    ___    _   _   ____
-//  / ___|  / _ \  | \ | | \ \   / / | ____| |  _ \  / ___|  |_ _|  / _ \  | \ | | / ___|
-// | |     | | | | |  \| |  \ \ / /  |  _|   | |_) | \___ \   | |  | | | | |  \| | \___ \
-// | |___  | |_| | | |\  |   \ V /   | |___  |  _ <   ___) |  | |  | |_| | | |\  |  ___) |
-//  \____|  \___/  |_| \_|    \_/    |_____| |_| \_\ |____/  |___|  \___/  |_| \_| |____/
-
-template<typename type_type, size_type vector_capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-View(const vector_type<type_type, vector_capacity>* vector) noexcept;
-
-template<typename type_type, size_type vector_capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(vector_type<type_type, vector_capacity>* vector) noexcept;
-
-template<typename type_type, size_type vector_capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-View(const vector_type<type_type, vector_capacity>* vector, size_type lower, size_type upper) noexcept;
-
-template<typename type_type, size_type vector_capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(vector_type<type_type, vector_capacity>* vector, size_type lower, size_type upper) noexcept;
+[[maybe_unused]] [[nodiscard]] constexpr inline static_vector_type<type_type, capacity>
+StaticVector() noexcept;
 
 }
 
 // include implementation
-#include "vector.inl"
+#include "static_vector.inl"
 
 #endif

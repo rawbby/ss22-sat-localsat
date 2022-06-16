@@ -37,7 +37,15 @@ template<typename type_type>
 [[maybe_unused]] constexpr inline void
 view_type<type_type>::MemSet(i32_type value) noexcept
 {
-  memset(data, value, Count() * sizeof(type_type));
+  if (!std::is_constant_evaluated()) {
+    memset(data, value, Count() * sizeof(type_type));
+    return;
+  }
+
+  auto* p = static_cast<stl::byte_type*>(static_cast<void*>(data));
+  const auto n = Count() * sizeof(type_type);
+  for (auto i = Size(0); i < n; ++i)
+    p[i] = Byte(value);
 }
 
 template<typename type_type>
@@ -45,7 +53,15 @@ template<typename type_type>
 view_type<type_type>::MemCopy(view_type<type_type> dst) const noexcept
 {
   Assert(dst.Count() == Count(), "Can not MemCopy from uneven sized Views!");
-  memcpy(dst.data, data, Count() * sizeof(type_type));
+
+  if (!std::is_constant_evaluated()) {
+    memcpy(dst.data, data, Count() * sizeof(type_type));
+    return;
+  }
+
+  const auto n = Count();
+  for (auto i = Size(0); i < n; ++i)
+    *dst.At(i) = *At(i);
 }
 
 template<typename type_type>
@@ -103,8 +119,23 @@ View(view_type<type_type> view, size_type lower, size_type upper) noexcept
   Assert(upper >= lower, "View can not be initialized in reverse Order!");
   Assert(upper >= Size(0), "View Can not be access with a negative Index!");
   Assert(upper <= view.Count(), "View Can not be access with an Index larger its Count!");
-  // At can not be used as a range from end to end is allowed but At(end) is undefined!
   return { &(view.data[lower]), upper - lower };
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+View(view_type<type_type> view, size_type upper) noexcept
+{
+  Assert(upper >= Size(0), "View Can not be access with a negative Index!");
+  Assert(upper <= view.Count(), "View Can not be access with an Index larger its Count!");
+  return { view.data, upper };
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+View(view_type<type_type> view) noexcept
+{
+  return { view.data, view.count };
 }
 
 }

@@ -2,7 +2,7 @@
 #define SLS_ASSIGNMENT_HPP
 
 #include <stl/random.hpp>
-#include <stl/vector.hpp>
+#include <stl/static_vector.hpp>
 #include <stl/view.hpp>
 
 #include "cnf.hpp"
@@ -18,8 +18,8 @@ namespace sls {
 
 struct assignment_type
 {
-  stl::vector_type<stl::i8_type, SLS_MAX_VARIABLES> assign;
-  stl::vector_type<stl::size_type, SLS_MAX_CLAUSES> satisfied_counts;
+  stl::static_vector_type<stl::i8_type, SLS_MAX_VARIABLES> assign;
+  stl::static_vector_type<stl::size_type, SLS_MAX_CLAUSES> satisfied_counts;
   stl::size_type loop_offset;
 
   //  __  __   _____   _____   _   _    ___    ____    ____
