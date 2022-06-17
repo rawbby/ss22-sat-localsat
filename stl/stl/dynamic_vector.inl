@@ -126,34 +126,6 @@ dynamic_vector_type<type_type, allocator_type>::ToView() const noexcept
   return View(data_, count);
 }
 
-template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-dynamic_vector_type<type_type, allocator_type>::ToView(size_type upper) noexcept
-{
-  return View(ToView(), upper);
-}
-
-template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-dynamic_vector_type<type_type, allocator_type>::ToView(size_type upper) const noexcept
-{
-  return View(ToView(), upper);
-}
-
-template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-dynamic_vector_type<type_type, allocator_type>::ToView(size_type lower, size_type upper) noexcept
-{
-  return View(ToView(), lower, upper);
-}
-
-template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-dynamic_vector_type<type_type, allocator_type>::ToView(size_type lower, size_type upper) const noexcept
-{
-  return View(ToView(), lower, upper);
-}
-
 //  _____      _       ____   _____    ___    ____    ___   _____   ____
 // |  ___|    / \     / ___| |_   _|  / _ \  |  _ \  |_ _| | ____| / ___|
 // | |_      / _ \   | |       | |   | | | | | |_) |  | |  |  _|   \___ \

@@ -3,11 +3,13 @@
 
 #include "../def.hpp"
 #include "alignment.hpp"
+#include "allocator.hpp"
 #include "memory.hpp"
 
 namespace stl {
 
 template<typename primary_allocator_type, typename secondary_allocator_type>
+  requires owning_allocator_concept<primary_allocator_type> && allocator_concept<secondary_allocator_type>
 struct fallback_allocator_type
   : primary_allocator_type
   , secondary_allocator_type

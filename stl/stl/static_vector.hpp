@@ -1,10 +1,8 @@
-#ifndef STL_VECTOR_HPP
-#define STL_VECTOR_HPP
+#ifndef STL_STATIC_VECTOR_HPP
+#define STL_STATIC_VECTOR_HPP
 
 #include "stl.hpp"
 #include "view.hpp"
-
-#include <type_traits> // std::is_constant_evaluated
 
 namespace stl {
 
@@ -49,6 +47,8 @@ struct static_vector_type
 
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* Peak() noexcept;
 
+  // === iterator methods ===
+
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* begin() noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* end() noexcept;
@@ -62,14 +62,6 @@ struct static_vector_type
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> ToView() noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> ToView() const noexcept;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> ToView(size_type upper) noexcept;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> ToView(size_type upper) const noexcept;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> ToView(size_type lower, size_type upper) noexcept;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> ToView(size_type lower, size_type upper) const noexcept;
 };
 
 //  _____      _       ____   _____    ___    ____    ___   _____   ____

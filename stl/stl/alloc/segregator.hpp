@@ -6,6 +6,7 @@
 namespace stl {
 
 template<size_type threshold, typename small_allocator_type, typename large_allocator_type>
+  requires allocator_concept<small_allocator_type> && allocator_concept<large_allocator_type>
 struct segregator_type
   : small_allocator_type
   , large_allocator_type

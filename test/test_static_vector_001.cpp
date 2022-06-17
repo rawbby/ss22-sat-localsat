@@ -3,7 +3,8 @@
 #include <stl/static_vector.hpp>
 
 template<typename vector_type>
-void TestPush(vector_type& vector, stl::size_type index)
+void
+TestPush(vector_type& vector, stl::size_type index)
 {
   vector.Push(index);
   stl::Assert(vector.Count() == index, TEST_FAILURE_MESSAGE());
@@ -26,7 +27,7 @@ main()
 
   auto view = vector.ToView();
   auto i = stl::Size(1);
-  for(auto index : view)
+  for (auto index : view)
     stl::Assert(index == i++, TEST_FAILURE_MESSAGE());
 
   TEST_ASSERT_EXIT_1(vector.Push(9));

@@ -52,6 +52,8 @@ struct dynamic_vector_type
 
   [[maybe_unused]] [[nodiscard]] inline type_type* Peak() noexcept;
 
+  // === iterator methods ===
+
   [[maybe_unused]] [[nodiscard]] inline type_type* begin() noexcept;
 
   [[maybe_unused]] [[nodiscard]] inline type_type* end() noexcept;
@@ -65,14 +67,6 @@ struct dynamic_vector_type
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> ToView() noexcept;
 
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> ToView() const noexcept;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> ToView(size_type upper) noexcept;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> ToView(size_type upper) const noexcept;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> ToView(size_type lower, size_type upper) noexcept;
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> ToView(size_type lower, size_type upper) const noexcept;
 };
 
 //  _____      _       ____   _____    ___    ____    ___   _____   ____

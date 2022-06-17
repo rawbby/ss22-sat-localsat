@@ -9,14 +9,14 @@
 #define TEST_ASSERT_EXIT_1(statement)                                                                                                          \
   auto _fail = [](int) {                                                                                                                       \
     std::cout << std::flush;                                                                                                                   \
-    std::quick_exit(1);                                                                                                                        \
+    std::exit(1);                                                                                                                              \
   };                                                                                                                                           \
   auto _succ = []() {                                                                                                                          \
     std::cout << std::flush;                                                                                                                   \
-    std::quick_exit(0);                                                                                                                        \
+    std::exit(0);                                                                                                                              \
   };                                                                                                                                           \
   std::atexit(_succ);                                                                                                                          \
-  std::at_quick_exit(_succ);                                                                                                                   \
+  /* std::at_quick_exit(_succ); */                                                                                                             \
   signal(SIGABRT, _fail);                                                                                                                      \
   statement;                                                                                                                                   \
   std::abort()

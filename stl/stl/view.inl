@@ -138,6 +138,48 @@ View(view_type<type_type> view) noexcept
   return { view.data, view.count };
 }
 
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+View(const view_convertible_concept<type_type> auto& view_convertible, size_type lower, size_type upper) noexcept
+{
+  return View(view_convertible.ToView(), lower, upper);
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+View(view_convertible_concept<type_type> auto& view_convertible, size_type lower, size_type upper) noexcept
+{
+  return View(view_convertible.ToView(), lower, upper);
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+View(const view_convertible_concept<type_type> auto& view_convertible, size_type upper) noexcept
+{
+  return View(view_convertible.ToView(), upper);
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+View(view_convertible_concept<type_type> auto& view_convertible, size_type upper) noexcept
+{
+  return View(view_convertible.ToView(), upper);
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+View(const view_convertible_concept<type_type> auto& view_convertible) noexcept
+{
+  return view_convertible.ToView();
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+View(view_convertible_concept<type_type> auto& view_convertible) noexcept
+{
+  return view_convertible.ToView();
+}
+
 }
 
 #endif

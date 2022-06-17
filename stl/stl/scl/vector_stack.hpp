@@ -86,7 +86,8 @@ struct vector_stack_type
     Assert(index < Count(), "Stack Can not be access with an Index larger its Count!");
     const auto lower = *ranges.At(index);
     const auto upper = *ranges.At(index + Size(1));
-    return buffer.ToView(lower, upper);
+    // TODO why is explicit ToView needed?
+    return View(buffer.ToView(), lower, upper);
   }
 
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> At(size_type index) noexcept
@@ -95,7 +96,8 @@ struct vector_stack_type
     Assert(index < Count(), "Stack Can not be access with an Index larger its Count!");
     const auto lower = *ranges.At(index);
     const auto upper = *ranges.At(index + Size(1));
-    return buffer.ToView(lower, upper);
+    // TODO why is explicit ToView needed?
+    return View(buffer.ToView(), lower, upper);
   }
 
   [[maybe_unused]] constexpr inline void Push(type_type type) noexcept { buffer.Push(type); }
@@ -117,7 +119,7 @@ struct vector_stack_type
     Assert(Count() > Size(0), "Can not peak an empty Stack!");
     const auto lower = ranges.At(ranges.Count() - Size(2));
     const auto upper = ranges.At(ranges.Count() - Size(1));
-    return buffer.ToView(lower, upper);
+    return View(buffer, lower, upper);
   }
 
   [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<type_type> begin() noexcept { return { buffer.data, ranges.data }; }

@@ -1,5 +1,5 @@
-#ifndef STL_VECTOR_INL
-#define STL_VECTOR_INL
+#ifndef STL_STATIC_VECTOR_INL
+#define STL_STATIC_VECTOR_INL
 
 #include "static_vector.hpp"
 #include "stl.hpp"
@@ -111,34 +111,6 @@ template<typename type_type, size_type capacity>
 static_vector_type<type_type, capacity>::ToView() const noexcept
 {
   return View(&(data[0]), count);
-}
-
-template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-static_vector_type<type_type, capacity>::ToView(size_type upper) noexcept
-{
-  return View(ToView(), upper);
-}
-
-template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-static_vector_type<type_type, capacity>::ToView(size_type upper) const noexcept
-{
-  return View(ToView(), upper);
-}
-
-template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-static_vector_type<type_type, capacity>::ToView(size_type lower, size_type upper) noexcept
-{
-  return View(ToView(), lower, upper);
-}
-
-template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-static_vector_type<type_type, capacity>::ToView(size_type lower, size_type upper) const noexcept
-{
-  return View(ToView(), lower, upper);
 }
 
 //  _____      _       ____   _____    ___    ____    ___   _____   ____

@@ -43,5 +43,5 @@ main(int argc, char** argv)
     std::cout << "0\n";
   }
 
-  return assign.Score();
+  return stl::I32(assign.Score());
 }
