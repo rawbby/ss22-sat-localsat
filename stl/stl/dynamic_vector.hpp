@@ -1,8 +1,8 @@
 #ifndef STL_DYNAMIC_VECTOR_HPP
 #define STL_DYNAMIC_VECTOR_HPP
 
-#include "alloc/alignment.hpp"
-#include "alloc/allocator.hpp"
+#include "allocator/alignment.hpp"
+#include "allocator/allocator.hpp"
 #include "stl.hpp"
 #include "view.hpp"
 

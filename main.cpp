@@ -1,7 +1,7 @@
 #include <concepts>
 #include <type_traits>
 
-#include <stl/alloc/memory.hpp>
+#include <stl/allocator/memory.hpp>
 #include <stl/def.hpp>
 
 // clang-format off

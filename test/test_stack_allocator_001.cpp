@@ -1,6 +1,6 @@
 #include "test_util.hpp"
 
-#include <stl/alloc/allocator.hpp>
+#include <stl/allocator/allocator.hpp>
 
 int
 main()
