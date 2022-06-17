@@ -8,20 +8,22 @@
 
 namespace stl {
 
-// clang-format off
 template<typename vector_type, typename type_type>
-concept vector_concept = viewable_concept<vector_type, type_type> &&
-                            requires(vector_type vector, type_type type) {
-                              { vector.Count(Size(0)) } -> std::same_as<void>;
-                              { vector.Push(type) } -> std::same_as<void>;
-                              { vector.Pop() } -> std::same_as<void>;
-                              { vector.Peak() } -> std::same_as<type_type*>;
-                              { vector.Remove(Size(0)) } -> std::same_as<void>;
-                            } &&
-                            requires(const vector_type vector) {
-                              { vector.Peak() } -> std::same_as<const type_type*>;
-                            };
-// clang-format on
+concept vector_concept = (
+  // clang-format off
+  viewable_concept<vector_type, type_type> &&
+  requires(vector_type vector, type_type type) {
+    { vector.Count(Size(0)) } -> std::same_as<void>;
+    { vector.Push(type) } -> std::same_as<void>;
+    { vector.Pop() } -> std::same_as<void>;
+    { vector.Peak() } -> std::same_as<type_type*>;
+    { vector.Remove(Size(0)) } -> std::same_as<void>;
+  } &&
+  requires(const vector_type vector) {
+    { vector.Peak() } -> std::same_as<const type_type*>;
+  }
+  // clang-format on
+);
 
 }
 

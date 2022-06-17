@@ -36,7 +36,14 @@ struct static_vector_type
   [[maybe_unused]] constexpr inline void Remove(size_type index) noexcept;
 };
 
-// factories
+/*
+ * factories
+ */
+
+template<typename type_type, size_type capacity>
+[[maybe_unused]] constexpr inline void
+StaticVector(static_vector_type<type_type, capacity>* vector) noexcept;
+
 template<typename type_type, size_type capacity>
 [[maybe_unused]] [[nodiscard]] constexpr inline static_vector_type<type_type, capacity>
 StaticVector() noexcept;

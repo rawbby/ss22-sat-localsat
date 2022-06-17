@@ -70,24 +70,6 @@ view_type<type_type>::end() noexcept
 }
 
 /*
- * satisfy the view convertible concept
- */
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-view_type<type_type>::View() const noexcept
-{
-  return { At(0), Count() };
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-view_type<type_type>::View() noexcept
-{
-  return { At(0), Count() };
-}
-
-/*
  * utilities
  */
 

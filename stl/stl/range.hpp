@@ -8,6 +8,10 @@
 
 namespace stl {
 
+/*
+ * range iterator declaration
+ */
+
 struct range_iter_type
 {
   size_type i;
@@ -25,6 +29,10 @@ struct range_iter_type
   [[maybe_unused]] [[nodiscard]] constexpr inline bool operator==(const range_iter_type& other) const noexcept;
   [[maybe_unused]] [[nodiscard]] constexpr inline bool operator!=(const range_iter_type& other) const noexcept;
 };
+
+/*
+ * range declaration
+ */
 
 struct range_type
 {

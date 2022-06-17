@@ -9,7 +9,6 @@ int
 main()
 {
   using a_view_type = stl::view_type<stl::size_type>;
-  static_assert(stl::view_convertible_concept<a_view_type, stl::size_type>);
   static_assert(stl::viewable_concept<a_view_type, stl::size_type>);
 
   using a_static_array_type = stl::array_type<stl::size_type, 0x1000>;

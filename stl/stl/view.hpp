@@ -22,10 +22,6 @@ struct view_type
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* begin() noexcept;
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* end() noexcept;
 
-  // satisfy the view convertible concept
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> View() const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> View() noexcept;
-
   // utilities
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> Range(size_type lower, size_type upper) const noexcept;
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> Range(size_type lower, size_type upper) noexcept;
@@ -39,27 +35,32 @@ struct view_type
  * view concepts
  */
 
-// clang-format off
 template<typename view_convertible_type, typename type_type>
-concept view_convertible_concept =
-                            requires(view_convertible_type view_convertible) {
-                              { view_convertible.View() } -> std::same_as<view_type<type_type>>;
-                            } &&
-                            requires(const view_convertible_type view_convertible) {
-                              { view_convertible.View() } -> std::same_as<view_type<const type_type>>;
-                            };
+concept view_convertible_concept = (
+  // clang-format off
+  requires(view_convertible_type view_convertible) {
+    { view_convertible.View() } -> std::same_as<view_type<type_type>>;
+  } &&
+  requires(const view_convertible_type view_convertible) {
+    { view_convertible.View() } -> std::same_as<view_type<const type_type>>;
+  }
+  // clang-format on
+);
+
 template<typename viewable_type, typename type_type>
-concept viewable_concept = view_convertible_concept<viewable_type, type_type> &&
-                            requires(viewable_type viewable) {
-                              { viewable.At(Size(0)) } -> std::same_as<type_type*>;
-                              { viewable[Size(0)] } -> std::same_as<type_type&>;
-                            } &&
-                            requires(const viewable_type viewable) {
-                              { viewable.Count() } -> std::same_as<size_type>;
-                              { viewable.At(Size(0)) } -> std::same_as<const type_type*>;
-                              { viewable[Size(0)] } -> std::same_as<const type_type&>;
-                            };
-// clang-format on
+concept viewable_concept = (
+  // clang-format off
+  requires(viewable_type viewable) {
+    { viewable.At(Size(0)) } -> std::same_as<type_type*>;
+    { viewable[Size(0)] } -> std::same_as<type_type&>;
+  } &&
+  requires(const viewable_type viewable) {
+    { viewable.Count() } -> std::same_as<size_type>;
+    { viewable.At(Size(0)) } -> std::same_as<const type_type*>;
+    { viewable[Size(0)] } -> std::same_as<const type_type&>;
+  }
+  // clang-format on
+);
 
 /*
  * basic factories
