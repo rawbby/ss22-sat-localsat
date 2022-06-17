@@ -1,0 +1,8 @@
+//
+// Created by user on 6/17/2022.
+//
+
+#ifndef LOCALSAT_VECTOR_STACK_INL
+#define LOCALSAT_VECTOR_STACK_INL
+
+#endif //LOCALSAT_VECTOR_STACK_INL
