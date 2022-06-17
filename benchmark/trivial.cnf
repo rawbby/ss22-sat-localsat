@@ -1,7 +1,7 @@
 c the planted solution is {3, 5}
 p cnf 5 5
 -1 0
-5 0
--4 0
-3 0
 -2 0
+3 0
+-4 0
+5 0
