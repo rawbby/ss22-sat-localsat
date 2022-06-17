@@ -5,18 +5,9 @@
 
 namespace stl {
 
-//  ___   _____   _____   ____       _      _____    ___    ____
-// |_ _| |_   _| | ____| |  _ \     / \    |_   _|  / _ \  |  _ \
-//  | |    | |   |  _|   | |_) |   / _ \     | |   | | | | | |_) |
-//  | |    | |   | |___  |  _ <   / ___ \    | |   | |_| | |  _ <
-// |___|   |_|   |_____| |_| \_\ /_/   \_\   |_|    \___/  |_| \_\
-
-[[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type::range_iter_type(const range_iter_type& iter) noexcept = default;
-
-[[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type::range_iter_type(size_type i) noexcept
-  : i(i)
-{
-}
+/*
+ * satisfy the iterator concept
+ */
 
 [[maybe_unused]] [[nodiscard]] constexpr inline size_type
 range_iter_type::operator*() const noexcept
@@ -31,7 +22,7 @@ range_iter_type::operator++() noexcept
   return *this;
 }
 
-[[maybe_unused]] constexpr inline const range_iter_type
+[[maybe_unused]] constexpr inline range_iter_type // NOLINT(cert-dcl21-cpp)
 range_iter_type::operator++(int) noexcept
 {
   return range_iter_type(i++);
@@ -49,11 +40,9 @@ range_iter_type::operator!=(const range_iter_type& other) const noexcept
   return i != other.i;
 }
 
-//  ____    _____    ____   _          _      ____       _      _____   ___    ___    _   _
-// |  _ \  | ____|  / ___| | |        / \    |  _ \     / \    |_   _| |_ _|  / _ \  | \ | |
-// | | | | |  _|   | |     | |       / _ \   | |_) |   / _ \     | |    | |  | | | | |  \| |
-// | |_| | | |___  | |___  | |___   / ___ \  |  _ <   / ___ \    | |    | |  | |_| | | |\  |
-// |____/  |_____|  \____| |_____| /_/   \_\ |_| \_\ /_/   \_\   |_|   |___|  \___/  |_| \_|
+/*
+ * satisfy the iterable concept
+ */
 
 [[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type
 range_type::begin() const noexcept
@@ -67,11 +56,9 @@ range_type::end() const noexcept
   return range_iter_type(upper);
 }
 
-//   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
-//  / ___|  / _ \  | \ | | / ___|  |_   _| |  _ \  | | | |  / ___| |_   _|  / _ \  |  _ \  / ___|
-// | |     | | | | |  \| | \___ \    | |   | |_) | | | | | | |       | |   | | | | | |_) | \___ \
-// | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
-//  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
+/*
+ * factories
+ */
 
 [[maybe_unused]] [[nodiscard]] constexpr inline range_type
 Range(size_type lower, size_type upper) noexcept

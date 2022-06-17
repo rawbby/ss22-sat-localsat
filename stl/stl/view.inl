@@ -8,6 +8,10 @@
 
 namespace stl {
 
+/*
+ * satisfy the viewable concept
+ */
+
 template<typename type_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline size_type
 view_type<type_type>::Count() const noexcept
@@ -31,6 +35,88 @@ view_type<type_type>::At(size_type index) noexcept
   Assert(index >= Size(0), "View Can not be access with a negative Index!");
   Assert(index < Count(), "View Can not be access with an Index larger its Count!");
   return &(data[index]);
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline const type_type&
+view_type<type_type>::operator[](size_type index) const noexcept
+{
+  return *At(index);
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline type_type&
+view_type<type_type>::operator[](size_type index) noexcept
+{
+  return *At(index);
+}
+
+/*
+ * satisfy the iterable concept
+ */
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+view_type<type_type>::begin() noexcept
+{
+  return At(0);
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+view_type<type_type>::end() noexcept
+{
+  return At(Count());
+}
+
+/*
+ * satisfy the view convertible concept
+ */
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+view_type<type_type>::View() const noexcept
+{
+  return { At(0), Count() };
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+view_type<type_type>::View() noexcept
+{
+  return { At(0), Count() };
+}
+
+/*
+ * utilities
+ */
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+view_type<type_type>::Range(size_type lower, size_type upper) const noexcept
+{
+  return { At(lower), upper - lower };
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+view_type<type_type>::Range(size_type lower, size_type upper) noexcept
+{
+  return { At(lower), upper - lower };
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+view_type<type_type>::Range(size_type upper) const noexcept
+{
+  return { At(0), upper };
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+view_type<type_type>::Range(size_type upper) noexcept
+{
+  return { At(0), upper };
 }
 
 template<typename type_type>
@@ -64,25 +150,9 @@ view_type<type_type>::MemCopy(view_type<type_type> dst) const noexcept
     *dst.At(i) = *At(i);
 }
 
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
-view_type<type_type>::begin() noexcept
-{
-  return data;
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
-view_type<type_type>::end() noexcept
-{
-  return &(data[count]);
-}
-
-//  _____      _       ____   _____    ___    ____    ___   _____   ____
-// |  ___|    / \     / ___| |_   _|  / _ \  |  _ \  |_ _| | ____| / ___|
-// | |_      / _ \   | |       | |   | | | | | |_) |  | |  |  _|   \___ \
-// |  _|    / ___ \  | |___    | |   | |_| | |  _ <   | |  | |___   ___) |
-// |_|     /_/   \_\  \____|   |_|    \___/  |_| \_\ |___| |_____| |____/
+/*
+ * factories
+ */
 
 template<typename type_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
@@ -110,74 +180,6 @@ template<typename type_type>
 View(type_type* data, size_type lower, size_type upper) noexcept
 {
   return { &(data[lower]), upper - lower };
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_type<type_type> view, size_type lower, size_type upper) noexcept
-{
-  Assert(upper >= lower, "View can not be initialized in reverse Order!");
-  Assert(upper >= Size(0), "View Can not be access with a negative Index!");
-  Assert(upper <= view.Count(), "View Can not be access with an Index larger its Count!");
-  return { &(view.data[lower]), upper - lower };
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_type<type_type> view, size_type upper) noexcept
-{
-  Assert(upper >= Size(0), "View Can not be access with a negative Index!");
-  Assert(upper <= view.Count(), "View Can not be access with an Index larger its Count!");
-  return { view.data, upper };
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_type<type_type> view) noexcept
-{
-  return { view.data, view.count };
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-View(const view_convertible_concept<type_type> auto& view_convertible, size_type lower, size_type upper) noexcept
-{
-  return View(view_convertible.ToView(), lower, upper);
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_convertible_concept<type_type> auto& view_convertible, size_type lower, size_type upper) noexcept
-{
-  return View(view_convertible.ToView(), lower, upper);
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-View(const view_convertible_concept<type_type> auto& view_convertible, size_type upper) noexcept
-{
-  return View(view_convertible.ToView(), upper);
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_convertible_concept<type_type> auto& view_convertible, size_type upper) noexcept
-{
-  return View(view_convertible.ToView(), upper);
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-View(const view_convertible_concept<type_type> auto& view_convertible) noexcept
-{
-  return view_convertible.ToView();
-}
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_convertible_concept<type_type> auto& view_convertible) noexcept
-{
-  return view_convertible.ToView();
 }
 
 }

@@ -34,10 +34,13 @@ struct vector_stack_iter_type
 
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> operator*() const noexcept
   {
-    return View(data, range[0], range[1]);
+    return { &(data[range[0]]), range[1] - range[0] };
   }
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> operator*() noexcept { return View(data, range[0], range[1]); }
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> operator*() noexcept
+  {
+    return { &(data[range[0]]), range[1] - range[0] };
+  }
 
   [[maybe_unused]] constexpr inline vector_stack_iter_type& operator++() noexcept
   {
@@ -82,12 +85,13 @@ struct vector_stack_type
 
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> At(size_type index) const noexcept
   {
+    static_assert(view_convertible_concept<decltype(buffer), type_type>);
     Assert(index >= Size(0), "Stack Can not be access with a negative Index!");
     Assert(index < Count(), "Stack Can not be access with an Index larger its Count!");
     const auto lower = *ranges.At(index);
     const auto upper = *ranges.At(index + Size(1));
-    // TODO why is explicit ToView needed?
-    return View(buffer.ToView(), lower, upper);
+    // TODO why is explicit View needed?
+    return buffer.View().Range(lower, upper);
   }
 
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> At(size_type index) noexcept
@@ -96,8 +100,8 @@ struct vector_stack_type
     Assert(index < Count(), "Stack Can not be access with an Index larger its Count!");
     const auto lower = *ranges.At(index);
     const auto upper = *ranges.At(index + Size(1));
-    // TODO why is explicit ToView needed?
-    return View(buffer.ToView(), lower, upper);
+    // TODO why is explicit View needed?
+    return buffer.View().Range(lower, upper);
   }
 
   [[maybe_unused]] constexpr inline void Push(type_type type) noexcept { buffer.Push(type); }
@@ -111,7 +115,7 @@ struct vector_stack_type
     Assert(Count() > Size(0), "Can not peak an empty Stack!");
     const auto lower = ranges.At(ranges.Size() - Size(2));
     const auto upper = ranges.At(ranges.Size() - Size(1));
-    return buffer.ToView(lower, upper);
+    return View(buffer).Range(lower, upper);
   }
 
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>* Peak() noexcept
@@ -119,7 +123,7 @@ struct vector_stack_type
     Assert(Count() > Size(0), "Can not peak an empty Stack!");
     const auto lower = ranges.At(ranges.Count() - Size(2));
     const auto upper = ranges.At(ranges.Count() - Size(1));
-    return View(buffer, lower, upper);
+    return View(buffer).Range(lower, upper);
   }
 
   [[maybe_unused]] [[nodiscard]] constexpr inline vector_stack_iter_type<type_type> begin() noexcept { return { buffer.data, ranges.data }; }

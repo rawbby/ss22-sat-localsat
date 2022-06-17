@@ -25,7 +25,7 @@ main()
   TestPush(vector, 7);
   TestPush(vector, 8);
 
-  auto view = vector.ToView();
+  auto view = vector.View();
   auto i = stl::Size(1);
   for (auto index : view)
     stl::Assert(index == i++, TEST_FAILURE_MESSAGE());

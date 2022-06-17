@@ -5,59 +5,65 @@
 
 namespace stl {
 
-//  ____    _____    ____   _          _      ____       _      _____   ___    ___    _   _
-// |  _ \  | ____|  / ___| | |        / \    |  _ \     / \    |_   _| |_ _|  / _ \  | \ | |
-// | | | | |  _|   | |     | |       / _ \   | |_) |   / _ \     | |    | |  | | | | |  \| |
-// | |_| | | |___  | |___  | |___   / ___ \  |  _ <   / ___ \    | |    | |  | |_| | | |\  |
-// |____/  |_____|  \____| |_____| /_/   \_\ |_| \_\ /_/   \_\   |_|   |___|  \___/  |_| \_|
-
 template<typename type_type>
 struct view_type
 {
   type_type* data;
   size_type count;
 
-  //  __  __   _____   _____   _   _    ___    ____    ____
-  // |  \/  | | ____| |_   _| | | | |  / _ \  |  _ \  / ___|
-  // | |\/| | |  _|     | |   | |_| | | | | | | | | | \___ \
-  // | |  | | | |___    | |   |  _  | | |_| | | |_| |  ___) |
-  // |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
-
-  // === magic methods ===
-
+  // satisfy the viewable concept
   [[maybe_unused]] [[nodiscard]] constexpr inline size_type Count() const noexcept;
-
   [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* At(size_type index) const noexcept;
-
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* At(size_type index) noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type& operator[](size_type index) const noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline type_type& operator[](size_type index) noexcept;
 
-  [[maybe_unused]] constexpr inline void MemSet(i32_type value) noexcept;
-
-  [[maybe_unused]] constexpr inline void MemCopy(view_type<type_type> dst) const noexcept;
-
+  // satisfy the iterable concept
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* begin() noexcept;
-
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* end() noexcept;
+
+  // satisfy the view convertible concept
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> View() const noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> View() noexcept;
+
+  // utilities
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> Range(size_type lower, size_type upper) const noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> Range(size_type lower, size_type upper) noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> Range(size_type upper) const noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> Range(size_type upper) noexcept;
+  [[maybe_unused]] constexpr inline void MemSet(i32_type value) noexcept;
+  [[maybe_unused]] constexpr inline void MemCopy(view_type<type_type> dst) const noexcept;
 };
+
+/*
+ * view concepts
+ */
 
 // clang-format off
 template<typename view_convertible_type, typename type_type>
 concept view_convertible_concept =
                             requires(view_convertible_type view_convertible) {
-                              { view_convertible.ToView() } -> std::same_as<view_type<type_type>>;
+                              { view_convertible.View() } -> std::same_as<view_type<type_type>>;
                             } &&
                             requires(const view_convertible_type view_convertible) {
-                              { view_convertible.ToView() } -> std::same_as<view_type<const type_type>>;
+                              { view_convertible.View() } -> std::same_as<view_type<const type_type>>;
+                            };
+template<typename viewable_type, typename type_type>
+concept viewable_concept = view_convertible_concept<viewable_type, type_type> &&
+                            requires(viewable_type viewable) {
+                              { viewable.At(Size(0)) } -> std::same_as<type_type*>;
+                              { viewable[Size(0)] } -> std::same_as<type_type&>;
+                            } &&
+                            requires(const viewable_type viewable) {
+                              { viewable.Count() } -> std::same_as<size_type>;
+                              { viewable.At(Size(0)) } -> std::same_as<const type_type*>;
+                              { viewable[Size(0)] } -> std::same_as<const type_type&>;
                             };
 // clang-format on
 
-//   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
-//  / ___|  / _ \  | \ | | / ___|  |_   _| |  _ \  | | | |  / ___| |_   _|  / _ \  |  _ \  / ___|
-// | |     | | | | |  \| | \___ \    | |   | |_) | | | | | | |       | |   | | | | | |_) | \___ \
-// | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
-//  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
-
-// === basic constructors ===
+/*
+ * basic factories
+ */
 
 template<typename type_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
@@ -74,46 +80,6 @@ View(const type_type* data, size_type upper) noexcept;
 template<typename type_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
 View(type_type* data, size_type upper) noexcept;
-
-// === composing constructors ===
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_type<type_type> view, size_type lower, size_type upper) noexcept;
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_type<type_type> view, size_type upper) noexcept;
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_type<type_type> view) noexcept;
-
-// === conversion constructors ===
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-View(const view_convertible_concept<type_type> auto& view_convertible, size_type lower, size_type upper) noexcept;
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_convertible_concept<type_type> auto& view_convertible, size_type lower, size_type upper) noexcept;
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-View(const view_convertible_concept<type_type> auto& view_convertible, size_type upper) noexcept;
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_convertible_concept<type_type> auto& view_convertible, size_type upper) noexcept;
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
-View(const view_convertible_concept<type_type> auto& view_convertible) noexcept;
-
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
-View(view_convertible_concept<type_type> auto& view_convertible) noexcept;
 
 }
 
