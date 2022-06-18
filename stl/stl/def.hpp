@@ -11,11 +11,16 @@ namespace stl {
 #define STL_OPTION_DEBUG
 #endif
 
+#define MNCI [[maybe_unused]] [[nodiscard]] constexpr inline
+#define MCI [[maybe_unused]] constexpr inline
+#define MNI [[maybe_unused]] [[nodiscard]] inline
+#define MI [[maybe_unused]] inline
+
 #define STL_DEFINE_INTEGRAL_CONSTRUCTOR(base_type, integral_type, name)                                                                        \
   typedef base_type integral_type;                                                                                                             \
                                                                                                                                                \
   template<typename type_type>                                                                                                                 \
-  [[maybe_unused]] [[nodiscard]] constexpr inline integral_type name(type_type type) noexcept                                                  \
+  MNCI integral_type name(type_type type) noexcept                                                                                             \
   {                                                                                                                                            \
     return static_cast<integral_type>(type);                                                                                                   \
   }
@@ -24,7 +29,7 @@ namespace stl {
   typedef base_type floating_point_type;                                                                                                       \
                                                                                                                                                \
   template<typename type_type>                                                                                                                 \
-  [[maybe_unused]] [[nodiscard]] constexpr inline floating_point_type name(type_type type) noexcept                                            \
+  MNCI floating_point_type name(type_type type) noexcept                                                                                       \
   {                                                                                                                                            \
     return static_cast<floating_point_type>(type);                                                                                             \
   }
@@ -47,7 +52,7 @@ STL_DEFINE_INTEGRAL_CONSTRUCTOR(char, char_type, Char)
 STL_DEFINE_INTEGRAL_CONSTRUCTOR(i32_type, size_type, Size)
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline u64_type
+MNCI u64_type
 U64(type_type* pointer) noexcept
 {
   static_assert(sizeof(u64_type) >= sizeof(pointer), "Unexpected Pointer Size. Unable to handle Pointer bigger than 8 Bytes.");
@@ -56,7 +61,7 @@ U64(type_type* pointer) noexcept
   return address;
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline b8_type
+MNCI b8_type
 Not(b8_type value) noexcept
 {
   return value ? B8(0) : B8(1);

@@ -3,62 +3,75 @@
 
 #include "heap_allocator.hpp"
 
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <cstdlib>
+#endif
+
 namespace stl {
 
+namespace detail {
+
+template<typename T>
+MNI T*
+aligned_alloc(size_type count, size_type alignment)
+{
+#ifdef WIN32
+  return (T*)_aligned_malloc(count * sizeof(T), alignment);
+#else
+  return (T*)std::aligned_alloc(alignment, count * sizeof(T));
+#endif
+}
+
+template<typename T>
+MI void
+aligned_free(T* data)
+{
+#ifdef WIN32
+  _aligned_free(data);
+#else
+  std::free(data);
+#endif
+}
+
+template<typename T>
+MI T*
+aligned_realloc(T* data, size_type count, size_type alignment)
+{
+#ifdef WIN32
+  return (T*)_aligned_realloc(data, count * sizeof(T), alignment);
+#else
+  return (T*)std::realloc(data, count * sizeof(T)); // TODO is alignment lost?
+#endif
+}
+
+}
+
 template<typename alignment_tag>
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline memory_type<type_type>
+template<typename T>
+MNI memory_type<T>
 heap_allocator_type<alignment_tag>::Allocate(size_type count) const noexcept
 {
-  type_type* data;
-#ifdef WIN32
-  data = (type_type*)_aligned_malloc(count * sizeof(type_type), alignment_tag::alignment);
-#else
-  data = (type_type*)std::aligned_alloc(alignment_tag::alignment, count * sizeof(type_type));
-#endif
-
-  if (!data)
-    return {};
-
-  return { data, count };
+  T* data = detail::aligned_alloc<T>(count, alignment_tag::alignment);
+  return { data, data ? count : Size(0) };
 }
 
 template<typename alignment_tag>
-template<typename type_type>
-[[maybe_unused]] constexpr inline void
-heap_allocator_type<alignment_tag>::Free(memory_type<type_type> memory) const noexcept
+template<typename T>
+MI void
+heap_allocator_type<alignment_tag>::Free(memory_type<T> memory) const noexcept
 {
-#ifdef WIN32
-  _aligned_free(memory.data);
-#else
-  std::free(memory.data);
-#endif
+  detail::aligned_free(memory.data);
 }
 
 template<typename alignment_tag>
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline memory_type<type_type>
-heap_allocator_type<alignment_tag>::ReAllocate(memory_type<type_type> memory, size_type count) const noexcept
+template<typename T>
+MNI memory_type<T>
+heap_allocator_type<alignment_tag>::ReAllocate(memory_type<T> memory, size_type count) const noexcept
 {
-  byte_type* data;
-#ifdef WIN32
-  data = static_cast<type_type*>(_aligned_realloc(memory.data, count * sizeof(type_type), alignment_tag::alignment));
-#else
-  // TODO no guarentee that the memory is still aligned?
-  data = static_cast<type_type*>(std::realloc(memory.data, count * sizeof(type_type)));
-#endif
-
-  if (!data)
-    return {};
-
-  return { data, count };
-}
-
-template<typename alignment_tag>
-[[maybe_unused]] constexpr inline heap_allocator_type<alignment_tag>
-HeapAllocator()
-{
-  return {};
+  T* data = detail::aligned_realloc(memory.data, memory.count, alignment_tag::alignment);
+  return { data, data ? count : Size(0) };
 }
 
 }

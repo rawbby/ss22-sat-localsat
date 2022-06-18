@@ -19,6 +19,8 @@ struct static_array_type
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type& operator[](size_type index) noexcept;
 
   // satisfy the iterable concept
+  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* begin() const noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* end() const noexcept;
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* begin() noexcept;
   [[maybe_unused]] [[nodiscard]] constexpr inline type_type* end() noexcept;
 

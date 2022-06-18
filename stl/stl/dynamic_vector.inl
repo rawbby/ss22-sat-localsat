@@ -5,6 +5,30 @@
 
 namespace stl {
 
+namespace detail {
+
+MNCI size_type
+InitialCapacity(size_type type_bytes)
+{
+  auto lcm = [](auto l, auto u) {
+    auto lcm = u;
+    auto i = Size(2);
+    while (lcm % l)
+      lcm = u * i++;
+    return lcm;
+  };
+
+  const auto a = type_bytes;
+  const auto b = Size(alignment_cache_line_tag::alignment);
+
+  if (a > b)
+    return lcm(a, b);
+  else
+    return lcm(b, a);
+}
+
+}
+
 /*
  * satisfy the viewable concept
  */
@@ -48,6 +72,20 @@ dynamic_vector_type<type_type, allocator_type>::operator[](size_type index) noex
  */
 
 template<typename type_type, typename allocator_type>
+[[maybe_unused]] [[nodiscard]] inline const type_type*
+dynamic_vector_type<type_type, allocator_type>::begin() const noexcept
+{
+  return View().begin();
+}
+
+template<typename type_type, typename allocator_type>
+[[maybe_unused]] [[nodiscard]] inline const type_type*
+dynamic_vector_type<type_type, allocator_type>::end() const noexcept
+{
+  return View().end();
+}
+
+template<typename type_type, typename allocator_type>
 [[maybe_unused]] [[nodiscard]] inline type_type*
 dynamic_vector_type<type_type, allocator_type>::begin() noexcept
 {
@@ -69,14 +107,14 @@ template<typename type_type, typename allocator_type>
 [[maybe_unused]] [[nodiscard]] inline view_type<type_type>
 dynamic_vector_type<type_type, allocator_type>::View() noexcept
 {
-  return { (type_type*)data.data, count };
+  return { data.data, count };
 }
 
 template<typename type_type, typename allocator_type>
 [[maybe_unused]] [[nodiscard]] inline view_type<const type_type>
 dynamic_vector_type<type_type, allocator_type>::View() const noexcept
 {
-  return { (type_type*)data.data, count };
+  return { data.data, count };
 }
 
 /*
@@ -87,29 +125,29 @@ template<typename type_type, typename allocator_type>
 [[maybe_unused]] [[nodiscard]] inline size_type
 dynamic_vector_type<type_type, allocator_type>::Capacity() const noexcept
 {
-  return data.count / sizeof(type_type);
+  return data.count;
 }
 
 template<typename type_type, typename allocator_type>
 [[maybe_unused]] inline void
 dynamic_vector_type<type_type, allocator_type>::Capacity(size_type new_count) noexcept
 {
-  const auto new_capacity = Size(new_count * sizeof(type_type));
-  auto capacity = Size(data.count);
+  constexpr auto init_cap = detail::InitialCapacity(sizeof(type_type));
 
-  if (capacity < new_capacity) {
+  if (data.count < new_count) {
 
-    // if count is not initialized use one cache line minimum
-    capacity = capacity ? capacity : Size(alignment_cache_line_tag::alignment);
+    // maybe initialize count and
+    // double the count until new_count is satisfied
+    auto the_count = data.count ? data.count : init_cap;
+    while (the_count < new_count)
+      the_count <<= 1;
 
-    // double the count until the new size is in the capacity
-    while (capacity < new_capacity)
-      capacity <<= 1;
+    if (data.count)
+      data = allocator->template ReAllocate<type_type>(data, the_count);
+    else
+      data = allocator->template Allocate<type_type>(the_count);
 
-    auto new_data = data.count ? allocator->ReAllocate(data, capacity) : allocator->Allocate(capacity);
-    Assert(new_data.data, "Failed to re allocate dynamic Vector!");
-
-    data = new_data;
+    Assert(data.data, "Failed to re allocate dynamic Vector!");
   }
 }
 

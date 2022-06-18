@@ -5,56 +5,45 @@
 
 namespace stl {
 
-template<typename primary_allocator_type, typename secondary_allocator_type>
-  requires owning_allocator_concept<primary_allocator_type> && allocator_concept<secondary_allocator_type>
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] inline memory_type<type_type>
-fallback_allocator_type<primary_allocator_type, secondary_allocator_type>::Allocate(size_type count) noexcept
+template<typename P, typename S>
+template<typename T>
+MNI memory_type<T>
+fallback_allocator_type<P, S>::Allocate(size_type count) noexcept
 {
-  auto memory = primary_allocator_type::template Allocate<type_type>(count);
+  auto memory = P::template Allocate<T>(count);
   if (!memory.data)
-    memory = secondary_allocator_type::template Allocate<type_type>(count);
+    memory = S::template Allocate<T>(count);
   return memory;
 }
 
-template<typename primary_allocator_type, typename secondary_allocator_type>
-  requires owning_allocator_concept<primary_allocator_type> && allocator_concept<secondary_allocator_type>
-template<typename type_type>
-[[maybe_unused]] inline void
-fallback_allocator_type<primary_allocator_type, secondary_allocator_type>::Free(memory_type<type_type> memory) noexcept
+template<typename P, typename S>
+template<typename T>
+MI void
+fallback_allocator_type<P, S>::Free(memory_type<T> memory) noexcept
 {
-  if (primary_allocator_type::Owns(memory))
-    primary_allocator_type::Free(memory);
+  if (P::template Owns<T>(memory))
+    P::template Free<T>(memory);
   else
-    secondary_allocator_type::Free(memory);
-}
-template<typename primary_allocator_type, typename secondary_allocator_type>
-  requires owning_allocator_concept<primary_allocator_type> && allocator_concept<secondary_allocator_type>
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] inline memory_type<type_type>
-fallback_allocator_type<primary_allocator_type, secondary_allocator_type>::ReAllocate(memory_type<type_type> memory, size_type count) noexcept
-{
-  if (primary_allocator_type::Owns(memory))
-    return primary_allocator_type::template ReAllocate<type_type>(memory, count);
-  else
-    return secondary_allocator_type::template ReAllocate<type_type>(memory, count);
-}
-template<typename primary_allocator_type, typename secondary_allocator_type>
-  requires owning_allocator_concept<primary_allocator_type> && allocator_concept<secondary_allocator_type>
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] inline bool
-fallback_allocator_type<primary_allocator_type, secondary_allocator_type>::Owns(memory_type<type_type> memory) const
-{
-  return primary_allocator_type::Owns(memory) || secondary_allocator_type::Owns(memory);
+    S::template Free<T>(memory);
 }
 
-template<typename primary_allocator_type, typename secondary_allocator_type>
-  requires owning_allocator_concept<primary_allocator_type> &&
-           allocator_concept<secondary_allocator_type> [
-           [maybe_unused]] constexpr inline fallback_allocator_type<primary_allocator_type, secondary_allocator_type>
-  FallbackAllocator()
+template<typename P, typename S>
+template<typename T>
+MNI memory_type<T>
+fallback_allocator_type<P, S>::ReAllocate(memory_type<T> memory, size_type count) noexcept
 {
-  return {};
+  if (P::Owns(memory))
+    return P::template ReAllocate<T>(memory, count);
+  else
+    return S::template ReAllocate<T>(memory, count);
+}
+
+template<typename P, typename S>
+template<typename T>
+MNI bool_type
+fallback_allocator_type<P, S>::Owns(memory_type<T> memory) const
+{
+  return P::Owns(memory) || S::Owns(memory);
 }
 
 }

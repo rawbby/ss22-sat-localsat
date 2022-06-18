@@ -28,17 +28,31 @@ static_array_type<type_type, capacity>::At(size_type index) noexcept
 }
 
 template<typename type_type, size_type capacity>
+constexpr const type_type*
+static_array_type<type_type, capacity>::begin() const noexcept
+{
+  return &(data[0]);
+}
+
+template<typename type_type, size_type capacity>
+constexpr const type_type*
+static_array_type<type_type, capacity>::end() const noexcept
+{
+  return &(data[capacity]);
+}
+
+template<typename type_type, size_type capacity>
 constexpr type_type*
 static_array_type<type_type, capacity>::begin() noexcept
 {
-  return View().At(0);
+  return &(data[0]);
 }
 
 template<typename type_type, size_type capacity>
 constexpr type_type*
 static_array_type<type_type, capacity>::end() noexcept
 {
-  return View().At(capacity);
+  return &(data[capacity]);
 }
 
 template<typename type_type, size_type capacity>

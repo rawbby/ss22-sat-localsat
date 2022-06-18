@@ -51,6 +51,20 @@ static_vector_type<type_type, capacity>::operator[](size_type index) noexcept
  */
 
 template<typename type_type, size_type capacity>
+[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
+static_vector_type<type_type, capacity>::begin() const noexcept
+{
+  return View().begin();
+}
+
+template<typename type_type, size_type capacity>
+[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
+static_vector_type<type_type, capacity>::end() const noexcept
+{
+  return View().end();
+}
+
+template<typename type_type, size_type capacity>
 [[maybe_unused]] [[nodiscard]] constexpr inline type_type*
 static_vector_type<type_type, capacity>::begin() noexcept
 {

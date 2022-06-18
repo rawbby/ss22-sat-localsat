@@ -1,10 +1,8 @@
 #ifndef STL_STACK_ALLOCATOR_HPP
 #define STL_STACK_ALLOCATOR_HPP
 
-#include "../def.hpp"
-#include "../util.hpp"
-#include "alignment.hpp"
-#include "memory.hpp"
+#include "allocator.hpp"
+#include "../static_array.hpp"
 
 namespace stl {
 
@@ -13,31 +11,27 @@ struct stack_allocator_type
 {
   // As this struct is not aligned we need to extend the boundaries
   // of the struct to guarantee that capacity is usable!
-  static constexpr auto extended_capacity = capacity + alignment_tag::lo_mask;
+  MCI static auto extended_capacity = capacity + alignment_tag::lo_mask;
 
-  byte_type data[extended_capacity];
+  stl::static_array_type<byte_type, extended_capacity> data;
   byte_type* top;
 
-  [[maybe_unused]] constexpr inline stack_allocator_type() noexcept;
+  MCI stack_allocator_type() noexcept;
 
   template<typename type_type = byte_type>
-  [[maybe_unused]] [[nodiscard]] constexpr inline memory_type<type_type> Allocate(size_type count) noexcept;
+  MNCI memory_type<type_type> Allocate(size_type count) noexcept;
 
   template<typename type_type = byte_type>
-  [[maybe_unused]] constexpr inline void Free(memory_type<type_type> memory) noexcept;
+  MCI void Free(memory_type<type_type> memory) noexcept;
 
-  [[maybe_unused]] constexpr inline void FreeAll() noexcept;
-
-  template<typename type_type = byte_type>
-  [[maybe_unused]] [[nodiscard]] constexpr inline memory_type<type_type> ReAllocate(memory_type<type_type> memory, size_type count) noexcept;
+  MCI void FreeAll() noexcept;
 
   template<typename type_type = byte_type>
-  [[maybe_unused]] [[nodiscard]] constexpr inline bool Owns(memory_type<type_type> memory) const noexcept;
+  MNCI memory_type<type_type> ReAllocate(memory_type<type_type> memory, size_type count) noexcept;
+
+  template<typename type_type = byte_type>
+  MNCI bool_type Owns(memory_type<type_type> memory) const noexcept;
 };
-
-template<size_type capacity, typename alignment_tag = alignment_no_tag>
-[[maybe_unused]] constexpr inline stack_allocator_type<capacity, alignment_tag>
-StackAllocator();
 
 }
 

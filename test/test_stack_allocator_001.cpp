@@ -5,7 +5,7 @@
 int
 main()
 {
-  auto allocator = stl::StackAllocator<0x4000, stl::alignment_cache_line_tag>();
+  auto allocator = stl::stack_allocator_type<0x4000, stl::alignment_cache_line_tag>();
 
   auto memory0 = allocator.Allocate(0x1000);
   stl::Assert(memory0.data != nullptr, TEST_FAILURE_MESSAGE());
@@ -19,11 +19,15 @@ main()
   stl::Assert(memory2.data != nullptr, TEST_FAILURE_MESSAGE());
   stl::Assert(!(stl::U64(memory2.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
 
-  auto memory3 = allocator.Allocate(0x1000);
+  auto memory3 = allocator.ReAllocate(memory2, 0x2000);
   stl::Assert(memory3.data != nullptr, TEST_FAILURE_MESSAGE());
   stl::Assert(!(stl::U64(memory3.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
 
   auto memory4 = allocator.Allocate(0x1000);
   stl::Assert(!memory4.data, TEST_FAILURE_MESSAGE());
   stl::Assert(!memory4.count, TEST_FAILURE_MESSAGE());
+
+  allocator.Free(memory3);
+  allocator.Free(memory1);
+  allocator.Free(memory0);
 }

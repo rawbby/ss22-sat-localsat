@@ -2,8 +2,9 @@
 #define STL_ALIGNMENT_HPP
 
 #include "../def.hpp"
-#include <bit>     // std::popcount
-#include <cstring> // std::memcpy
+
+#include <bit>
+#include <cstring>
 
 namespace stl {
 
@@ -11,12 +12,11 @@ template<size_type bytes>
 struct alignment_bytes_tag
 {
   static_assert(std::popcount(U64(bytes)) == 1, "Template Parameter `bytes` must be 2^n.");
+  MCI static auto alignment = U64(bytes);
+  MCI static auto lo_mask = U64(alignment - U64(1));
+  MCI static auto hi_mask = U64(~lo_mask);
 
-  static constexpr auto alignment = U64(bytes);
-  static constexpr auto lo_mask = U64(alignment - U64(1));
-  static constexpr auto hi_mask = U64(~lo_mask);
-
-  static inline u64_type align(u64_type address)
+  MNI static u64_type align(u64_type address)
   {
     // Add 1 alignment to address
     // if there are bit at lo_mask.
@@ -24,7 +24,8 @@ struct alignment_bytes_tag
     return address & hi_mask;
   }
 
-  static inline byte_type* align(byte_type* pointer)
+  template<typename type_type>
+  MNI static type_type* align(type_type* pointer)
   {
     // Notice: memcpy is the safest way for
     // manipulating pointers at bit level.
@@ -38,11 +39,17 @@ struct alignment_bytes_tag
 
 struct alignment_no_tag
 {
-  [[maybe_unused]] static constexpr auto alignment = U64(1);
-  [[maybe_unused]] static constexpr auto lo_mask = U64(0);
-  [[maybe_unused]] static constexpr auto hi_mask = U64(~lo_mask);
+  MCI static auto alignment = U64(1);
+  MCI static auto lo_mask = U64(0);
+  MCI static auto hi_mask = U64(~lo_mask);
 
-  static inline byte_type* align(byte_type* pointer) { return pointer; }
+  MNI static u64_type align(u64_type address) { return address; }
+
+  template<typename type_type>
+  MNI static type_type* align(type_type* pointer)
+  {
+    return pointer;
+  }
 };
 
 typedef alignment_bytes_tag<0x0008> alignment_8_byte_tag;

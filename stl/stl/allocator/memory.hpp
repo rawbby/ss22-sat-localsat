@@ -10,14 +10,19 @@ struct memory_type
 {
   type_type* data;
   size_type count;
-};
 
-template<typename type_type = byte_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline memory_type<type_type>
-Memory(type_type* data, size_type count) noexcept
-{
-  return { data, count };
-}
+  memory_type(type_type* data, size_type count)
+    : data(data)
+    , count(count)
+  {
+  }
+
+  memory_type()
+    : data(nullptr)
+    , count(0)
+  {
+  }
+};
 
 }
 

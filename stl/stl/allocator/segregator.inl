@@ -6,63 +6,90 @@
 
 namespace stl {
 
-template<size_type threshold, typename small_allocator_type, typename large_allocator_type>
-  requires allocator_concept<small_allocator_type> && allocator_concept<large_allocator_type>
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] inline memory_type<type_type>
-segregator_type<threshold, small_allocator_type, large_allocator_type>::Allocate(size_type count) noexcept
+template<size_type threshold, typename S, typename L>
+template<typename T>
+MNI memory_type<T>
+segregator_type<threshold, S, L>::Allocate(size_type count) noexcept
 {
-  if (count < threshold)
-    return small_allocator_type::Allocate(count);
+  if (UseSmall<T>(count))
+    return S::template Allocate<T>(count);
   else
-    return large_allocator_type::Allocate(count);
+    return L::template Allocate<T>(count);
 }
 
-template<size_type threshold, typename small_allocator_type, typename large_allocator_type>
-  requires allocator_concept<small_allocator_type> && allocator_concept<large_allocator_type>
-template<typename type_type>
-[[maybe_unused]] inline void
-segregator_type<threshold, small_allocator_type, large_allocator_type>::Free(memory_type<type_type> memory) noexcept
+template<size_type threshold, typename S, typename L>
+template<typename T>
+MI void
+segregator_type<threshold, S, L>::Free(memory_type<T> memory) noexcept
 {
-  if (memory.count < threshold)
-    return small_allocator_type::Free(memory);
+  if (memory.count * sizeof(T) <= threshold)
+    return S::template Free<T>(memory);
   else
-    return large_allocator_type::Free(memory);
+    return L::template Free<T>(memory);
 }
 
-template<size_type threshold, typename small_allocator_type, typename large_allocator_type>
-  requires allocator_concept<small_allocator_type> && allocator_concept<large_allocator_type>
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] inline memory_type<type_type>
-segregator_type<threshold, small_allocator_type, large_allocator_type>::ReAllocate(memory_type<type_type> memory, size_type count) noexcept
+template<size_type threshold, typename S, typename L>
+template<typename T>
+MNI memory_type<T>
+segregator_type<threshold, S, L>::ReAllocate(memory_type<T> memory, size_type count) noexcept
 {
-  if (memory.count < threshold && count < threshold)
-    return small_allocator_type::ReAllocate(memory, count);
+  // continue using small allocator
+  if (UseSmall<T>(memory.count) && UseSmall<T>(count))
+    return S::template ReAllocate<T>(memory, count);
 
-  if (memory.count >= threshold && count >= threshold)
-    return large_allocator_type::ReAllocate(memory, count);
+  // continue using large allocator
+  if (!UseSmall<T>(memory.count) && !UseSmall<T>(count))
+    return L::template ReAllocate<T>(memory, count);
 
-  if (memory.count >= threshold && count < threshold) {
-    auto new_memory = small_allocator_type::Allocate(count);
-    memcpy(new_memory.data, memory.data, count);
+  // switch from small to large allocator
+  if (UseSmall<T>(memory.count)) {
+
+    auto new_memory = L::template Allocate<T>(count);
+    if (new_memory.data) {
+      memcpy(new_memory.data, memory.data, memory.count * sizeof(T));
+      S::template Free<T>(memory);
+      return new_memory;
+    }
+
+    return {};
+  }
+
+  // switch from large to small allocator
+  auto new_memory = S::template Allocate<T>(count);
+  if (new_memory.data) {
+    memcpy(new_memory.data, memory.data, count * sizeof(T));
+    L::template Free<T>(memory);
     return new_memory;
   }
 
-  auto new_memory = large_allocator_type::Allocate(count);
-  memcpy(new_memory.data, memory.data, memory.count);
-  return new_memory;
+  return {};
 }
 
-template<size_type threshold, typename small_allocator_type, typename large_allocator_type>
-  requires allocator_concept<small_allocator_type> && allocator_concept<large_allocator_type>
-template<typename type_type>
-[[maybe_unused]] [[nodiscard]] inline bool
-segregator_type<threshold, small_allocator_type, large_allocator_type>::Owns(memory_type<type_type> memory) const
+template<size_type threshold, typename S, typename L>
+template<typename T>
+MNI bool_type
+segregator_type<threshold, S, L>::Owns(memory_type<T> memory) const
 {
-  if (memory.count < threshold)
-    return small_allocator_type::Owns(memory);
+  if (memory.count * sizeof(T) <= threshold)
+    return S::Owns(memory);
   else
-    return large_allocator_type::Owns(memory);
+    return L::Owns(memory);
+}
+
+template<size_type threshold, typename S, typename L>
+template<typename T>
+MNCI bool_type
+segregator_type<threshold, S, L>::UseSmall(size_type count) const noexcept
+{
+  return count * sizeof(T) <= threshold;
+}
+
+template<size_type threshold, typename S, typename L>
+template<typename T>
+MNCI bool_type
+segregator_type<threshold, S, L>::UseLarge(size_type count) const noexcept
+{
+  return count * sizeof(T) > threshold;
 }
 
 }
