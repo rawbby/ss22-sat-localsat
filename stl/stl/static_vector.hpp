@@ -28,6 +28,8 @@ struct static_vector_type
   [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> View() noexcept;
 
   // utilities
+  [[maybe_unused]] [[nodiscard]] constexpr inline size_type Capacity() const noexcept;
+  [[maybe_unused]] constexpr inline void Capacity(size_type new_count) noexcept;
   [[maybe_unused]] constexpr inline void Count(size_type new_count) noexcept;
   [[maybe_unused]] constexpr inline void Push(type_type type) noexcept;
   [[maybe_unused]] constexpr inline void Pop() noexcept;

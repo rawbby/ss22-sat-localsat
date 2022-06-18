@@ -43,7 +43,7 @@ ParseDimacs(FILE* f, cnf_type* cnf)
     num_clauses += c - '0';
   }
 
-  *cnf = CnfExtended(num_variables, num_clauses);
+  Cnf(cnf, num_variables, num_clauses);
 
   int32_t literal;
   do {

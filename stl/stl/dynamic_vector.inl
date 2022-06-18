@@ -84,8 +84,15 @@ dynamic_vector_type<type_type, allocator_type>::View() const noexcept
  */
 
 template<typename type_type, typename allocator_type>
+[[maybe_unused]] [[nodiscard]] inline size_type
+dynamic_vector_type<type_type, allocator_type>::Capacity() const noexcept
+{
+  return data.count / sizeof(type_type);
+}
+
+template<typename type_type, typename allocator_type>
 [[maybe_unused]] inline void
-dynamic_vector_type<type_type, allocator_type>::Count(size_type new_count) noexcept
+dynamic_vector_type<type_type, allocator_type>::Capacity(size_type new_count) noexcept
 {
   const auto new_capacity = Size(new_count * sizeof(type_type));
   auto capacity = Size(data.count);
@@ -99,12 +106,18 @@ dynamic_vector_type<type_type, allocator_type>::Count(size_type new_count) noexc
     while (capacity < new_capacity)
       capacity <<= 1;
 
-    auto new_data = allocator->ReAllocate(data, capacity);
-    Assert(new_data.data, "Failed to re allocate dynamic StaticVector!");
+    auto new_data = data.count ? allocator->ReAllocate(data, capacity) : allocator->Allocate(capacity);
+    Assert(new_data.data, "Failed to re allocate dynamic Vector!");
 
     data = new_data;
   }
+}
 
+template<typename type_type, typename allocator_type>
+[[maybe_unused]] inline void
+dynamic_vector_type<type_type, allocator_type>::Count(size_type new_count) noexcept
+{
+  Capacity(new_count);
   count = new_count;
 }
 
@@ -150,10 +163,32 @@ dynamic_vector_type<type_type, allocator_type>::Remove(size_type index) noexcept
  */
 
 template<typename type_type, typename allocator_type>
+[[maybe_unused]] inline void
+DynamicVector(dynamic_vector_type<type_type, allocator_type>* vector, allocator_type* allocator, size_type initial_capacity) noexcept
+{
+  vector->data = {};
+  vector->count = Size(0);
+
+  vector->allocator = allocator;
+  vector->Capacity(initial_capacity);
+}
+
+template<typename type_type, typename allocator_type>
 [[maybe_unused]] [[nodiscard]] inline dynamic_vector_type<type_type, allocator_type>
 DynamicVector(allocator_type* allocator) noexcept
 {
-  return { .allocator = allocator };
+  dynamic_vector_type<type_type, allocator_type> vector;
+  DynamicVector(&vector, allocator, Size(0));
+  return vector;
+}
+
+template<typename type_type, typename allocator_type>
+[[maybe_unused]] [[nodiscard]] inline dynamic_vector_type<type_type, allocator_type>
+DynamicVector(allocator_type* allocator, size_type initial_capacity) noexcept
+{
+  dynamic_vector_type<type_type, allocator_type> vector;
+  DynamicVector(&vector, allocator, initial_capacity);
+  return vector;
 }
 
 }

@@ -17,7 +17,7 @@ main(int argc, char** argv)
   stl::Assert(f, "Failed to open File!");
 #endif
 
-  sls::cnf_type cnf;
+  sls::cnf_type cnf{};
   ParseDimacs(f, &cnf);
   cnf.PostProcess();
 
@@ -28,7 +28,7 @@ main(int argc, char** argv)
 
   {
     std::cout << "v ";
-    auto var = sls::Variable(0);
+    auto var = sls::Var(0);
     for (auto sign : assign)
       std::cout << (sign ? "-" : "") << ++var << ' ';
     std::cout << "0\n";

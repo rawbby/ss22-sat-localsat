@@ -12,7 +12,7 @@ template<typename type_type, typename allocator_type = heap_allocator_type<align
 struct dynamic_vector_type
 {
   allocator_type* allocator;
-  memory_type data;
+  memory_type<byte_type> data;
   size_type count;
 
   inline ~dynamic_vector_type() noexcept { allocator->Free(data); }
@@ -33,6 +33,8 @@ struct dynamic_vector_type
   [[maybe_unused]] [[nodiscard]] inline view_type<type_type> View() noexcept;
 
   // utilities
+  [[maybe_unused]] [[nodiscard]] inline size_type Capacity() const noexcept;
+  [[maybe_unused]] inline void Capacity(size_type new_count) noexcept;
   [[maybe_unused]] inline void Count(size_type new_count) noexcept;
   [[maybe_unused]] inline void Push(type_type type) noexcept;
   [[maybe_unused]] inline void Pop() noexcept;
@@ -41,10 +43,21 @@ struct dynamic_vector_type
   [[maybe_unused]] inline void Remove(size_type index) noexcept;
 };
 
-// factories
+/*
+ * factories
+ */
+
+template<typename type_type, typename allocator_type = heap_allocator_type<alignment_no_tag>>
+[[maybe_unused]] inline void
+DynamicVector(dynamic_vector_type<type_type, allocator_type>* vector, allocator_type* allocator, size_type initial_capacity) noexcept;
+
 template<typename type_type, typename allocator_type = heap_allocator_type<alignment_no_tag>>
 [[maybe_unused]] [[nodiscard]] inline dynamic_vector_type<type_type, allocator_type>
 DynamicVector(allocator_type* allocator) noexcept;
+
+template<typename type_type, typename allocator_type = heap_allocator_type<alignment_no_tag>>
+[[maybe_unused]] [[nodiscard]] inline dynamic_vector_type<type_type, allocator_type>
+DynamicVector(allocator_type* allocator, size_type initial_capacity) noexcept;
 
 }
 

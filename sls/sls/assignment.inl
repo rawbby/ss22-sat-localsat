@@ -13,18 +13,18 @@ namespace sls {
 // | |  | | | |___    | |   |  _  | | |_| | | |_| |  ___) |
 // |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
 
-[[maybe_unused]] constexpr inline void
+[[maybe_unused]] inline void
 assignment_type::Flip(const cnf_type* cnf, variable_type variable) noexcept
 {
   auto& sign = *assign.At(variable);
-  sign = !(sign);
+  sign = stl::Not(sign);
 
-  auto pos_literal = Literal(variable, sign);
+  auto pos_literal = Lit(variable, sign);
   for (auto pos_clause_index : cnf->ResolvingClauses(pos_literal)) {
     *(satisfied_counts.At(pos_clause_index)) += 1;
   }
 
-  auto neg_literal = Literal(variable, !sign);
+  auto neg_literal = Lit(variable, stl::Not(sign));
   for (auto neg_clause_index : cnf->ResolvingClauses(neg_literal)) {
     *(satisfied_counts.At(neg_clause_index)) -= 1;
   }
@@ -33,10 +33,10 @@ assignment_type::Flip(const cnf_type* cnf, variable_type variable) noexcept
 [[maybe_unused]] inline void
 assignment_type::RandomFlip(const cnf_type* cnf, stl::random_type random) noexcept
 {
-  Flip(cnf, Variable(random.RandInt(cnf->num_variables)));
+  Flip(cnf, Var(random.RandInt(cnf->num_variables)));
 }
 
-[[maybe_unused]] constexpr inline void
+[[maybe_unused]] inline void
 assignment_type::BestFlip(const cnf_type* cnf) noexcept
 {
   // use loop_offset to start at new position
@@ -48,11 +48,11 @@ assignment_type::BestFlip(const cnf_type* cnf) noexcept
   ++loop_offset;
   loop_offset = loop_offset < cnf->num_variables ? loop_offset : 0;
 
-  auto best_var = Variable(0);
+  auto best_var = Var(0);
   auto best_stat = FlipStat(cnf, best_var);
 
-  const auto n = loop_offset;
-  const auto m = cnf->num_variables;
+  const auto n = Var(loop_offset);
+  const auto m = Var(cnf->num_variables);
 
   for (auto var : stl::Range(n, m)) {
     auto stat = FlipStat(cnf, var);
@@ -61,7 +61,7 @@ assignment_type::BestFlip(const cnf_type* cnf) noexcept
       best_stat = stat;
     }
   }
-  for (auto var : stl::Range(0, n)) {
+  for (auto var : stl::Range(Var(0), n)) {
     auto stat = FlipStat(cnf, var);
     if (stat > best_stat) {
       best_var = var;
@@ -79,11 +79,11 @@ assignment_type::BestFlip(const cnf_type* cnf, stl::random_type* random) noexcep
   // so less loops occur. this seems to
   // be very important!
 
-  auto best_var = Variable(0);
+  auto best_var = Var(0);
   auto best_stat = FlipStat(cnf, best_var);
 
-  const auto n = random->RandInt(cnf->num_variables);
-  const auto m = cnf->num_variables;
+  const auto n = Var(random->RandInt(cnf->num_variables));
+  const auto m = Var(cnf->num_variables);
 
   for (auto var : stl::Range(n, m)) {
     auto stat = FlipStat(cnf, var);
@@ -92,7 +92,7 @@ assignment_type::BestFlip(const cnf_type* cnf, stl::random_type* random) noexcep
       best_stat = stat;
     }
   }
-  for (auto var : stl::Range(0, n)) {
+  for (auto var : stl::Range(Var(0), n)) {
     auto stat = FlipStat(cnf, var);
     if (stat > best_stat) {
       best_var = var;
@@ -103,7 +103,7 @@ assignment_type::BestFlip(const cnf_type* cnf, stl::random_type* random) noexcep
   Flip(cnf, best_var);
 }
 
-[[maybe_unused]] constexpr inline void
+[[maybe_unused]] inline void
 assignment_type::RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept
 {
   for (auto& sign : assign)
@@ -112,15 +112,15 @@ assignment_type::RandomReset(const cnf_type* cnf, stl::random_type* random) noex
   UpdateStats(cnf);
 }
 
-[[maybe_unused]] constexpr inline void
+[[maybe_unused]] inline void
 assignment_type::UpdateStats(const cnf_type* cnf) noexcept
 {
   satisfied_counts.View().MemSet(0);
 
-  auto variable = Variable(0);
+  auto variable = Var(0);
   for (auto& sign : assign) {
 
-    auto literal = Literal(variable, sign);
+    auto literal = Lit(variable, sign);
 
     for (auto clause_index : cnf->ResolvingClauses(literal))
       *satisfied_counts.At(clause_index) += 1;
@@ -129,7 +129,7 @@ assignment_type::UpdateStats(const cnf_type* cnf) noexcept
   }
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline float
+[[maybe_unused]] [[nodiscard]] inline float
 assignment_type::Score() noexcept
 {
   auto score = satisfied_counts.Count();
@@ -139,12 +139,12 @@ assignment_type::Score() noexcept
   return stl::F32(score);
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline stl::size_type
+[[maybe_unused]] [[nodiscard]] inline stl::size_type
 assignment_type::FlipStat(const cnf_type* cnf, variable_type variable) noexcept
 {
   auto sign = *assign.At(variable);
-  auto sat_clauses = cnf->ResolvingClauses(Literal(variable, sign));
-  auto unsat_clauses = cnf->ResolvingClauses(Literal(variable, !sign));
+  auto sat_clauses = cnf->ResolvingClauses(Lit(variable, sign));
+  auto unsat_clauses = cnf->ResolvingClauses(Lit(variable, stl::Not(sign)));
 
   auto stat = stl::Size(0);
 
@@ -157,13 +157,13 @@ assignment_type::FlipStat(const cnf_type* cnf, variable_type variable) noexcept
   return stat;
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline stl::i8_type*
+[[maybe_unused]] [[nodiscard]] inline stl::i8_type*
 assignment_type::begin() noexcept
 {
   return assign.begin();
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline stl::i8_type*
+[[maybe_unused]] [[nodiscard]] inline stl::i8_type*
 assignment_type::end() noexcept
 {
   return assign.end();
@@ -175,7 +175,7 @@ assignment_type::end() noexcept
 // | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
 
-[[maybe_unused]] constexpr inline void
+[[maybe_unused]] inline void
 Assignment(assignment_type* assignment, const cnf_type* cnf) noexcept
 {
   assignment->loop_offset = stl::Size(0);
@@ -191,7 +191,7 @@ Assignment(assignment_type* assignment, const cnf_type* cnf) noexcept
   assignment->UpdateStats(cnf);
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline assignment_type
+[[maybe_unused]] [[nodiscard]] inline assignment_type
 Assignment(const cnf_type* cnf) noexcept
 {
   assignment_type assignment;

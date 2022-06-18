@@ -18,54 +18,24 @@ struct heap_allocator_type
 {
   constexpr inline heap_allocator_type() noexcept = default;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline memory_type Allocate(size_type count) const noexcept
-  {
-    byte_type* data;
-#ifdef WIN32
-    data = static_cast<byte_type*>(_aligned_malloc(count, alignment_tag::alignment));
-#else
-    data = static_cast<byte_type*>(std::aligned_alloc(alignment_tag::alignment, count));
-#endif
+  template<typename type_type = byte_type>
+  [[maybe_unused]] [[nodiscard]] constexpr inline memory_type<type_type> Allocate(size_type count) const noexcept;
 
-    if (!data)
-      return {};
+  template<typename type_type = byte_type>
+  [[maybe_unused]] constexpr inline void Free(memory_type<type_type> memory) const noexcept;
 
-    return { data, count };
-  }
-
-  [[maybe_unused]] constexpr inline void Free(memory_type memory) const noexcept
-  {
-#ifdef WIN32
-    _aligned_free(memory.data);
-#else
-    std::free(memory.data);
-#endif
-  }
-
-  [[maybe_unused]] [[nodiscard]] constexpr inline memory_type ReAllocate(memory_type memory, size_type count) const noexcept
-  {
-    byte_type* data;
-#ifdef WIN32
-    data = static_cast<byte_type*>(_aligned_realloc(memory.data, count, alignment_tag::alignment));
-#else
-    // TODO no guarentee that the memory is still aligned?
-    data = static_cast<byte_type*>(std::realloc(memory.data, count));
-#endif
-
-    if (!data)
-      return {};
-
-    return { data, count };
-  }
+  template<typename type_type = byte_type>
+  [[maybe_unused]] [[nodiscard]] constexpr inline memory_type<type_type> ReAllocate(memory_type<type_type> memory,
+                                                                                    size_type count) const noexcept;
 };
 
-template<typename alignment_tag_ = alignment_no_tag>
-[[maybe_unused]] constexpr inline heap_allocator_type<alignment_tag_>
-HeapAllocator()
-{
-  return {};
-}
+template<typename alignment_tag = alignment_no_tag>
+[[maybe_unused]] constexpr inline heap_allocator_type<alignment_tag>
+HeapAllocator();
 
 }
+
+// include implementation
+#include "heap_allocator.inl"
 
 #endif

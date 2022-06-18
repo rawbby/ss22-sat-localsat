@@ -42,6 +42,7 @@ STL_DEFINE_FLOATING_CONSTRUCTOR(double, f64_type, F64)
 
 STL_DEFINE_INTEGRAL_CONSTRUCTOR(std::byte, byte_type, Byte)
 STL_DEFINE_INTEGRAL_CONSTRUCTOR(bool, bool_type, Bool)
+STL_DEFINE_INTEGRAL_CONSTRUCTOR(i8_type, b8_type, B8)
 STL_DEFINE_INTEGRAL_CONSTRUCTOR(char, char_type, Char)
 STL_DEFINE_INTEGRAL_CONSTRUCTOR(i32_type, size_type, Size)
 
@@ -53,6 +54,12 @@ U64(type_type* pointer) noexcept
   u64_type address;
   std::memcpy(&address, &pointer, sizeof(pointer));
   return address;
+}
+
+[[maybe_unused]] [[nodiscard]] constexpr inline b8_type
+Not(b8_type value) noexcept
+{
+  return value ? B8(0) : B8(1);
 }
 
 }

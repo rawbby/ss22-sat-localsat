@@ -87,6 +87,20 @@ static_vector_type<type_type, capacity>::View() const noexcept
  */
 
 template<typename type_type, size_type capacity>
+[[maybe_unused]] constexpr inline size_type
+static_vector_type<type_type, capacity>::Capacity() const noexcept
+{
+  return capacity;
+}
+
+template<typename type_type, size_type capacity>
+[[maybe_unused]] constexpr inline void
+static_vector_type<type_type, capacity>::Capacity(size_type new_count) noexcept
+{
+  Assert(new_count <= capacity, "Can not capacity StaticVector beyond its Capacity!");
+}
+
+template<typename type_type, size_type capacity>
 [[maybe_unused]] constexpr inline void
 static_vector_type<type_type, capacity>::Count(size_type new_count) noexcept
 {
@@ -146,14 +160,12 @@ template<typename type_type, size_type capacity>
 [[maybe_unused]] [[nodiscard]] constexpr inline static_vector_type<type_type, capacity>
 StaticVector() noexcept
 {
-  // in a constexpr inline environment
-  // zero initialize the whole s_vector->
-  if (std::is_constant_evaluated())
-    return {};
+  if (std::is_constant_evaluated()) {
+    static_vector_type<type_type, capacity> vector{};
+    StaticVector(&vector);
+    return vector;
+  }
 
-  // as zero initialization is not needed
-  // we do not take the effort in a non
-  // constexpr environment.
   static_vector_type<type_type, capacity> vector;
   StaticVector(&vector);
   return vector;

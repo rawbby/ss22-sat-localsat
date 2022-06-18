@@ -6,8 +6,8 @@
 
 namespace sls {
 
-STL_DEFINE_INTEGRAL_CONSTRUCTOR(stl::i16_type, literal_type, Literal)
-STL_DEFINE_INTEGRAL_CONSTRUCTOR(stl::i16_type, variable_type, Variable)
+STL_DEFINE_INTEGRAL_CONSTRUCTOR(stl::i16_type, literal_type, Lit)
+STL_DEFINE_INTEGRAL_CONSTRUCTOR(stl::i16_type, variable_type, Var)
 
 // just define what is expected by this solver
 
@@ -35,7 +35,7 @@ STL_DEFINE_INTEGRAL_CONSTRUCTOR(stl::i16_type, variable_type, Variable)
 #endif
 
 [[maybe_unused]] [[nodiscard]] constexpr inline literal_type
-Literal(variable_type var, stl::i8_type sign) noexcept
+Lit(variable_type var, stl::i8_type sign) noexcept
 {
   stl::Assert(var < SLS_MAX_VARIABLES, "Invalid Variable passed!");
   auto literal = static_cast<literal_type>((var << 1) | sign);

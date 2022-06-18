@@ -5,14 +5,16 @@
 
 namespace stl {
 
+template<typename type_type = byte_type>
 struct memory_type
 {
-  byte_type* data;
+  type_type* data;
   size_type count;
 };
 
-[[maybe_unused]] constexpr inline memory_type
-Memory(byte_type* data, size_type count) noexcept
+template<typename type_type = byte_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline memory_type<type_type>
+Memory(type_type* data, size_type count) noexcept
 {
   return { data, count };
 }

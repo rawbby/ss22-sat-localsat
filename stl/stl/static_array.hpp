@@ -7,7 +7,7 @@
 namespace stl {
 
 template<typename type_type, size_type capacity>
-struct array_type
+struct static_array_type
 {
   type_type data[capacity];
 
@@ -29,12 +29,12 @@ struct array_type
 
 // factories
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline array_type<type_type, capacity>
-Array() noexcept;
+[[maybe_unused]] [[nodiscard]] constexpr inline static_array_type<type_type, capacity>
+StaticArray() noexcept;
 
 }
 
 // include implementation
-#include "array.inl"
+#include "static_array.inl"
 
 #endif

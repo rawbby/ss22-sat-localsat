@@ -36,10 +36,10 @@ struct hidoku_type
   sls::literal_type At(stl::size_type x, stl::size_type y) const { return *data.At(y * w + x); }
 
   // get a variable from the one hot pool
-  sls::literal_type Var(stl::size_type x, stl::size_type y, stl::size_type i) { return sls::Literal((x + y * w) * n + i); }
+  sls::literal_type Var(stl::size_type x, stl::size_type y, stl::size_type i) { return sls::Lit((x + y * w) * n + i); }
 
   // generate a new variable
-  sls::literal_type SVar() { return sls::Literal((w * h * n) + si++); }
+  sls::literal_type SVar() { return sls::Lit((w * h * n) + si++); }
 
   // always invoke after data, w, h and n are initialized
   void PostProcess()
@@ -70,7 +70,7 @@ struct hidoku_type
       }
     }
 
-    cnf = sls::CnfExtended(num_variables, num_clauses);
+    cnf = sls::Cnf(num_variables, num_clauses);
 
     // buffer for temporary / generated variables
     auto tmp_vars = stl::StaticVector<sls::literal_type, sls::SLS_MAX_LITERALS>();

@@ -14,49 +14,30 @@ struct fallback_allocator_type
   : primary_allocator_type
   , secondary_allocator_type
 {
-  [[maybe_unused]] inline fallback_allocator_type() noexcept
-    : primary_allocator_type()
-    , secondary_allocator_type()
-  {
-  }
+  [[maybe_unused]] inline fallback_allocator_type() noexcept = default;
 
-  [[maybe_unused]] [[nodiscard]] inline memory_type Allocate(size_type count) noexcept
-  {
-    auto memory = primary_allocator_type::Allocate(count);
-    if (!memory.data)
-      memory = secondary_allocator_type::Allocate(count);
-    return memory;
-  }
+  template<typename type_type = byte_type>
+  [[maybe_unused]] [[nodiscard]] inline memory_type<type_type> Allocate(size_type count) noexcept;
 
-  [[maybe_unused]] inline void Free(memory_type memory) noexcept
-  {
-    if (primary_allocator_type::Owns(memory))
-      primary_allocator_type::Free(memory);
-    else
-      secondary_allocator_type::Free(memory);
-  }
+  template<typename type_type = byte_type>
+  [[maybe_unused]] inline void Free(memory_type<type_type> memory) noexcept;
 
-  [[maybe_unused]] [[nodiscard]] inline memory_type ReAllocate(memory_type memory, size_type count) noexcept
-  {
-    if (primary_allocator_type::Owns(memory))
-      return primary_allocator_type::ReAllocate(memory, count);
-    else
-      return secondary_allocator_type::ReAllocate(memory, count);
-  }
+  template<typename type_type = byte_type>
+  [[maybe_unused]] [[nodiscard]] inline memory_type<type_type> ReAllocate(memory_type<type_type> memory, size_type count) noexcept;
 
-  [[maybe_unused]] [[nodiscard]] inline bool Owns(memory_type memory) const
-  {
-    return primary_allocator_type::Owns(memory) || secondary_allocator_type::Owns(memory);
-  }
+  template<typename type_type = byte_type>
+  [[maybe_unused]] [[nodiscard]] inline bool Owns(memory_type<type_type> memory) const;
 };
 
 template<typename primary_allocator_type, typename secondary_allocator_type>
-[[maybe_unused]] constexpr inline fallback_allocator_type<primary_allocator_type, secondary_allocator_type>
-FallbackAllocator()
-{
-  return {};
-}
+  requires owning_allocator_concept<primary_allocator_type> &&
+           allocator_concept<secondary_allocator_type> [
+           [maybe_unused]] constexpr inline fallback_allocator_type<primary_allocator_type, secondary_allocator_type>
+  FallbackAllocator();
 
 }
+
+// include implementation
+#include "fallback_allocator.inl"
 
 #endif

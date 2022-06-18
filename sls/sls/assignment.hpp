@@ -18,7 +18,7 @@ namespace sls {
 
 struct assignment_type
 {
-  stl::static_vector_type<stl::i8_type, SLS_MAX_VARIABLES> assign;
+  stl::static_vector_type<stl::b8_type, SLS_MAX_VARIABLES> assign;
   stl::static_vector_type<stl::size_type, SLS_MAX_CLAUSES> satisfied_counts;
   stl::size_type loop_offset;
 
@@ -28,27 +28,27 @@ struct assignment_type
   // | |  | | | |___    | |   |  _  | | |_| | | |_| |  ___) |
   // |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
 
-  [[maybe_unused]] constexpr inline void Flip(const cnf_type* cnf, variable_type variable) noexcept;
+  [[maybe_unused]] inline void Flip(const cnf_type* cnf, variable_type variable) noexcept;
 
   [[maybe_unused]] inline void RandomFlip(const cnf_type* cnf, stl::random_type random) noexcept;
 
-  [[maybe_unused]] constexpr inline void BestFlip(const cnf_type* cnf) noexcept;
+  [[maybe_unused]] inline void BestFlip(const cnf_type* cnf) noexcept;
 
   [[maybe_unused]] inline void BestFlip(const cnf_type* cnf, stl::random_type* random) noexcept;
 
-  [[maybe_unused]] constexpr inline void RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept;
+  [[maybe_unused]] inline void RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept;
 
-  [[maybe_unused]] constexpr inline void UpdateStats(const cnf_type* cnf) noexcept;
+  [[maybe_unused]] inline void UpdateStats(const cnf_type* cnf) noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline float Score() noexcept;
+  [[maybe_unused]] [[nodiscard]] inline float Score() noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline stl::size_type FlipStat(const cnf_type* cnf, variable_type variable) noexcept;
+  [[maybe_unused]] [[nodiscard]] inline stl::size_type FlipStat(const cnf_type* cnf, variable_type variable) noexcept;
 
   // === iterator support ===
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline stl::i8_type* begin() noexcept;
+  [[maybe_unused]] [[nodiscard]] inline stl::i8_type* begin() noexcept;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline stl::i8_type* end() noexcept;
+  [[maybe_unused]] [[nodiscard]] inline stl::i8_type* end() noexcept;
 };
 
 //   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
@@ -57,10 +57,10 @@ struct assignment_type
 // | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
 
-[[maybe_unused]] constexpr inline void
+[[maybe_unused]] inline void
 Assignment(assignment_type* assign, const cnf_type* cnf) noexcept;
 
-[[maybe_unused]] [[nodiscard]] constexpr inline assignment_type
+[[maybe_unused]] [[nodiscard]] inline assignment_type
 Assignment(const cnf_type* cnf) noexcept;
 
 [[maybe_unused]] inline void

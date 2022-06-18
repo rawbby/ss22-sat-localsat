@@ -9,33 +9,38 @@ namespace stl {
  * satisfy the iterator concept
  */
 
-[[maybe_unused]] [[nodiscard]] constexpr inline size_type
-range_iter_type::operator*() const noexcept
+template<typename integral_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline integral_type
+range_iter_type<integral_type>::operator*() const noexcept
 {
   return i;
 }
 
-[[maybe_unused]] constexpr inline range_iter_type&
-range_iter_type::operator++() noexcept
+template<typename integral_type>
+[[maybe_unused]] constexpr inline range_iter_type<integral_type>&
+range_iter_type<integral_type>::operator++() noexcept
 {
   i++;
   return *this;
 }
 
-[[maybe_unused]] constexpr inline range_iter_type // NOLINT(cert-dcl21-cpp)
-range_iter_type::operator++(int) noexcept
+template<typename integral_type>
+[[maybe_unused]] constexpr inline range_iter_type<integral_type> // NOLINT(cert-dcl21-cpp)
+range_iter_type<integral_type>::operator++(int) noexcept
 {
   return range_iter_type(i++);
 }
 
+template<typename integral_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline bool
-range_iter_type::operator==(const range_iter_type& other) const noexcept
+range_iter_type<integral_type>::operator==(const range_iter_type<integral_type>& other) const noexcept
 {
   return i == other.i;
 }
 
+template<typename integral_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline bool
-range_iter_type::operator!=(const range_iter_type& other) const noexcept
+range_iter_type<integral_type>::operator!=(const range_iter_type<integral_type>& other) const noexcept
 {
   return i != other.i;
 }
@@ -44,14 +49,16 @@ range_iter_type::operator!=(const range_iter_type& other) const noexcept
  * satisfy the iterable concept
  */
 
-[[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type
-range_type::begin() const noexcept
+template<typename integral_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type<integral_type>
+range_type<integral_type>::begin() const noexcept
 {
   return range_iter_type(lower);
 }
 
-[[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type
-range_type::end() const noexcept
+template<typename integral_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type<integral_type>
+range_type<integral_type>::end() const noexcept
 {
   return range_iter_type(upper);
 }
@@ -60,8 +67,9 @@ range_type::end() const noexcept
  * factories
  */
 
-[[maybe_unused]] [[nodiscard]] constexpr inline range_type
-Range(size_type lower, size_type upper) noexcept
+template<typename integral_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline range_type<integral_type>
+Range(integral_type lower, integral_type upper) noexcept
 {
   Assert(lower <= upper, "Invalid Parameter for Range! lower > upper.");
   return { lower, upper };

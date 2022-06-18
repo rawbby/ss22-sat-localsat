@@ -66,7 +66,7 @@ template<typename type_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline type_type*
 view_type<type_type>::end() noexcept
 {
-  return At(Count());
+  return &(data[Count()]);
 }
 
 /*
