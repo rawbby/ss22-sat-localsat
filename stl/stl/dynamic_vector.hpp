@@ -15,6 +15,13 @@ struct dynamic_vector_type
   memory_type<type_type> data;
   size_type count;
 
+  inline dynamic_vector_type(allocator_type* allocator)
+    : allocator(allocator)
+    , data(allocator->template Allocate<type_type>())
+    , count(count)
+  {
+  }
+
   inline ~dynamic_vector_type() noexcept { allocator->Free(data); }
 
   // satisfy the viewable concept
