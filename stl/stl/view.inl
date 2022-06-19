@@ -91,14 +91,22 @@ template<typename type_type>
 MNCI view_type<const type_type>
 view_type<type_type>::Range(size_type lower, size_type upper) const noexcept
 {
-  return { At(lower), upper - lower };
+  Assert(lower >= Size(0), "View Can not be access with a negative Index!");
+  Assert(lower <= Count(), "View Can not be access with an Index larger its Count!");
+  Assert(upper >= Size(0), "View Can not be access with a negative Index!");
+  Assert(upper <= Count(), "View Can not be access with an Index larger its Count!");
+  return { &(data[lower]), upper - lower };
 }
 
 template<typename type_type>
 MNCI view_type<type_type>
 view_type<type_type>::Range(size_type lower, size_type upper) noexcept
 {
-  return { At(lower), upper - lower };
+  Assert(lower >= Size(0), "View Can not be access with a negative Index!");
+  Assert(lower <= Count(), "View Can not be access with an Index larger its Count!");
+  Assert(upper >= Size(0), "View Can not be access with a negative Index!");
+  Assert(upper <= Count(), "View Can not be access with an Index larger its Count!");
+  return { &(data[lower]), upper - lower };
 }
 
 template<typename type_type>
@@ -132,7 +140,7 @@ view_type<type_type>::MemSet(i32_type value) noexcept
 
 template<typename type_type>
 [[maybe_unused]] constexpr inline void
-view_type<type_type>::MemCopy(view_type<type_type> dst) const noexcept
+view_type<type_type>::MemCopy(view_type<std::remove_const<type_type>> dst) const noexcept
 {
   Assert(dst.Count() == Count(), "Can not MemCopy from uneven sized Views!");
 

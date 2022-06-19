@@ -62,26 +62,27 @@ struct view_iterable_type
   MNI view_iter_type<literal_type> end() noexcept { return _end; }
 };
 
+template<typename allocator_type>
 struct cnf_type
 {
-  stl::heap_allocator_type<stl::alignment_cache_line_tag> allocator;
-  stl::dynamic_vector_type<literal_type, decltype(allocator)> cnf_buffer;
-  stl::dynamic_vector_type<stl::size_type, decltype(allocator)> cnf_clauses;
-  stl::dynamic_vector_type<stl::size_type, decltype(allocator)> clause_index_buffer;
-  stl::dynamic_vector_type<stl::size_type, decltype(allocator)> literal_clauses;
-  stl::dynamic_vector_type<stl::size_type, decltype(allocator)> literal_num_clauses;
+  allocator_type* allocator;
+  stl::dynamic_vector_type<literal_type, allocator_type> cnf_buffer;
+  stl::dynamic_vector_type<stl::size_type, allocator_type> cnf_clauses;
+  stl::dynamic_vector_type<stl::size_type, allocator_type> clause_index_buffer;
+  stl::dynamic_vector_type<stl::size_type, allocator_type> literal_clauses;
+  stl::dynamic_vector_type<stl::size_type, allocator_type> literal_num_clauses;
 
   stl::size_type num_variables;
   stl::size_type num_literals;
   stl::size_type num_clauses;
 
-  cnf_type(stl::size_type num_variables, stl::size_type num_clauses)
-    : allocator()
-    , cnf_buffer(&allocator)
-    , cnf_clauses(&allocator)
-    , clause_index_buffer(&allocator)
-    , literal_clauses(&allocator)
-    , literal_num_clauses(&allocator)
+  cnf_type(allocator_type* allocator, stl::size_type num_variables, stl::size_type num_clauses)
+    : allocator(allocator)
+    , cnf_buffer(allocator)
+    , cnf_clauses(allocator)
+    , clause_index_buffer(allocator)
+    , literal_clauses(allocator)
+    , literal_num_clauses(allocator)
     , num_variables(num_variables)
     , num_literals(num_variables << 1)
     , num_clauses(num_clauses)
@@ -97,12 +98,12 @@ struct cnf_type
   }
 
   cnf_type(cnf_type&& cnf)
-    : allocator()
-    , cnf_buffer(&allocator)
-    , cnf_clauses(&allocator)
-    , clause_index_buffer(&allocator)
-    , literal_clauses(&allocator)
-    , literal_num_clauses(&allocator)
+    : allocator(nullptr)
+    , cnf_buffer(nullptr)
+    , cnf_clauses(nullptr)
+    , clause_index_buffer(nullptr)
+    , literal_clauses(nullptr)
+    , literal_num_clauses(nullptr)
     , num_variables(0)
     , num_literals(0)
     , num_clauses(0)

@@ -30,7 +30,7 @@ struct view_type
   MNCI view_type<const type_type> Range(size_type upper) const noexcept;
   MNCI view_type<type_type> Range(size_type upper) noexcept;
   [[maybe_unused]] constexpr inline void MemSet(i32_type value) noexcept;
-  [[maybe_unused]] constexpr inline void MemCopy(view_type<type_type> dst) const noexcept;
+  [[maybe_unused]] constexpr inline void MemCopy(view_type<std::remove_const<type_type>> dst) const noexcept;
 };
 
 /*

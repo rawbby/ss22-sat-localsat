@@ -4,12 +4,21 @@
 #include <stl/static_vector.hpp>
 #include <stl/vector.hpp>
 
+using type_type = stl::size_type;
+
+template<typename vector_type>
+void
+test_vector()
+{
+  static_assert(stl::vector_concept<vector_type, type_type>);
+  static_assert(std::is_move_assignable_v<vector_type>);
+  static_assert(std::is_move_constructible_v<vector_type>);
+  static_assert(std::ranges::range<vector_type>);
+}
+
 int
 main()
 {
-  using a_static_vector_type = stl::static_vector_type<stl::size_type, 0x1000>;
-  static_assert(stl::vector_concept<stl::size_type, a_static_vector_type>);
-
-  using a_dynamic_vector_type = stl::dynamic_vector_type<stl::size_type>;
-  static_assert(stl::vector_concept<stl::size_type, a_dynamic_vector_type>);
+  test_vector<stl::static_vector_type<type_type, 0x1000>>();
+  test_vector<stl::dynamic_vector_type<type_type>>();
 }

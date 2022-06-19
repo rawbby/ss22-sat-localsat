@@ -55,15 +55,15 @@ MNCI memory_type<type_type>
 stack_allocator_type<capacity, alignment_tag>::ReAllocate(memory_type<type_type> memory, size_type count) noexcept
 {
   // sanitize
-  [[maybe_unused]] const auto top_ = alignment_tag::align(top);
-  [[maybe_unused]] const auto end_ = alignment_tag::align(&(memory.data[memory.count * sizeof(type_type)]));
+  [[maybe_unused]] const auto top_ = (void*)alignment_tag::align(top);
+  [[maybe_unused]] const auto end_ = (void*)alignment_tag::align(&(memory.data[memory.count * sizeof(type_type)]));
   Assert(top_ == end_, "Runtime Error: Invalid usage of StackAllocator. Can only reallocate Memory on Top of the Stack!");
 
-  if (&(memory.data[count * sizeof(type_type)]) > data.end())
+  if ((void*)&(memory.data[count * sizeof(type_type)]) > (void*)data.end())
     return {};
 
   memory.count = count;
-  top = &(memory.data[count * sizeof(type_type)]);
+  top = (byte_type*) &(memory.data[count * sizeof(type_type)]);
   return memory;
 }
 

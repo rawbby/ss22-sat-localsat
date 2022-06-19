@@ -8,7 +8,7 @@
 
 namespace stl {
 
-template<typename type_type, typename vector_type>
+template<typename vector_type, typename type_type>
 concept vector_concept = (
   // clang-format off
   viewable_concept<vector_type, type_type> &&

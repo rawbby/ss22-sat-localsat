@@ -17,10 +17,16 @@ main(int argc, char** argv)
   stl::Assert(f, "Failed to open File!");
 #endif
 
-  auto cnf = sls::ParseDimacs(f);
+  stl::fallback_allocator_type<stl::stack_allocator_type<0x40000, stl::alignment_page_tag>,
+                               stl::heap_allocator_type<stl::alignment_cache_line_tag>>
+    allocator{};
+
+  static_assert(stl::allocator_concept<decltype(allocator)>);
+
+  auto cnf = sls::ParseDimacs<decltype(allocator)>(f, &allocator);
   cnf.PostProcess();
 
-  auto assign = SLS(&cnf);
+  auto assign = SLS<decltype(allocator)>(&allocator, &cnf);
 
   std::cout << "p cnf " << cnf.num_variables << ' ' << cnf.num_clauses << '\n';
   std::cout << "s SATISFIABLE\n";

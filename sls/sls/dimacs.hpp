@@ -13,8 +13,9 @@ ReadChar(FILE* f)
   return c;
 }
 
-cnf_type
-ParseDimacs(FILE* f)
+template<typename allocator_type>
+cnf_type<allocator_type>
+ParseDimacs(FILE* f, allocator_type* allocator)
 {
   char c;
 
@@ -43,7 +44,7 @@ ParseDimacs(FILE* f)
     num_clauses += c - '0';
   }
 
-  cnf_type cnf{ num_variables, num_clauses };
+  cnf_type cnf{ allocator, num_variables, num_clauses };
 
   int32_t literal;
   do {

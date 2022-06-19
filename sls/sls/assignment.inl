@@ -13,8 +13,10 @@ namespace sls {
 // | |  | | | |___    | |   |  _  | | |_| | | |_| |  ___) |
 // |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
 
+template<typename allocator_type>
+template<typename cnf_allocator_type>
 MI void
-assignment_type::Flip(const cnf_type* cnf, variable_type variable) noexcept
+assignment_type<allocator_type>::Flip(const cnf_type<cnf_allocator_type>* cnf, variable_type variable) noexcept
 {
   const auto sign = stl::Not(assign[variable]);
 
@@ -27,14 +29,18 @@ assignment_type::Flip(const cnf_type* cnf, variable_type variable) noexcept
     --satisfied_counts[clause_index];
 }
 
+template<typename allocator_type>
+template<typename cnf_allocator_type>
 MI void
-assignment_type::RandomFlip(const cnf_type* cnf, stl::random_type random) noexcept
+assignment_type<allocator_type>::RandomFlip(const cnf_type<cnf_allocator_type>* cnf, stl::random_type random) noexcept
 {
   Flip(cnf, Var(random.RandInt(cnf->num_variables)));
 }
 
+template<typename allocator_type>
+template<typename cnf_allocator_type>
 MI void
-assignment_type::BestFlip(const cnf_type* cnf) noexcept
+assignment_type<allocator_type>::BestFlip(const cnf_type<cnf_allocator_type>* cnf) noexcept
 {
   // use loop_offset to start at new position
   // so less loops occur. this seems to be
@@ -69,8 +75,10 @@ assignment_type::BestFlip(const cnf_type* cnf) noexcept
   Flip(cnf, best_var);
 }
 
+template<typename allocator_type>
+template<typename cnf_allocator_type>
 MI void
-assignment_type::BestFlip(const cnf_type* cnf, stl::random_type* random) noexcept
+assignment_type<allocator_type>::BestFlip(const cnf_type<cnf_allocator_type>* cnf, stl::random_type* random) noexcept
 {
   // use random to start at new position
   // so less loops occur. this seems to
@@ -100,8 +108,10 @@ assignment_type::BestFlip(const cnf_type* cnf, stl::random_type* random) noexcep
   Flip(cnf, best_var);
 }
 
+template<typename allocator_type>
+template<typename cnf_allocator_type>
 MI void
-assignment_type::RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept
+assignment_type<allocator_type>::RandomReset(const cnf_type<cnf_allocator_type>* cnf, stl::random_type* random) noexcept
 {
   for (auto& sign : assign)
     sign = stl::I8(random->RandBool());
@@ -109,8 +119,10 @@ assignment_type::RandomReset(const cnf_type* cnf, stl::random_type* random) noex
   UpdateStats(cnf);
 }
 
+template<typename allocator_type>
+template<typename cnf_allocator_type>
 MI void
-assignment_type::UpdateStats(const cnf_type* cnf) noexcept
+assignment_type<allocator_type>::UpdateStats(const cnf_type<cnf_allocator_type>* cnf) noexcept
 {
   satisfied_counts.View().MemSet(stl::I32(0));
 
@@ -122,12 +134,13 @@ assignment_type::UpdateStats(const cnf_type* cnf) noexcept
     for (auto clause_index : cnf->ResolvingClauses(literal))
       *satisfied_counts.At(clause_index) += 1;
 
-    variable++;
+    ++variable;
   }
 }
 
+template<typename allocator_type>
 MNI float
-assignment_type::Score() noexcept
+assignment_type<allocator_type>::Score() noexcept
 {
   auto score = satisfied_counts.Count();
   for (auto count : satisfied_counts)
@@ -136,101 +149,39 @@ assignment_type::Score() noexcept
   return stl::F32(score);
 }
 
+template<typename allocator_type>
+template<typename cnf_allocator_type>
 MNI stl::size_type
-assignment_type::FlipStat(const cnf_type* cnf, variable_type variable) noexcept
+assignment_type<allocator_type>::FlipStat(const cnf_type<cnf_allocator_type>* cnf, variable_type variable) noexcept
 {
-  auto sign = *assign.At(variable);
+  auto sign = assign[variable];
+
   auto sat_clauses = cnf->ResolvingClauses(Lit(variable, sign));
   auto unsat_clauses = cnf->ResolvingClauses(Lit(variable, stl::Not(sign)));
 
   auto stat = stl::Size(0);
 
   for (auto index : sat_clauses)
-    stat -= *satisfied_counts.At(index) == 1 ? 1 : 0;
+    stat -= satisfied_counts[index] == 1 ? 1 : 0;
 
   for (auto index : unsat_clauses)
-    stat += *satisfied_counts.At(index) == 0 ? 1 : 0;
+    stat += satisfied_counts[index] == 0 ? 1 : 0;
 
   return stat;
 }
 
+template<typename allocator_type>
 MNI stl::i8_type*
-assignment_type::begin() noexcept
+assignment_type<allocator_type>::begin() noexcept
 {
   return assign.begin();
 }
 
+template<typename allocator_type>
 MNI stl::i8_type*
-assignment_type::end() noexcept
+assignment_type<allocator_type>::end() noexcept
 {
   return assign.end();
-}
-
-//   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
-//  / ___|  / _ \  | \ | | / ___|  |_   _| |  _ \  | | | |  / ___| |_   _|  / _ \  |  _ \  / ___|
-// | |     | | | | |  \| | \___ \    | |   | |_) | | | | | | |       | |   | | | | | |_) | \___ \
-// | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
-//  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
-
-MI void
-Assignment(assignment_type* assignment, const cnf_type* cnf) noexcept
-{
-  assignment->loop_offset = stl::Size(0);
-
-#ifdef SLS_STATIC_ASSIGNMENT
-  assignment->assign = stl::StaticVector<stl::i8_type, SLS_MAX_VARIABLES>();
-  assignment->assign.Count(cnf->num_variables);
-  assignment->assign.View().MemSet(stl::I32(0));
-
-  assignment->satisfied_counts = stl::StaticVector<stl::size_type, SLS_MAX_CLAUSES>();
-  assignment->satisfied_counts.Count(cnf->num_clauses);
-  assignment->satisfied_counts.View().MemSet(stl::I32(0));
-#else
-  assignment->assign.View().MemSet(stl::I32(0));
-  assignment->satisfied_counts.View().MemSet(stl::I32(0));
-#endif
-
-  assignment->UpdateStats(cnf);
-}
-
-MNI assignment_type
-Assignment(const cnf_type* cnf) noexcept
-{
-#ifdef SLS_STATIC_ASSIGNMENT
-  assignment_type assignment;
-#else
-  auto assignment = assignment_type(cnf->num_variables);
-#endif
-  Assignment(&assignment, cnf);
-  return assignment;
-}
-
-MI void
-Assignment(assignment_type* assignment, const cnf_type* cnf, stl::random_type* random) noexcept
-{
-  assignment->loop_offset = stl::Size(0);
-
-#ifdef SLS_STATIC_ASSIGNMENT
-  stl::StaticVector<stl::i8_type, SLS_MAX_VARIABLES>(assignment->assign);
-  assignment->satisfied_counts.Count(cnf->num_variables);
-
-  stl::StaticVector<stl::size_type, SLS_MAX_CLAUSES>(&assignment->satisfied_counts);
-  assignment->satisfied_counts.Count(cnf->num_clauses);
-#endif
-
-  assignment->RandomReset(cnf, random);
-}
-
-MNI assignment_type
-Assignment(const cnf_type* cnf, stl::random_type* random) noexcept
-{
-#ifdef SLS_STATIC_ASSIGNMENT
-  assignment_type assignment;
-#else
-  auto assignment = assignment_type(cnf->num_variables);
-#endif
-  Assignment(&assignment, cnf, random);
-  return assignment;
 }
 
 }

@@ -11,6 +11,22 @@ struct static_array_type
 {
   type_type data[capacity];
 
+  MNCI static_array_type()
+    : data()
+  {
+  }
+
+  MNCI static_array_type(static_array_type&& other)
+    : data(other.data)
+  {
+  }
+
+  MNCI static_array_type& operator=(static_array_type&& other)
+  {
+    data = other.data;
+    return *this;
+  }
+
   // satisfy the viewable concept
   MNCI size_type Count() const noexcept;
   MNCI const type_type* At(size_type index) const noexcept;

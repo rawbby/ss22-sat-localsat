@@ -23,7 +23,6 @@
 struct hidoku_type
 {
   stl::static_vector_type<sls::literal_type, 256> data;
-  sls::cnf_type cnf;
   stl::size_type w;
   stl::size_type h;
   stl::size_type n;
@@ -42,7 +41,7 @@ struct hidoku_type
   sls::literal_type SVar() { return sls::Lit((w * h * n) + si++); }
 
   // always invoke after data, w, h and n are initialized
-  void PostProcess()
+  sls::cnf_type PostProcess()
   {
     // calculate variables and clauses
 
@@ -70,7 +69,7 @@ struct hidoku_type
       }
     }
 
-    cnf = sls::Cnf(num_variables, num_clauses);
+    sls::cnf_type cnf{ num_variables, num_clauses };
 
     // cnf_buffer for temporary / generated variables
     auto tmp_vars = stl::StaticVector<sls::literal_type, sls::SLS_MAX_LITERALS>();
@@ -79,10 +78,10 @@ struct hidoku_type
     for (auto i : stl::Range(0, n)) {
       for (auto y : stl::Range(0, h)) {
         for (auto x : stl::Range(0, w)) {
-          Push(x, y, i);
+          Push(cnf, x, y, i);
         }
       }
-      Push();
+      Push(cnf);
     }
 
     for (auto y : stl::Range(0, h)) {
@@ -96,16 +95,16 @@ struct hidoku_type
           auto m = At(x, y) - 1;
 
           for (auto i : stl::Range(0, m)) {
-            PushNot(x, y, i);
-            Push();
+            PushNot(cnf, x, y, i);
+            Push(cnf);
           }
 
-          Push(x, y, At(x, y) - 1);
-          Push();
+          Push(cnf, x, y, At(x, y) - 1);
+          Push(cnf);
 
           for (auto i : stl::Range(m + 1, n)) {
-            PushNot(x, y, i);
-            Push();
+            PushNot(cnf, x, y, i);
+            Push(cnf);
           }
 
           // === neighbor constraint ===
@@ -115,16 +114,16 @@ struct hidoku_type
             continue;
 
           stl::size_type i = At(x, y) - 1;
-          PushNot(x, y, i);
-          Push(x - 1, y - 1, i + 1);
-          Push(x - 1, y + 0, i + 1);
-          Push(x - 1, y + 1, i + 1);
-          Push(x + 0, y - 1, i + 1);
-          Push(x + 0, y + 1, i + 1);
-          Push(x + 1, y - 1, i + 1);
-          Push(x + 1, y + 0, i + 1);
-          Push(x + 1, y + 1, i + 1);
-          Push();
+          PushNot(cnf, x, y, i);
+          Push(cnf, x - 1, y - 1, i + 1);
+          Push(cnf, x - 1, y + 0, i + 1);
+          Push(cnf, x - 1, y + 1, i + 1);
+          Push(cnf, x + 0, y - 1, i + 1);
+          Push(cnf, x + 0, y + 1, i + 1);
+          Push(cnf, x + 1, y - 1, i + 1);
+          Push(cnf, x + 1, y + 0, i + 1);
+          Push(cnf, x + 1, y + 1, i + 1);
+          Push(cnf);
         }
         else
         {
@@ -132,8 +131,8 @@ struct hidoku_type
           // === trivial at least once constraint ===
 
           for (auto i : stl::Range(0, n))
-            Push(x, y, i);
-          Push();
+            Push(cnf, x, y, i);
+          Push(cnf);
 
 #ifdef OPTION_PAIRWISE
 
@@ -156,82 +155,84 @@ struct hidoku_type
             tmp_vars.Push(SVar());
 
           // not X0 or s0
-          PushNot(x, y, 0);
-          Push(*tmp_vars.At(0));
-          Push();
+          PushNot(cnf, x, y, 0);
+          Push(cnf, *tmp_vars.At(0));
+          Push(cnf);
 
           // not Xn-1 or sn-2
-          PushNot(x, y, n - 1);
-          PushNot(*tmp_vars.At(n - 2));
-          Push();
+          PushNot(cnf, x, y, n - 1);
+          PushNot(cnf, *tmp_vars.At(n - 2));
+          Push(cnf);
 
           // for (0 < i < n-1)
           for (auto i : stl::Range(1, n - 1)) {
 
             //  not Xi   or     si
-            PushNot(x, y, i);
-            Push(*tmp_vars.At(i));
-            Push();
+            PushNot(cnf, x, y, i);
+            Push(cnf, *tmp_vars.At(i));
+            Push(cnf);
 
             //  not si-1 or     si
-            PushNot(*tmp_vars.At(i - 1));
-            Push(*tmp_vars.At(i));
-            Push();
+            PushNot(cnf, *tmp_vars.At(i - 1));
+            Push(cnf, *tmp_vars.At(i));
+            Push(cnf);
 
             //  not Xi   or not si-1
-            PushNot(x, y, i);
-            PushNot(*tmp_vars.At(i - 1));
-            Push();
+            PushNot(cnf, x, y, i);
+            PushNot(cnf, *tmp_vars.At(i - 1));
+            Push(cnf);
           }
 #endif
 
           // === neighbor constraint ===
 
           for (auto i : stl::Range(0, n - 1)) {
-            PushNot(x, y, i);
-            Push(x - 1, y - 1, i + 1);
-            Push(x - 1, y + 0, i + 1);
-            Push(x - 1, y + 1, i + 1);
-            Push(x + 0, y - 1, i + 1);
-            Push(x + 0, y + 1, i + 1);
-            Push(x + 1, y - 1, i + 1);
-            Push(x + 1, y + 0, i + 1);
-            Push(x + 1, y + 1, i + 1);
-            Push();
+            PushNot(cnf, x, y, i);
+            Push(cnf, x - 1, y - 1, i + 1);
+            Push(cnf, x - 1, y + 0, i + 1);
+            Push(cnf, x - 1, y + 1, i + 1);
+            Push(cnf, x + 0, y - 1, i + 1);
+            Push(cnf, x + 0, y + 1, i + 1);
+            Push(cnf, x + 1, y - 1, i + 1);
+            Push(cnf, x + 1, y + 0, i + 1);
+            Push(cnf, x + 1, y + 1, i + 1);
+            Push(cnf);
           }
         }
       }
     }
 
-    stl::Assert(num_clauses == cnf.cnf.Count(), "Invalid cnf generation!");
+    stl::Assert(num_clauses == cnf.cnf_clauses.Count() - 1, "Invalid cnf generation!");
     cnf.PostProcess();
+
+    return cnf;
   }
 
-  void Push(stl::size_type x, stl::size_type y, stl::size_type i)
+  void Push(sls::cnf_type& cnf, stl::size_type x, stl::size_type y, stl::size_type i)
   {
     stl::Assert(i < n, "Invalid Variable Pushed!");
-    [[likely]] if (x >= 0 && y >= 0 && x < w && y < h) Push(Var(x, y, i));
+    [[likely]] if (x >= 0 && y >= 0 && x < w && y < h) Push(cnf, Var(x, y, i));
   }
 
-  void PushNot(stl::size_type x, stl::size_type y, stl::size_type i)
+  void PushNot(sls::cnf_type& cnf, stl::size_type x, stl::size_type y, stl::size_type i)
   {
     stl::Assert(i < n, "Invalid Variable Pushed!");
-    [[likely]] if (x >= 0 && y >= 0 && x < w || y < h) PushNot(Var(x, y, i));
+    [[likely]] if (x >= 0 && y >= 0 && x < w || y < h) PushNot(cnf, Var(x, y, i));
   }
 
-  void Push(stl::size_type l)
+  void Push(sls::cnf_type& cnf, stl::size_type l)
   {
     stl::Assert(l < num_variables, "Invalid Variable Pushed!");
     cnf.Push(l << 1);
   }
 
-  void PushNot(stl::size_type l)
+  void PushNot(sls::cnf_type& cnf, stl::size_type l)
   {
     stl::Assert(l < num_variables, "Invalid Variable Pushed!");
     cnf.Push((l << 1) | 1);
   }
 
-  void Push()
+  void Push(sls::cnf_type& cnf)
   {
     cnf.Push();
   }
@@ -312,7 +313,6 @@ Hidoku(char* arg)
   }
   stl::Assert(arg[c] == '\0', "Unexpected Token in Input String!");
 
-  hidoku.PostProcess();
   return hidoku;
 }
 
@@ -321,13 +321,14 @@ main(int argc, char** argv)
 {
   stl::Assert(argc > 1, "Expected an Input Parameter");
   auto hidoku = Hidoku(argv[1]);
+  auto cnf = hidoku.PostProcess();
 
 #ifdef OPTION_SLS_SOLVE
-  auto assign = SLS(&hidoku.cnf);
+  auto assign = SLS(&cnf);
 #endif
 
 #ifdef OPTION_VERBOSE
-  std::cout << "p cnf " << hidoku.cnf.num_variables << ' ' << hidoku.cnf.num_clauses << '\n';
+  std::cout << "p cnf " << cnf.num_variables << ' ' << cnf.num_clauses << '\n';
 
 #ifdef OPTION_SLS_SOLVE
   std::cout << "s SATISFIABLE\n";
@@ -340,7 +341,7 @@ main(int argc, char** argv)
   }
 #endif
 
-  for (auto clause : hidoku.cnf) {
+  for (auto clause : cnf.ClauseIterable()) {
     for (auto lit : clause) {
       auto sign = lit & 1;
       auto var = (lit >> 1) + 1;

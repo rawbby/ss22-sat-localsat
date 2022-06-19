@@ -5,8 +5,9 @@
 
 namespace sls {
 
+template<typename allocator_type>
 MI void
-SLS(assignment_type* result, const cnf_type* cnf) noexcept
+SLS(assignment_type<allocator_type>* result, const cnf_type<allocator_type>* cnf) noexcept
 {
   volatile bool found = false;
 
@@ -16,41 +17,39 @@ SLS(assignment_type* result, const cnf_type* cnf) noexcept
     auto id = omp_get_thread_num();
     auto random = stl::Random(id);
 
-    assignment_type assign{ cnf->num_variables };
+    stl::fallback_allocator_type<stl::stack_allocator_type<0x4000, stl::alignment_page_tag>,
+                                 stl::heap_allocator_type<stl::alignment_cache_line_tag>>
+      allocator;
+
+    assignment_type assign{ &allocator, cnf->num_variables, cnf->num_clauses };
 
     do {
-      Assignment(&assign, cnf, &random);
+      assign.RandomReset(cnf, &random);
 
-      const auto n = stl::I32(cnf->num_variables) + stl::I32(cnf->num_clauses);
+      const auto n = (stl::I32(cnf->num_variables) + stl::I32(cnf->num_clauses)) << 1;
       for (auto i = stl::I32(0); (!found && i < n); ++i) {
 
         assign.BestFlip(cnf, &random);
-        // assign.BestFlip(cnf);
 
         [[unlikely]] if (!assign.Score())
         {
 #pragma omp critical
           {
             found = true;
-            *result = std::move(assign);
+            *result = assign;
           }
           break;
         }
       }
     } while (!found);
-
-#ifdef SLS_OPTION_ALLOCATE_HEAP
-#ifndef SLS_OPTION_NO_FREE
-    free(assign);
-#endif
-#endif
   }
 }
 
-MI assignment_type
-SLS(const cnf_type* cnf) noexcept
+template<typename allocator_type>
+MI assignment_type<allocator_type>
+SLS(allocator_type* allocator, const cnf_type<allocator_type>* cnf) noexcept
 {
-  assignment_type result{ cnf->num_variables };
+  assignment_type<allocator_type> result{ allocator, 0, 0 };
   SLS(&result, cnf);
   return result;
 }
