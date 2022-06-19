@@ -37,7 +37,6 @@ stack_allocator_type<capacity, alignment_tag>::Free(memory_type<type_type> memor
   // sanitize
   [[maybe_unused]] const auto top_ = (void*)alignment_tag::align(top);
   [[maybe_unused]] const auto end_ = (void*)alignment_tag::align(&(memory.data[memory.count]));
-  Assert(top_ == end_, "Runtime Error: Invalid usage of StackAllocator. Can only free Memory on Top of the Stack!");
 
   top = (byte_type*)&(memory.data[0]);
 }
@@ -57,13 +56,13 @@ stack_allocator_type<capacity, alignment_tag>::ReAllocate(memory_type<type_type>
   // sanitize
   [[maybe_unused]] const auto top_ = (void*)alignment_tag::align(top);
   [[maybe_unused]] const auto end_ = (void*)alignment_tag::align(&(memory.data[memory.count * sizeof(type_type)]));
-  Assert(top_ == end_, "Runtime Error: Invalid usage of StackAllocator. Can only reallocate Memory on Top of the Stack!");
 
   if ((void*)&(memory.data[count * sizeof(type_type)]) > (void*)data.end())
     return {};
 
   memory.count = count;
-  top = (byte_type*) &(memory.data[count * sizeof(type_type)]);
+  top = (byte_type*)&(memory.data[count * sizeof(type_type)]);
+
   return memory;
 }
 

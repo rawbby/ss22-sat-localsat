@@ -84,10 +84,6 @@ cnf_type<allocator_type>::PostProcess() noexcept
 {
   stl::Assert(num_clauses == cnf_clauses.Count() - stl::Size(1), "Cnf was initialized with an invalid Number of Clauses!");
 
-  // for each sub vector create an index counter
-  auto i = stl::dynamic_array_type<stl::size_type, allocator_type>(allocator, num_literals);
-  i.View().MemSet(stl::I32(0));
-
   // initialize lookup data structures
   clause_index_buffer.Count(cnf_buffer.Count());
   literal_clauses.Count(num_literals + 1);
@@ -102,6 +98,10 @@ cnf_type<allocator_type>::PostProcess() noexcept
 
   auto clause_index = stl::Size(0);
   const auto clauses = cnf_clauses.Count() - 1;
+
+  // for each sub vector create an index counter
+  auto i = stl::dynamic_array_type<stl::size_type, allocator_type>(allocator, num_literals);
+  i.View().MemSet(stl::I32(0));
 
   for (auto c = stl::Size(0); c < clauses; ++c) {
     auto clause_begin = cnf_clauses[c];
