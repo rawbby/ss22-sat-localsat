@@ -6,126 +6,160 @@
 
 namespace sls {
 
+/*
+ * satisfy the iterator concept
+ */
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<const type_type>
+view_iter_type<type_type>::operator*() const noexcept
+{
+  return { &(data[range[0]]), range[1] - range[0] };
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<type_type>
+view_iter_type<type_type>::operator*() noexcept
+{
+  return { &(data[range[0]]), range[1] - range[0] };
+}
+
+template<typename type_type>
+[[maybe_unused]] constexpr inline view_iter_type<type_type>&
+view_iter_type<type_type>::operator++() noexcept
+{
+  range++;
+  return *this;
+}
+
+template<typename type_type>
+[[maybe_unused]] constexpr inline view_iter_type<type_type> // NOLINT(cert-dcl21-cpp)
+view_iter_type<type_type>::operator++(int) noexcept
+{
+  return { data, range++ };
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline bool
+view_iter_type<type_type>::operator==(const view_iter_type& other) const noexcept
+{
+  stl::Assert(data == other.data, "Invalid iterator comparison!");
+  return range == other.range;
+}
+
+template<typename type_type>
+[[maybe_unused]] [[nodiscard]] constexpr inline bool
+view_iter_type<type_type>::operator!=(const view_iter_type& other) const noexcept
+{
+  stl::Assert(data == other.data, "Invalid iterator comparison!");
+  return range != other.range;
+}
+
+/*
+ *
+ */
+
 [[maybe_unused]] inline void
 cnf_type::Push(literal_type literal) noexcept
 {
-  cnf.Push(literal);
-  *(num_clauses_for_literals.At(stl::Size(literal))) += stl::Size(1);
+  cnf_buffer.Push(literal);
+  ++literal_num_clauses[stl::Size(literal)];
 }
 
 [[maybe_unused]] inline void
 cnf_type::Push() noexcept
 {
-  cnf.Push();
+  cnf_clauses.Push(cnf_buffer.Count());
 }
 
 [[maybe_unused]] inline void
 cnf_type::PostProcess() noexcept
 {
-  stl::Assert(!num_clauses || num_clauses == cnf.Count(), "Cnf was initialized with an invalid Number of Clauses!");
-  num_clauses = cnf.Count();
+  stl::Assert(num_clauses == cnf_clauses.Count() - stl::Size(1), "Cnf was initialized with an invalid Number of Clauses!");
+  num_clauses = cnf_clauses.Count();
 
   // for each sub vector create an index counter
-  auto i = stl::StaticVector<stl::size_type, SLS_MAX_LITERALS>();
-  i.Count(num_literals);
+  auto i = stl::dynamic_array_type<stl::size_type, decltype(allocator)>(&allocator, num_literals);
   i.View().MemSet(stl::I32(0));
 
-  auto& n = num_clauses_for_literals;
-  auto m = num_literals;
+  // initialize lookup data structures
+  clause_index_buffer.Count(cnf_buffer.Count());
+  literal_clauses.Count(num_literals + 1);
 
-  {
-    // hack into cnf.vc
-    vc.buffer.Count(cnf.buffer.Count());
-    vc.ranges.Count(num_literals + stl::Size(1));
-    auto total_size = stl::Size(0);
-    for (auto j = stl::Size(0); j < m; ++j) {
-      total_size += *n.At(j);
-      *(vc.ranges.At(j + stl::Size(1))) = total_size;
+  // initialize literal clauses
+  auto total_size = stl::Size(0);
+  for (auto j = stl::Size(0); j < num_literals; ++j) {
+    total_size += literal_num_clauses[j];
+    literal_clauses[j + 1] = total_size;
+  }
+
+  auto clause_index = stl::Size(0);
+  const auto clauses = cnf_clauses.Count() - 1;
+
+  for (auto c = stl::Size(0); c < clauses; ++c) {
+    auto clause_begin = cnf_clauses[c];
+    auto clause_end = cnf_clauses[c+1];
+
+    for (auto l = clause_begin; l < clause_end; ++l) {
+      auto literal = cnf_buffer[l];
+
+      auto index = i[literal]++;
+      literal_clauses[literal + index] = clause_index;
     }
   }
 
-  {
-    auto clause_index = stl::Size(0);
+  for (auto clause : ClauseIterable()) {
+    const auto clause_end = clause.end();
 
-    for (auto clause : cnf) {
-      for (auto literal : clause) {
+    const auto last = clause_end - 1;
 
-        auto view = vc.At(literal);
-        auto index = (*i.At(literal))++;
+    for (auto clause_i = clause.begin(); clause_i != clause_end; clause_i++) {
 
-        *(view.At(index)) = clause_index;
-      }
-
-      clause_index += stl::Size(1);
+      auto literal = *clause_i;
+      auto index = i[literal]++;
+      literal_clauses[literal + index] = clause_index;
     }
+
+    clause_index += stl::Size(1);
   }
 }
 
 [[maybe_unused]] [[nodiscard]] inline stl::size_type
 cnf_type::NumResolvingClauses(literal_type literal) const noexcept
 {
-  return *(num_clauses_for_literals.At(literal));
+  return literal_num_clauses[literal];
 }
 
 [[maybe_unused]] [[nodiscard]] inline stl::view_type<const stl::size_type>
 cnf_type::ResolvingClauses(literal_type literal) const noexcept
 {
-  return vc.At(literal);
+  auto lower = literal_clauses[literal];
+  auto upper = literal_clauses[literal + 1];
+  return clause_index_buffer.View().Range(lower, upper);
 }
 
-[[maybe_unused]] [[nodiscard]] inline vector_stack_iter_type<literal_type>
-cnf_type::begin() noexcept
+MNI view_iterable_type<const literal_type>
+cnf_type::ClauseIterable() const noexcept
 {
-  return cnf.begin();
+  return { { cnf_buffer.begin(), cnf_clauses.begin() }, { cnf_buffer.begin(), cnf_clauses.end()-1 } };
 }
 
-[[maybe_unused]] [[nodiscard]] inline vector_stack_iter_type<literal_type>
-cnf_type::end() noexcept
+MNI view_iterable_type<literal_type>
+cnf_type::ClauseIterable() noexcept
 {
-  return cnf.end();
+  return { { cnf_buffer.begin(), cnf_clauses.begin() }, { cnf_buffer.begin(), cnf_clauses.end()-1 } };
 }
 
-//   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
-//  / ___|  / _ \  | \ | | / ___|  |_   _| |  _ \  | | | |  / ___| |_   _|  / _ \  |  _ \  / ___|
-// | |     | | | | |  \| | \___ \    | |   | |_) | | | | | | |       | |   | | | | | |_) | \___ \
-// | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
-//  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
-
-[[maybe_unused]] inline void
-Cnf(cnf_type* cnf, stl::size_type num_variables, stl::size_type num_clauses) noexcept
+MNI view_iterable_type<const stl::size_type>
+cnf_type::LiteralClausesIterable() const noexcept
 {
-  cnf->num_variables = num_variables;
-  cnf->num_literals = num_variables << 1;
-  cnf->num_clauses = num_clauses;
-
-  //stl::VectorStack(&cnf->cnf);
-  //stl::VectorStack(&cnf->vc);
-
-  cnf->cnf.Capacity(num_clauses);
-  cnf->num_clauses_for_literals.Count(cnf->num_literals);
-  cnf->num_clauses_for_literals.View().MemSet(stl::I32(0));
+  return { { clause_index_buffer.begin(), literal_clauses.begin() }, { clause_index_buffer.begin(), literal_clauses.end()-1 } };
 }
 
-[[maybe_unused]] inline void
-Cnf(cnf_type* cnf, stl::size_type num_variables) noexcept
+MNI view_iterable_type<stl::size_type>
+cnf_type::LiteralClausesIterable() noexcept
 {
-  Cnf(cnf, num_variables, stl::Size(0));
-}
-
-[[maybe_unused]] [[nodiscard]] inline cnf_type
-Cnf(stl::size_type num_variables, stl::size_type num_clauses) noexcept
-{
-  cnf_type cnf{};
-  Cnf(&cnf, num_variables, num_clauses);
-  return cnf;
-}
-
-[[maybe_unused]] [[nodiscard]] inline cnf_type
-Cnf(stl::size_type num_variables) noexcept
-{
-  cnf_type cnf{};
-  Cnf(&cnf, num_variables, stl::Size(0));
-  return cnf;
+  return { { clause_index_buffer.begin(), literal_clauses.begin() }, { clause_index_buffer.begin(), literal_clauses.end()-1 } };
 }
 
 }

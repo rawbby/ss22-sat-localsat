@@ -13,8 +13,8 @@ ReadChar(FILE* f)
   return c;
 }
 
-void
-ParseDimacs(FILE* f, cnf_type* cnf)
+cnf_type
+ParseDimacs(FILE* f)
 {
   char c;
 
@@ -43,7 +43,7 @@ ParseDimacs(FILE* f, cnf_type* cnf)
     num_clauses += c - '0';
   }
 
-  Cnf(cnf, num_variables, num_clauses);
+  cnf_type cnf{num_variables, num_clauses};
 
   int32_t literal;
   do {
@@ -61,8 +61,8 @@ ParseDimacs(FILE* f, cnf_type* cnf)
 
     [[unlikely]] if (!literal)
     {
-      cnf->Push();
-      [[unlikely]] if (cnf->cnf.Count() >= num_clauses) break;
+      cnf.Push();
+      [[unlikely]] if (cnf.cnf_clauses.Count() >= num_clauses) break;
     }
     else
     {
@@ -70,12 +70,14 @@ ParseDimacs(FILE* f, cnf_type* cnf)
       literal <<= 1;
       literal = sig ? literal : literal | 1;
 
-      cnf->Push(literal);
+      cnf.Push(literal);
     }
   } while (true);
 
   // Do not block the solver by freeing resources :-P
   // fclose(f);
+
+  return cnf;
 }
 
 }

@@ -16,28 +16,23 @@ SLS(assignment_type* result, const cnf_type* cnf) noexcept
     auto id = omp_get_thread_num();
     auto random = stl::Random(id);
 
-#ifndef SLS_OPTION_ALLOCATE_HEAP
-    assignment_type assign_;
-    assignment_type* assign = &assign_;
-#else
-    assignment_type* assign = static_cast<assignment_type*>(malloc(sizeof(assignment_type)));
-#endif
+    assignment_type assign{cnf->num_variables};
 
     do {
-      Assignment(assign, cnf, &random);
+      Assignment(&assign, cnf, &random);
 
       const auto n = stl::I32(cnf->num_variables) + stl::I32(cnf->num_clauses);
       for (auto i = stl::I32(0); (!found && i < n); ++i) {
 
-        assign->BestFlip(cnf, &random);
+        assign.BestFlip(cnf, &random);
         // assign.BestFlip(cnf);
 
-        [[unlikely]] if (!assign->Score())
+        [[unlikely]] if (!assign.Score())
         {
 #pragma omp critical
           {
             found = true;
-            std::swap(*result, *assign);
+            *result = std::move(assign);
           }
           break;
         }
@@ -55,7 +50,7 @@ SLS(assignment_type* result, const cnf_type* cnf) noexcept
 [[maybe_unused]] inline assignment_type
 SLS(const cnf_type* cnf) noexcept
 {
-  assignment_type result;
+  assignment_type result{cnf->num_variables};
   SLS(&result, cnf);
   return result;
 }

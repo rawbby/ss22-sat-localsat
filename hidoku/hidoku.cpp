@@ -72,7 +72,7 @@ struct hidoku_type
 
     cnf = sls::Cnf(num_variables, num_clauses);
 
-    // buffer for temporary / generated variables
+    // cnf_buffer for temporary / generated variables
     auto tmp_vars = stl::StaticVector<sls::literal_type, sls::SLS_MAX_LITERALS>();
 
     // at least every number

@@ -1,6 +1,7 @@
 #ifndef SLS_ASSIGNMENT_HPP
 #define SLS_ASSIGNMENT_HPP
 
+#include <stl/dynamic_array.hpp>
 #include <stl/random.hpp>
 #include <stl/static_vector.hpp>
 #include <stl/view.hpp>
@@ -10,63 +11,51 @@
 
 namespace sls {
 
-//  ____    _____    ____   _          _      ____       _      _____   ___    ___    _   _
-// |  _ \  | ____|  / ___| | |        / \    |  _ \     / \    |_   _| |_ _|  / _ \  | \ | |
-// | | | | |  _|   | |     | |       / _ \   | |_) |   / _ \     | |    | |  | | | | |  \| |
-// | |_| | | |___  | |___  | |___   / ___ \  |  _ <   / ___ \    | |    | |  | |_| | | |\  |
-// |____/  |_____|  \____| |_____| /_/   \_\ |_| \_\ /_/   \_\   |_|   |___|  \___/  |_| \_|
-
 struct assignment_type
 {
+#ifdef SLS_STATIC_ASSIGNMENT
   stl::static_vector_type<stl::b8_type, SLS_MAX_VARIABLES> assign;
   stl::static_vector_type<stl::size_type, SLS_MAX_CLAUSES> satisfied_counts;
+#else
+  stl::heap_allocator_type<stl::alignment_cache_line_tag> allocator;
+  stl::dynamic_array_type<stl::b8_type, decltype(allocator)> assign;
+  stl::dynamic_array_type<stl::b8_type, decltype(allocator)> satisfied_counts;
+#endif
+
   stl::size_type loop_offset;
 
-  //  __  __   _____   _____   _   _    ___    ____    ____
-  // |  \/  | | ____| |_   _| | | | |  / _ \  |  _ \  / ___|
-  // | |\/| | |  _|     | |   | |_| | | | | | | | | | \___ \
-  // | |  | | | |___    | |   |  _  | | |_| | | |_| |  ___) |
-  // |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
+  MI assignment_type(stl::size_type num_variables)
+    : allocator()
+    , assign(&allocator, num_variables)
+    , satisfied_counts(&allocator, num_variables << 1)
+    , loop_offset(0)
+  {
+  }
 
-  [[maybe_unused]] inline void Flip(const cnf_type* cnf, variable_type variable) noexcept;
-
-  [[maybe_unused]] inline void RandomFlip(const cnf_type* cnf, stl::random_type random) noexcept;
-
-  [[maybe_unused]] inline void BestFlip(const cnf_type* cnf) noexcept;
-
-  [[maybe_unused]] inline void BestFlip(const cnf_type* cnf, stl::random_type* random) noexcept;
-
-  [[maybe_unused]] inline void RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept;
-
-  [[maybe_unused]] inline void UpdateStats(const cnf_type* cnf) noexcept;
-
-  [[maybe_unused]] [[nodiscard]] inline float Score() noexcept;
-
-  [[maybe_unused]] [[nodiscard]] inline stl::size_type FlipStat(const cnf_type* cnf, variable_type variable) noexcept;
+  MI void Flip(const cnf_type* cnf, variable_type variable) noexcept;
+  MI void RandomFlip(const cnf_type* cnf, stl::random_type random) noexcept;
+  MI void BestFlip(const cnf_type* cnf) noexcept;
+  MI void BestFlip(const cnf_type* cnf, stl::random_type* random) noexcept;
+  MI void RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept;
+  MI void UpdateStats(const cnf_type* cnf) noexcept;
+  MNI float Score() noexcept;
+  MNI stl::size_type FlipStat(const cnf_type* cnf, variable_type variable) noexcept;
 
   // === iterator support ===
-
-  [[maybe_unused]] [[nodiscard]] inline stl::i8_type* begin() noexcept;
-
-  [[maybe_unused]] [[nodiscard]] inline stl::i8_type* end() noexcept;
+  MNI stl::i8_type* begin() noexcept;
+  MNI stl::i8_type* end() noexcept;
 };
 
-//   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
-//  / ___|  / _ \  | \ | | / ___|  |_   _| |  _ \  | | | |  / ___| |_   _|  / _ \  |  _ \  / ___|
-// | |     | | | | |  \| | \___ \    | |   | |_) | | | | | | |       | |   | | | | | |_) | \___ \
-// | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
-//  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
-
-[[maybe_unused]] inline void
+MI void
 Assignment(assignment_type* assign, const cnf_type* cnf) noexcept;
 
-[[maybe_unused]] [[nodiscard]] inline assignment_type
+MNI assignment_type
 Assignment(const cnf_type* cnf) noexcept;
 
-[[maybe_unused]] inline void
+MI void
 Assignment(assignment_type* assign, const cnf_type* cnf, stl::random_type* random) noexcept;
 
-[[maybe_unused]] [[nodiscard]] inline assignment_type
+MNI assignment_type
 Assignment(const cnf_type* cnf, stl::random_type* random) noexcept;
 
 }

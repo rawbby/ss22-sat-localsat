@@ -25,10 +25,23 @@ struct dynamic_array_type
   {
   }
 
+  MI dynamic_array_type(dynamic_array_type&& array)
+    : allocator(array.allocator)
+    , data(array.data)
+  {
+    array.data = memory_type<type_type>();
+  }
+
   MI ~dynamic_array_type() noexcept
   {
     if (data.data)
       allocator->Free(data);
+  }
+
+  MI dynamic_array_type<type_type, allocator_type>& operator=(dynamic_array_type&& array){
+    std::swap(allocator, array.allocator);
+    std::swap(data, array.data);
+    return *this;
   }
 
   // satisfy the viewable concept

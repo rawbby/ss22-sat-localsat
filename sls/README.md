@@ -16,7 +16,7 @@ Specifies the upper bound for container storing clauses.\
 _Note: By default this value is set to 5 times SLS_MAX_VARIABLES._
 
 **SLS_OPTION\_MAX\_CNF\_LITERALS**\
-Specifies the upper bound for buffer storing all literals of a cnf.\
+Specifies the upper bound for cnf_buffer storing all literals of a cnf.\
 _Note: By default this value is set to 5 times SLS_MAX_CLAUSES._
 
 **SLS_OPTION\_ALLOCATE\_HEAP**\

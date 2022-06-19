@@ -2,7 +2,6 @@
 #define SLS_CNF_EXTENDED_HPP
 
 #include "def.hpp"
-#include "vector_stack.hpp"
 
 #include <stl/dynamic_vector.hpp>
 #include <stl/static_vector.hpp>
@@ -13,73 +12,177 @@
 
 namespace sls {
 
-//  ____    _____    ____   _          _      ____       _      _____   ___    ___    _   _
-// |  _ \  | ____|  / ___| | |        / \    |  _ \     / \    |_   _| |_ _|  / _ \  | \ | |
-// | | | | |  _|   | |     | |       / _ \   | |_) |   / _ \     | |    | |  | | | | |  \| |
-// | |_| | | |___  | |___  | |___   / ___ \  |  _ <   / ___ \    | |    | |  | |_| | | |\  |
-// |____/  |_____|  \____| |_____| /_/   \_\ |_| \_\ /_/   \_\   |_|   |___|  \___/  |_| \_|
+/*
+ * dynamic range vector iterator declaration
+ */
+
+template<typename type_type>
+struct view_iter_type
+{
+  type_type* data;
+  const stl::size_type* range;
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_iter_type(const view_iter_type& iter) noexcept
+    : data(iter.data)
+    , range(iter.range)
+  {
+  }
+
+  [[maybe_unused]] [[nodiscard]] constexpr inline view_iter_type(type_type* data, const stl::size_type* range) noexcept
+    : data(data)
+    , range(range)
+  {
+  }
+
+  // satisfy the iterator concept
+  [[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<const type_type> operator*() const noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<type_type> operator*() noexcept;
+  [[maybe_unused]] constexpr inline view_iter_type<type_type>& operator++() noexcept;
+  [[maybe_unused]] constexpr inline view_iter_type<type_type> operator++(int) noexcept; // NOLINT(cert-dcl21-cpp)
+  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator==(const view_iter_type& other) const noexcept;
+  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator!=(const view_iter_type& other) const noexcept;
+};
+
+template<typename type_type>
+struct view_iterable_type
+{
+  view_iter_type<type_type> _begin;
+  view_iter_type<type_type> _end;
+
+  MI view_iterable_type(view_iter_type<type_type> begin, view_iter_type<type_type> end)
+    : _begin(begin)
+    , _end(end)
+  {
+  }
+
+  // === iterator support ===
+  MNI view_iter_type<const literal_type> begin() const noexcept { return _begin; }
+  MNI view_iter_type<const literal_type> end() const noexcept { return _end; }
+  MNI view_iter_type<literal_type> begin() noexcept { return _begin; }
+  MNI view_iter_type<literal_type> end() noexcept { return _end; }
+};
 
 struct cnf_type
 {
-  using cnf_stack_type = vector_stack_type<literal_type, stl::dynamic_vector_type<literal_type>, stl::dynamic_vector_type<stl::size_type>>;
-  using literal_clause_lookup_type = vector_stack_type<stl::size_type, stl::dynamic_vector_type<stl::size_type>, stl::dynamic_vector_type<stl::size_type>>;
-  using clause_count_type = stl::dynamic_vector_type<stl::size_type>;
-
-  // base cnf formula
-  cnf_stack_type cnf;
-
-  // statistical lookup
-  literal_clause_lookup_type vc;
-  clause_count_type num_clauses_for_literals;
+#ifdef SLS_STATIC_ASSIGNMENT
+  stl::static_vector_type<literal_type, SLS_MAX_CNF_LITERALS> cnf_buffer;
+  stl::static_vector_type<stl::size_type, SLS_MAX_CLAUSES + Size(1)> cnf_clauses;
+  stl::static_vector_type<stl::size_type, SLS_MAX_CLAUSES> clause_index_buffer;
+  stl::static_vector_type<stl::size_type, SLS_MAX_LITERALS + Size(1)> literal_clauses;
+  stl::static_vector_type<stl::size_type, SLS_MAX_LITERALS> literal_num_clauses;
+#else
+  stl::heap_allocator_type<stl::alignment_cache_line_tag> allocator;
+  stl::dynamic_vector_type<literal_type, decltype(allocator)> cnf_buffer;
+  stl::dynamic_vector_type<stl::size_type, decltype(allocator)> cnf_clauses;
+  stl::dynamic_vector_type<stl::size_type, decltype(allocator)> clause_index_buffer;
+  stl::dynamic_vector_type<stl::size_type, decltype(allocator)> literal_clauses;
+  stl::dynamic_vector_type<stl::size_type, decltype(allocator)> literal_num_clauses;
+#endif
 
   stl::size_type num_variables;
   stl::size_type num_literals;
   stl::size_type num_clauses;
 
-  //  __  __   _____   _____   _   _    ___    ____    ____
-  // |  \/  | | ____| |_   _| | | | |  / _ \  |  _ \  / ___|
-  // | |\/| | |  _|     | |   | |_| | | | | | | | | | \___ \
-  // | |  | | | |___    | |   |  _  | | |_| | | |_| |  ___) |
-  // |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
+#ifdef SLS_STATIC_ASSIGNMENT
+  cnf_type(stl::size_type num_variables, stl::size_type num_clauses)
+    : cnf_buffer()
+    , cnf_clauses()
+    , clause_index_buffer()
+    , literal_clauses()
+    , literal_num_clauses()
+    , num_variables(num_variables)
+    , num_literals(num_variables << 1)
+    , num_clauses(num_clauses)
+  {
+  }
+
+  cnf_type(cnf_type&& cnf)
+    : cnf_buffer()
+    , cnf_clauses()
+    , clause_index_buffer()
+    , literal_clauses()
+    , literal_num_clauses()
+    , num_variables(0)
+    , num_literals(0)
+    , num_clauses(0)
+  {
+    *this = std::move(cnf);
+  }
+
+  cnf_type& operator=(cnf_type&& other)
+  {
+    std::swap(cnf_buffer, other.cnf_buffer);
+    std::swap(cnf_clauses, other.cnf_clauses);
+    std::swap(clause_index_buffer, other.clause_index_buffer);
+    std::swap(literal_clauses, other.literal_clauses);
+    std::swap(literal_num_clauses, other.literal_num_clauses);
+    std::swap(num_variables, other.num_variables);
+    std::swap(num_literals, other.num_literals);
+    std::swap(num_clauses, other.num_clauses);
+    return *this;
+  }
+#else
+  cnf_type(stl::size_type num_variables, stl::size_type num_clauses)
+    : allocator()
+    , cnf_buffer(&allocator)
+    , cnf_clauses(&allocator)
+    , clause_index_buffer(&allocator)
+    , literal_clauses(&allocator)
+    , literal_num_clauses(&allocator)
+    , num_variables(num_variables)
+    , num_literals(num_variables << 1)
+    , num_clauses(num_clauses)
+  {
+    cnf_clauses.Capacity(num_clauses);
+    literal_clauses.Count(num_literals);
+    literal_num_clauses.Count(num_literals);
+    literal_num_clauses.View().MemSet(stl::I32(0));
+  }
+
+  cnf_type(cnf_type&& cnf)
+    : allocator()
+    , cnf_buffer(&allocator)
+    , cnf_clauses(&allocator)
+    , clause_index_buffer(&allocator)
+    , literal_clauses(&allocator)
+    , literal_num_clauses(&allocator)
+    , num_variables(0)
+    , num_literals(0)
+    , num_clauses(0)
+  {
+    *this = std::move(cnf);
+  }
+
+  cnf_type& operator=(cnf_type&& other)
+  {
+    std::swap(allocator, other.allocator);
+    std::swap(cnf_buffer, other.cnf_buffer);
+    std::swap(cnf_clauses, other.cnf_clauses);
+    std::swap(clause_index_buffer, other.clause_index_buffer);
+    std::swap(literal_clauses, other.literal_clauses);
+    std::swap(literal_num_clauses, other.literal_num_clauses);
+    std::swap(num_variables, other.num_variables);
+    std::swap(num_literals, other.num_literals);
+    std::swap(num_clauses, other.num_clauses);
+    return *this;
+  }
+#endif
 
   // === build methods ===
-
-  [[maybe_unused]] inline void Push(literal_type literal) noexcept;
-
-  [[maybe_unused]] inline void Push() noexcept;
-
-  [[maybe_unused]] inline void PostProcess() noexcept;
+  MI void Push(literal_type literal) noexcept;
+  MI void Push() noexcept;
+  MI void PostProcess() noexcept;
 
   // === statistic methods ===
+  MNI stl::size_type NumResolvingClauses(literal_type literal) const noexcept;
+  MNI stl::view_type<const stl::size_type> ResolvingClauses(literal_type literal) const noexcept;
 
-  [[maybe_unused]] [[nodiscard]] inline stl::size_type NumResolvingClauses(literal_type literal) const noexcept;
-
-  [[maybe_unused]] [[nodiscard]] inline stl::view_type<const stl::size_type> ResolvingClauses(literal_type literal) const noexcept;
-
-  // ==- iterator support ===
-
-  [[maybe_unused]] [[nodiscard]] inline vector_stack_iter_type<literal_type> begin() noexcept;
-
-  [[maybe_unused]] [[nodiscard]] inline vector_stack_iter_type<literal_type> end() noexcept;
+  // === iterable components
+  MNI view_iterable_type<const literal_type> ClauseIterable() const noexcept;
+  MNI view_iterable_type<literal_type> ClauseIterable() noexcept;
+  MNI view_iterable_type<const stl::size_type> LiteralClausesIterable() const noexcept;
+  MNI view_iterable_type<stl::size_type> LiteralClausesIterable() noexcept;
 };
-
-//   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
-//  / ___|  / _ \  | \ | | / ___|  |_   _| |  _ \  | | | |  / ___| |_   _|  / _ \  |  _ \  / ___|
-// | |     | | | | |  \| | \___ \    | |   | |_) | | | | | | |       | |   | | | | | |_) | \___ \
-// | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
-//  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
-
-[[maybe_unused]] inline void
-Cnf(cnf_type* cnf, stl::size_type num_variables, stl::size_type num_clauses) noexcept;
-
-[[maybe_unused]] inline void
-Cnf(cnf_type* cnf, stl::size_type num_variables) noexcept;
-
-[[maybe_unused]] [[nodiscard]] inline cnf_type
-Cnf(stl::size_type num_variables, stl::size_type num_clauses) noexcept;
-
-[[maybe_unused]] [[nodiscard]] inline cnf_type
-Cnf(stl::size_type num_variables) noexcept;
 
 }
 

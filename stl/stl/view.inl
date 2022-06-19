@@ -56,14 +56,14 @@ view_type<type_type>::operator[](size_type index) noexcept
  */
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
 view_type<type_type>::begin() const noexcept
 {
-  return At(0);
+  return &(data[0]);
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
 view_type<type_type>::end() const noexcept
 {
   return &(data[Count()]);
@@ -73,7 +73,7 @@ template<typename type_type>
 [[maybe_unused]] [[nodiscard]] constexpr inline type_type*
 view_type<type_type>::begin() noexcept
 {
-  return At(0);
+  return &(data[0]);
 }
 
 template<typename type_type>

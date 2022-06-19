@@ -17,33 +17,34 @@ template<typename T>
 MNI T*
 aligned_alloc(size_type count, size_type alignment)
 {
-#ifdef WIN32
-  return (T*)_aligned_malloc(count * sizeof(T), alignment);
-#else
-  return (T*)std::aligned_alloc(alignment, count * sizeof(T));
-#endif
+//#ifdef WIN32
+//  return (T*)_aligned_malloc(count * sizeof(T), alignment);
+//#else
+//  return (T*)std::aligned_alloc(alignment, count * sizeof(T));
+  return (T*)std::malloc(count * sizeof(T));
+//#endif
 }
 
 template<typename T>
 MI void
 aligned_free(T* data)
 {
-#ifdef WIN32
-  _aligned_free(data);
-#else
+//#ifdef WIN32
+//  _aligned_free(data);
+//#else
   std::free(data);
-#endif
+//#endif
 }
 
 template<typename T>
 MI T*
 aligned_realloc(T* data, size_type count, size_type alignment)
 {
-#ifdef WIN32
-  return (T*)_aligned_realloc(data, count * sizeof(T), alignment);
-#else
+//#ifdef WIN32
+//  return (T*)_aligned_realloc(data, count * sizeof(T), alignment);
+//#else
   return (T*)std::realloc(data, count * sizeof(T)); // TODO is alignment lost?
-#endif
+//#endif
 }
 
 }
