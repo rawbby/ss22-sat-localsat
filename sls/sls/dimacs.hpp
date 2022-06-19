@@ -62,7 +62,8 @@ ParseDimacs(FILE* f)
     [[unlikely]] if (!literal)
     {
       cnf.Push();
-      [[unlikely]] if (cnf.cnf_clauses.Count() >= num_clauses) break;
+      [[unlikely]] if (cnf.cnf_clauses.Count() - 1 >= num_clauses)
+        break;
     }
     else
     {

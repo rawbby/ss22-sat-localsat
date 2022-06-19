@@ -72,22 +72,6 @@ struct dynamic_vector_type
   MI void Remove(size_type index) noexcept;
 };
 
-/*
- * factories
- */
-
-template<typename type_type, typename allocator_type = heap_allocator_type<alignment_no_tag>>
-[[maybe_unused]] inline void
-DynamicVector(dynamic_vector_type<type_type, allocator_type>* vector, allocator_type* allocator, size_type initial_capacity) noexcept;
-
-template<typename type_type, typename allocator_type = heap_allocator_type<alignment_no_tag>>
-[[maybe_unused]] [[nodiscard]] inline dynamic_vector_type<type_type, allocator_type>
-DynamicVector(allocator_type* allocator) noexcept;
-
-template<typename type_type, typename allocator_type = heap_allocator_type<alignment_no_tag>>
-[[maybe_unused]] [[nodiscard]] inline dynamic_vector_type<type_type, allocator_type>
-DynamicVector(allocator_type* allocator, size_type initial_capacity) noexcept;
-
 }
 
 // include implementation

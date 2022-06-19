@@ -15,7 +15,7 @@ int
 main()
 {
   auto allocator = stl::heap_allocator_type();
-  auto vector = stl::DynamicVector<stl::size_type>(&allocator);
+  auto vector = stl::dynamic_vector_type<stl::size_type>(&allocator);
   stl::Assert(vector.Count() == 0, TEST_FAILURE_MESSAGE());
 
   TestPush(vector, 1);

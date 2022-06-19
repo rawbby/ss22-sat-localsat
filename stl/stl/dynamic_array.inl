@@ -30,28 +30,28 @@ template<typename type_type, typename allocator_type>
 MNI const type_type*
 dynamic_array_type<type_type, allocator_type>::begin() const noexcept
 {
-  return View().At(0);
+  return View().begin();
 }
 
 template<typename type_type, typename allocator_type>
 MNI const type_type*
 dynamic_array_type<type_type, allocator_type>::end() const noexcept
 {
-  return View().At(data.count);
+  return View().end();
 }
 
 template<typename type_type, typename allocator_type>
 MNI type_type*
 dynamic_array_type<type_type, allocator_type>::begin() noexcept
 {
-  return View().At(0);
+  return View().begin();
 }
 
 template<typename type_type, typename allocator_type>
 MNI type_type*
 dynamic_array_type<type_type, allocator_type>::end() noexcept
 {
-  return View().At(data.count);
+  return View().end();
 }
 
 template<typename type_type, typename allocator_type>

@@ -88,6 +88,7 @@ cnf_type::PostProcess() noexcept
 
   // initialize literal clauses
   auto total_size = stl::Size(0);
+  literal_clauses[0] = total_size;
   for (auto j = stl::Size(0); j < num_literals; ++j) {
     total_size += literal_num_clauses[j];
     literal_clauses[j + 1] = total_size;
@@ -98,29 +99,15 @@ cnf_type::PostProcess() noexcept
 
   for (auto c = stl::Size(0); c < clauses; ++c) {
     auto clause_begin = cnf_clauses[c];
-    auto clause_end = cnf_clauses[c+1];
+    auto clause_end = cnf_clauses[c + 1];
 
     for (auto l = clause_begin; l < clause_end; ++l) {
       auto literal = cnf_buffer[l];
 
-      auto index = i[literal]++;
-      literal_clauses[literal + index] = clause_index;
+      auto offset = i[literal]++;
+      auto index = literal_clauses[literal];
+      clause_index_buffer[index + offset] = clause_index;
     }
-  }
-
-  for (auto clause : ClauseIterable()) {
-    const auto clause_end = clause.end();
-
-    const auto last = clause_end - 1;
-
-    for (auto clause_i = clause.begin(); clause_i != clause_end; clause_i++) {
-
-      auto literal = *clause_i;
-      auto index = i[literal]++;
-      literal_clauses[literal + index] = clause_index;
-    }
-
-    clause_index += stl::Size(1);
   }
 }
 
@@ -141,25 +128,25 @@ cnf_type::ResolvingClauses(literal_type literal) const noexcept
 MNI view_iterable_type<const literal_type>
 cnf_type::ClauseIterable() const noexcept
 {
-  return { { cnf_buffer.begin(), cnf_clauses.begin() }, { cnf_buffer.begin(), cnf_clauses.end()-1 } };
+  return { { cnf_buffer.begin(), cnf_clauses.begin() }, { cnf_buffer.begin(), cnf_clauses.end() - 1 } };
 }
 
 MNI view_iterable_type<literal_type>
 cnf_type::ClauseIterable() noexcept
 {
-  return { { cnf_buffer.begin(), cnf_clauses.begin() }, { cnf_buffer.begin(), cnf_clauses.end()-1 } };
+  return { { cnf_buffer.begin(), cnf_clauses.begin() }, { cnf_buffer.begin(), cnf_clauses.end() - 1 } };
 }
 
 MNI view_iterable_type<const stl::size_type>
 cnf_type::LiteralClausesIterable() const noexcept
 {
-  return { { clause_index_buffer.begin(), literal_clauses.begin() }, { clause_index_buffer.begin(), literal_clauses.end()-1 } };
+  return { { clause_index_buffer.begin(), literal_clauses.begin() }, { clause_index_buffer.begin(), literal_clauses.end() - 1 } };
 }
 
 MNI view_iterable_type<stl::size_type>
 cnf_type::LiteralClausesIterable() noexcept
 {
-  return { { clause_index_buffer.begin(), literal_clauses.begin() }, { clause_index_buffer.begin(), literal_clauses.end()-1 } };
+  return { { clause_index_buffer.begin(), literal_clauses.begin() }, { clause_index_buffer.begin(), literal_clauses.end() - 1 } };
 }
 
 }

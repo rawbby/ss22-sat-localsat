@@ -1,11 +1,12 @@
 #include "test_util.hpp"
 
-#include <stl/dynamic_vector.hpp>
+#include <stl/vector.hpp>
 
-template<typename vector_type>
+template<typename vector_type, typename type_type>
 void
 TestPush(vector_type& vector, stl::size_type index)
 {
+  static_assert(stl::vector_concept<type_type, vector_type>);
   vector.Push(index);
   stl::Assert(vector.Count() == index, TEST_FAILURE_MESSAGE());
   stl::Assert(*vector.Peak() == index, TEST_FAILURE_MESSAGE());
@@ -21,7 +22,7 @@ main()
   stl::Assert(vector.Count() == 0, TEST_FAILURE_MESSAGE());
 
   for (stl::size_type i = 1; i < 0x4000; ++i)
-    TestPush(vector, i);
+    TestPush<decltype(vector), stl::size_type>(vector, i);
 
   auto view = vector.View();
   auto i = stl::Size(1);

@@ -196,39 +196,6 @@ dynamic_vector_type<type_type, allocator_type>::Remove(size_type index) noexcept
   Pop();
 }
 
-/*
- * factories
- */
-
-template<typename type_type, typename allocator_type>
-[[maybe_unused]] inline void
-DynamicVector(dynamic_vector_type<type_type, allocator_type>* vector, allocator_type* allocator, size_type initial_capacity) noexcept
-{
-  vector->data = {};
-  vector->count = Size(0);
-
-  vector->allocator = allocator;
-  vector->Capacity(initial_capacity);
-}
-
-template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline dynamic_vector_type<type_type, allocator_type>
-DynamicVector(allocator_type* allocator) noexcept
-{
-  dynamic_vector_type<type_type, allocator_type> vector;
-  DynamicVector(&vector, allocator, Size(0));
-  return vector;
-}
-
-template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline dynamic_vector_type<type_type, allocator_type>
-DynamicVector(allocator_type* allocator, size_type initial_capacity) noexcept
-{
-  dynamic_vector_type<type_type, allocator_type> vector;
-  DynamicVector(&vector, allocator, initial_capacity);
-  return vector;
-}
-
 }
 
 #endif

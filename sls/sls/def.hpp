@@ -37,7 +37,7 @@ STL_DEFINE_INTEGRAL_CONSTRUCTOR(stl::i16_type, variable_type, Var)
 [[maybe_unused]] [[nodiscard]] constexpr inline literal_type
 Lit(variable_type var, stl::i8_type sign) noexcept
 {
-  stl::Assert(var < SLS_MAX_VARIABLES, "Invalid Variable passed!");
+  // stl::Assert(var < SLS_MAX_VARIABLES, "Invalid Variable passed!");
   auto literal = static_cast<literal_type>((var << 1) | sign);
   return literal;
 }

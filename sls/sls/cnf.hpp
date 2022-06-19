@@ -137,6 +137,10 @@ struct cnf_type
     literal_clauses.Count(num_literals);
     literal_num_clauses.Count(num_literals);
     literal_num_clauses.View().MemSet(stl::I32(0));
+
+    // initialize the lower bound
+    // of the range vectors
+    cnf_clauses.Push(0);
   }
 
   cnf_type(cnf_type&& cnf)
