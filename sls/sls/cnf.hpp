@@ -22,25 +22,25 @@ struct view_iter_type
   type_type* data;
   const stl::size_type* range;
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_iter_type(const view_iter_type& iter) noexcept
+  MNCI view_iter_type(const view_iter_type& iter) noexcept
     : data(iter.data)
     , range(iter.range)
   {
   }
 
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_iter_type(type_type* data, const stl::size_type* range) noexcept
+  MNCI view_iter_type(type_type* data, const stl::size_type* range) noexcept
     : data(data)
     , range(range)
   {
   }
 
   // satisfy the iterator concept
-  [[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<const type_type> operator*() const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<type_type> operator*() noexcept;
-  [[maybe_unused]] constexpr inline view_iter_type<type_type>& operator++() noexcept;
-  [[maybe_unused]] constexpr inline view_iter_type<type_type> operator++(int) noexcept; // NOLINT(cert-dcl21-cpp)
-  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator==(const view_iter_type& other) const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline bool operator!=(const view_iter_type& other) const noexcept;
+  MNCI stl::view_type<const type_type> operator*() const noexcept;
+  MNCI stl::view_type<type_type> operator*() noexcept;
+  MCI view_iter_type<type_type>& operator++() noexcept;
+  MCI view_iter_type<type_type> operator++(int) noexcept; // NOLINT(cert-dcl21-cpp)
+  MNCI bool operator==(const view_iter_type& other) const noexcept;
+  MNCI bool operator!=(const view_iter_type& other) const noexcept;
 };
 
 template<typename type_type>
@@ -64,64 +64,17 @@ struct view_iterable_type
 
 struct cnf_type
 {
-#ifdef SLS_STATIC_ASSIGNMENT
-  stl::static_vector_type<literal_type, SLS_MAX_CNF_LITERALS> cnf_buffer;
-  stl::static_vector_type<stl::size_type, SLS_MAX_CLAUSES + Size(1)> cnf_clauses;
-  stl::static_vector_type<stl::size_type, SLS_MAX_CLAUSES> clause_index_buffer;
-  stl::static_vector_type<stl::size_type, SLS_MAX_LITERALS + Size(1)> literal_clauses;
-  stl::static_vector_type<stl::size_type, SLS_MAX_LITERALS> literal_num_clauses;
-#else
   stl::heap_allocator_type<stl::alignment_cache_line_tag> allocator;
   stl::dynamic_vector_type<literal_type, decltype(allocator)> cnf_buffer;
   stl::dynamic_vector_type<stl::size_type, decltype(allocator)> cnf_clauses;
   stl::dynamic_vector_type<stl::size_type, decltype(allocator)> clause_index_buffer;
   stl::dynamic_vector_type<stl::size_type, decltype(allocator)> literal_clauses;
   stl::dynamic_vector_type<stl::size_type, decltype(allocator)> literal_num_clauses;
-#endif
 
   stl::size_type num_variables;
   stl::size_type num_literals;
   stl::size_type num_clauses;
 
-#ifdef SLS_STATIC_ASSIGNMENT
-  cnf_type(stl::size_type num_variables, stl::size_type num_clauses)
-    : cnf_buffer()
-    , cnf_clauses()
-    , clause_index_buffer()
-    , literal_clauses()
-    , literal_num_clauses()
-    , num_variables(num_variables)
-    , num_literals(num_variables << 1)
-    , num_clauses(num_clauses)
-  {
-  }
-
-  cnf_type(cnf_type&& cnf)
-    : cnf_buffer()
-    , cnf_clauses()
-    , clause_index_buffer()
-    , literal_clauses()
-    , literal_num_clauses()
-    , num_variables(0)
-    , num_literals(0)
-    , num_clauses(0)
-  {
-    *this = std::move(cnf);
-  }
-
-  cnf_type& operator=(cnf_type&& other)
-  {
-    std::swap(cnf_buffer, other.cnf_buffer);
-    std::swap(cnf_clauses, other.cnf_clauses);
-    std::swap(clause_index_buffer, other.clause_index_buffer);
-    std::swap(literal_clauses, other.literal_clauses);
-    std::swap(literal_num_clauses, other.literal_num_clauses);
-    std::swap(num_variables, other.num_variables);
-    std::swap(num_literals, other.num_literals);
-    std::swap(num_clauses, other.num_clauses);
-    return *this;
-  }
-#else
   cnf_type(stl::size_type num_variables, stl::size_type num_clauses)
     : allocator()
     , cnf_buffer(&allocator)
@@ -170,7 +123,6 @@ struct cnf_type
     std::swap(num_clauses, other.num_clauses);
     return *this;
   }
-#endif
 
   // === build methods ===
   MI void Push(literal_type literal) noexcept;

@@ -13,28 +13,28 @@ STL_DEFINE_INTEGRAL_CONSTRUCTOR(stl::i16_type, variable_type, Var)
 
 #ifndef SLS_OPTION_MAX_VARIABLES
 /// 64 bytes = 32 literals => 12 cache lines
-[[maybe_unused]] constexpr auto SLS_MAX_VARIABLES = stl::Size(384);
+MCI auto SLS_MAX_VARIABLES = stl::Size(384);
 #else
-[[maybe_unused]] constexpr auto SLS_MAX_VARIABLES = stl::Size(SLS_OPTION_MAX_VARIABLES);
+MCI auto SLS_MAX_VARIABLES = stl::Size(SLS_OPTION_MAX_VARIABLES);
 #endif
 
-[[maybe_unused]] constexpr auto SLS_MAX_LITERALS = SLS_MAX_VARIABLES * stl::Size(2);
+MCI auto SLS_MAX_LITERALS = SLS_MAX_VARIABLES * stl::Size(2);
 
 #ifndef SLS_OPTION_MAX_CLAUSES
 /// approx 5 x SLS_MAX_VARIABLES
-[[maybe_unused]] constexpr auto SLS_MAX_CLAUSES = SLS_MAX_VARIABLES * stl::Size(5);
+MCI auto SLS_MAX_CLAUSES = SLS_MAX_VARIABLES * stl::Size(5);
 #else
-[[maybe_unused]] constexpr auto SLS_MAX_CLAUSES = stl::Size(SLS_OPTION_MAX_CLAUSES);
+MCI auto SLS_MAX_CLAUSES = stl::Size(SLS_OPTION_MAX_CLAUSES);
 #endif
 
 #ifndef SLS_OPTION_MAX_CNF_LITERALS
 /// approx 5 literals per clause; 64 bytes = 32 literals => 300 cache lines
-[[maybe_unused]] constexpr auto SLS_MAX_CNF_LITERALS = SLS_MAX_CLAUSES * stl::Size(5);
+MCI auto SLS_MAX_CNF_LITERALS = SLS_MAX_CLAUSES * stl::Size(5);
 #else
-[[maybe_unused]] constexpr auto SLS_MAX_CNF_LITERALS = stl::Size(SLS_OPTION_MAX_CNF_LITERALS);
+MCI auto SLS_MAX_CNF_LITERALS = stl::Size(SLS_OPTION_MAX_CNF_LITERALS);
 #endif
 
-[[maybe_unused]] [[nodiscard]] constexpr inline literal_type
+MNCI literal_type
 Lit(variable_type var, stl::i8_type sign) noexcept
 {
   // stl::Assert(var < SLS_MAX_VARIABLES, "Invalid Variable passed!");

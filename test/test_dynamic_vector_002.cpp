@@ -10,8 +10,8 @@ TestPush(vector_type& vector, stl::size_type index)
   vector.Push(index);
   stl::Assert(vector.Count() == index, TEST_FAILURE_MESSAGE());
   stl::Assert(*vector.Peak() == index, TEST_FAILURE_MESSAGE());
-  stl::Assert(vector[vector.Count()-1] == index, TEST_FAILURE_MESSAGE());
-  stl::Assert(*(vector.end()-1) == index, TEST_FAILURE_MESSAGE());
+  stl::Assert(vector[vector.Count() - 1] == index, TEST_FAILURE_MESSAGE());
+  stl::Assert(*(vector.end() - 1) == index, TEST_FAILURE_MESSAGE());
 }
 
 int

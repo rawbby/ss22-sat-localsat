@@ -12,35 +12,35 @@ namespace stl {
  */
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline size_type
+MNCI size_type
 static_vector_type<type_type, capacity>::Count() const noexcept
 {
   return View().Count();
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
+MNCI const type_type*
 static_vector_type<type_type, capacity>::At(size_type index) const noexcept
 {
   return View().At(index);
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+MNCI type_type*
 static_vector_type<type_type, capacity>::At(size_type index) noexcept
 {
   return View().At(index);
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type&
+MNCI const type_type&
 static_vector_type<type_type, capacity>::operator[](size_type index) const noexcept
 {
   return View()[index];
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type&
+MNCI type_type&
 static_vector_type<type_type, capacity>::operator[](size_type index) noexcept
 {
   return View()[index];
@@ -51,28 +51,28 @@ static_vector_type<type_type, capacity>::operator[](size_type index) noexcept
  */
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
+MNCI const type_type*
 static_vector_type<type_type, capacity>::begin() const noexcept
 {
   return View().begin();
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
+MNCI const type_type*
 static_vector_type<type_type, capacity>::end() const noexcept
 {
   return View().end();
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+MNCI type_type*
 static_vector_type<type_type, capacity>::begin() noexcept
 {
   return View().begin();
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+MNCI type_type*
 static_vector_type<type_type, capacity>::end() noexcept
 {
   return View().end();
@@ -83,14 +83,14 @@ static_vector_type<type_type, capacity>::end() noexcept
  */
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+MNCI view_type<type_type>
 static_vector_type<type_type, capacity>::View() noexcept
 {
   return { &(data[0]), count };
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+MNCI view_type<const type_type>
 static_vector_type<type_type, capacity>::View() const noexcept
 {
   return { &(data[0]), count };
@@ -138,14 +138,14 @@ static_vector_type<type_type, capacity>::Pop() noexcept
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
+MNCI const type_type*
 static_vector_type<type_type, capacity>::Peak() const noexcept
 {
   return At(Count() - Size(1));
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+MNCI type_type*
 static_vector_type<type_type, capacity>::Peak() noexcept
 {
   return At(Count() - Size(1));
@@ -171,7 +171,7 @@ StaticVector(static_vector_type<type_type, capacity>* vector) noexcept
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline static_vector_type<type_type, capacity>
+MNCI static_vector_type<type_type, capacity>
 StaticVector() noexcept
 {
   if (std::is_constant_evaluated()) {

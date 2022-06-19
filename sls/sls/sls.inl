@@ -5,7 +5,7 @@
 
 namespace sls {
 
-[[maybe_unused]] inline void
+MI void
 SLS(assignment_type* result, const cnf_type* cnf) noexcept
 {
   volatile bool found = false;
@@ -16,7 +16,7 @@ SLS(assignment_type* result, const cnf_type* cnf) noexcept
     auto id = omp_get_thread_num();
     auto random = stl::Random(id);
 
-    assignment_type assign{cnf->num_variables};
+    assignment_type assign{ cnf->num_variables };
 
     do {
       Assignment(&assign, cnf, &random);
@@ -47,10 +47,10 @@ SLS(assignment_type* result, const cnf_type* cnf) noexcept
   }
 }
 
-[[maybe_unused]] inline assignment_type
+MI assignment_type
 SLS(const cnf_type* cnf) noexcept
 {
-  assignment_type result{cnf->num_variables};
+  assignment_type result{ cnf->num_variables };
   SLS(&result, cnf);
   return result;
 }

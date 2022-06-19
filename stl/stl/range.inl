@@ -10,7 +10,7 @@ namespace stl {
  */
 
 template<typename integral_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline integral_type
+MNCI integral_type
 range_iter_type<integral_type>::operator*() const noexcept
 {
   return i;
@@ -32,14 +32,14 @@ range_iter_type<integral_type>::operator++(int) noexcept
 }
 
 template<typename integral_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline bool
+MNCI bool
 range_iter_type<integral_type>::operator==(const range_iter_type<integral_type>& other) const noexcept
 {
   return i == other.i;
 }
 
 template<typename integral_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline bool
+MNCI bool
 range_iter_type<integral_type>::operator!=(const range_iter_type<integral_type>& other) const noexcept
 {
   return i != other.i;
@@ -50,14 +50,14 @@ range_iter_type<integral_type>::operator!=(const range_iter_type<integral_type>&
  */
 
 template<typename integral_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type<integral_type>
+MNCI range_iter_type<integral_type>
 range_type<integral_type>::begin() const noexcept
 {
   return range_iter_type(lower);
 }
 
 template<typename integral_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline range_iter_type<integral_type>
+MNCI range_iter_type<integral_type>
 range_type<integral_type>::end() const noexcept
 {
   return range_iter_type(upper);
@@ -68,7 +68,7 @@ range_type<integral_type>::end() const noexcept
  */
 
 template<typename integral_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline range_type<integral_type>
+MNCI range_type<integral_type>
 Range(integral_type lower, integral_type upper) noexcept
 {
   Assert(lower <= upper, "Invalid Parameter for Range! lower > upper.");

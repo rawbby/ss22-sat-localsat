@@ -11,21 +11,21 @@ namespace sls {
  */
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<const type_type>
+MNCI stl::view_type<const type_type>
 view_iter_type<type_type>::operator*() const noexcept
 {
   return { &(data[range[0]]), range[1] - range[0] };
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline stl::view_type<type_type>
+MNCI stl::view_type<type_type>
 view_iter_type<type_type>::operator*() noexcept
 {
   return { &(data[range[0]]), range[1] - range[0] };
 }
 
 template<typename type_type>
-[[maybe_unused]] constexpr inline view_iter_type<type_type>&
+MCI view_iter_type<type_type>&
 view_iter_type<type_type>::operator++() noexcept
 {
   range++;
@@ -33,14 +33,14 @@ view_iter_type<type_type>::operator++() noexcept
 }
 
 template<typename type_type>
-[[maybe_unused]] constexpr inline view_iter_type<type_type> // NOLINT(cert-dcl21-cpp)
+MCI view_iter_type<type_type> // NOLINT(cert-dcl21-cpp)
 view_iter_type<type_type>::operator++(int) noexcept
 {
   return { data, range++ };
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline bool
+MNCI bool
 view_iter_type<type_type>::operator==(const view_iter_type& other) const noexcept
 {
   stl::Assert(data == other.data, "Invalid iterator comparison!");
@@ -48,7 +48,7 @@ view_iter_type<type_type>::operator==(const view_iter_type& other) const noexcep
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline bool
+MNCI bool
 view_iter_type<type_type>::operator!=(const view_iter_type& other) const noexcept
 {
   stl::Assert(data == other.data, "Invalid iterator comparison!");
@@ -59,20 +59,20 @@ view_iter_type<type_type>::operator!=(const view_iter_type& other) const noexcep
  *
  */
 
-[[maybe_unused]] inline void
+MI void
 cnf_type::Push(literal_type literal) noexcept
 {
   cnf_buffer.Push(literal);
   ++literal_num_clauses[stl::Size(literal)];
 }
 
-[[maybe_unused]] inline void
+MI void
 cnf_type::Push() noexcept
 {
   cnf_clauses.Push(cnf_buffer.Count());
 }
 
-[[maybe_unused]] inline void
+MI void
 cnf_type::PostProcess() noexcept
 {
   stl::Assert(num_clauses == cnf_clauses.Count() - stl::Size(1), "Cnf was initialized with an invalid Number of Clauses!");
@@ -111,13 +111,13 @@ cnf_type::PostProcess() noexcept
   }
 }
 
-[[maybe_unused]] [[nodiscard]] inline stl::size_type
+MNI stl::size_type
 cnf_type::NumResolvingClauses(literal_type literal) const noexcept
 {
   return literal_num_clauses[literal];
 }
 
-[[maybe_unused]] [[nodiscard]] inline stl::view_type<const stl::size_type>
+MNI stl::view_type<const stl::size_type>
 cnf_type::ResolvingClauses(literal_type literal) const noexcept
 {
   auto lower = literal_clauses[literal];

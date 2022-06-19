@@ -12,26 +12,26 @@ struct static_array_type
   type_type data[capacity];
 
   // satisfy the viewable concept
-  [[maybe_unused]] [[nodiscard]] constexpr inline size_type Count() const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* At(size_type index) const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* At(size_type index) noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type& operator[](size_type index) const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline type_type& operator[](size_type index) noexcept;
+  MNCI size_type Count() const noexcept;
+  MNCI const type_type* At(size_type index) const noexcept;
+  MNCI type_type* At(size_type index) noexcept;
+  MNCI const type_type& operator[](size_type index) const noexcept;
+  MNCI type_type& operator[](size_type index) noexcept;
 
   // satisfy the iterable concept
-  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* begin() const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* end() const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* begin() noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* end() noexcept;
+  MNCI const type_type* begin() const noexcept;
+  MNCI const type_type* end() const noexcept;
+  MNCI type_type* begin() noexcept;
+  MNCI type_type* end() noexcept;
 
   // satisfy the view convertible concept
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> View() const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> View() noexcept;
+  MNCI view_type<const type_type> View() const noexcept;
+  MNCI view_type<type_type> View() noexcept;
 };
 
 // factories
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline static_array_type<type_type, capacity>
+MNCI static_array_type<type_type, capacity>
 StaticArray() noexcept;
 
 }

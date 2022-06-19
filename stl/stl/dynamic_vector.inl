@@ -34,34 +34,34 @@ InitialCapacity(size_type type_bytes)
  */
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline size_type
+MNI size_type
 dynamic_vector_type<type_type, allocator_type>::Count() const noexcept
 {
   return View().Count();
 }
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline const type_type*
+MNI const type_type*
 dynamic_vector_type<type_type, allocator_type>::At(size_type index) const noexcept
 {
   return View().At(index);
 }
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline type_type*
+MNI type_type*
 dynamic_vector_type<type_type, allocator_type>::At(size_type index) noexcept
 {
   return View().At(index);
 }
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline const type_type&
+MNI const type_type&
 dynamic_vector_type<type_type, allocator_type>::operator[](size_type index) const noexcept
 {
   return *At(index);
 }
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline type_type&
+MNI type_type&
 dynamic_vector_type<type_type, allocator_type>::operator[](size_type index) noexcept
 {
   return *At(index);
@@ -72,28 +72,28 @@ dynamic_vector_type<type_type, allocator_type>::operator[](size_type index) noex
  */
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline const type_type*
+MNI const type_type*
 dynamic_vector_type<type_type, allocator_type>::begin() const noexcept
 {
   return View().begin();
 }
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline const type_type*
+MNI const type_type*
 dynamic_vector_type<type_type, allocator_type>::end() const noexcept
 {
   return View().end();
 }
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline type_type*
+MNI type_type*
 dynamic_vector_type<type_type, allocator_type>::begin() noexcept
 {
   return View().begin();
 }
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline type_type*
+MNI type_type*
 dynamic_vector_type<type_type, allocator_type>::end() noexcept
 {
   return View().end();
@@ -104,14 +104,14 @@ dynamic_vector_type<type_type, allocator_type>::end() noexcept
  */
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline view_type<type_type>
+MNI view_type<type_type>
 dynamic_vector_type<type_type, allocator_type>::View() noexcept
 {
   return { data.data, count };
 }
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline view_type<const type_type>
+MNI view_type<const type_type>
 dynamic_vector_type<type_type, allocator_type>::View() const noexcept
 {
   return { data.data, count };
@@ -122,7 +122,7 @@ dynamic_vector_type<type_type, allocator_type>::View() const noexcept
  */
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline size_type
+MNI size_type
 dynamic_vector_type<type_type, allocator_type>::Capacity() const noexcept
 {
   return data.count;
@@ -175,14 +175,14 @@ dynamic_vector_type<type_type, allocator_type>::Pop() noexcept
 }
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline const type_type*
+MNI const type_type*
 dynamic_vector_type<type_type, allocator_type>::Peak() const noexcept
 {
   return At(Count() - Size(1));
 }
 
 template<typename type_type, typename allocator_type>
-[[maybe_unused]] [[nodiscard]] inline type_type*
+MNI type_type*
 dynamic_vector_type<type_type, allocator_type>::Peak() noexcept
 {
   return At(Count() - Size(1));

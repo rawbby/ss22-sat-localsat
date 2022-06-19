@@ -10,10 +10,10 @@
 
 namespace sls {
 
-[[maybe_unused]] inline void
+MI void
 SLS(assignment_type* assignment, const cnf_type* cnf) noexcept;
 
-[[maybe_unused]] inline assignment_type
+MI assignment_type
 SLS(const cnf_type* cnf) noexcept;
 
 }

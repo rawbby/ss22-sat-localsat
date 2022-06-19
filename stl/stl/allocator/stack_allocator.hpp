@@ -1,8 +1,8 @@
 #ifndef STL_STACK_ALLOCATOR_HPP
 #define STL_STACK_ALLOCATOR_HPP
 
-#include "allocator.hpp"
 #include "../static_array.hpp"
+#include "allocator.hpp"
 
 namespace stl {
 

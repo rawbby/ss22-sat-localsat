@@ -13,7 +13,7 @@ namespace sls {
 // | |  | | | |___    | |   |  _  | | |_| | | |_| |  ___) |
 // |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
 
-[[maybe_unused]] inline void
+MI void
 assignment_type::Flip(const cnf_type* cnf, variable_type variable) noexcept
 {
   const auto sign = stl::Not(assign[variable]);
@@ -27,13 +27,13 @@ assignment_type::Flip(const cnf_type* cnf, variable_type variable) noexcept
     --satisfied_counts[clause_index];
 }
 
-[[maybe_unused]] inline void
+MI void
 assignment_type::RandomFlip(const cnf_type* cnf, stl::random_type random) noexcept
 {
   Flip(cnf, Var(random.RandInt(cnf->num_variables)));
 }
 
-[[maybe_unused]] inline void
+MI void
 assignment_type::BestFlip(const cnf_type* cnf) noexcept
 {
   // use loop_offset to start at new position
@@ -69,7 +69,7 @@ assignment_type::BestFlip(const cnf_type* cnf) noexcept
   Flip(cnf, best_var);
 }
 
-[[maybe_unused]] inline void
+MI void
 assignment_type::BestFlip(const cnf_type* cnf, stl::random_type* random) noexcept
 {
   // use random to start at new position
@@ -100,7 +100,7 @@ assignment_type::BestFlip(const cnf_type* cnf, stl::random_type* random) noexcep
   Flip(cnf, best_var);
 }
 
-[[maybe_unused]] inline void
+MI void
 assignment_type::RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept
 {
   for (auto& sign : assign)
@@ -109,7 +109,7 @@ assignment_type::RandomReset(const cnf_type* cnf, stl::random_type* random) noex
   UpdateStats(cnf);
 }
 
-[[maybe_unused]] inline void
+MI void
 assignment_type::UpdateStats(const cnf_type* cnf) noexcept
 {
   satisfied_counts.View().MemSet(stl::I32(0));
@@ -126,7 +126,7 @@ assignment_type::UpdateStats(const cnf_type* cnf) noexcept
   }
 }
 
-[[maybe_unused]] [[nodiscard]] inline float
+MNI float
 assignment_type::Score() noexcept
 {
   auto score = satisfied_counts.Count();
@@ -136,7 +136,7 @@ assignment_type::Score() noexcept
   return stl::F32(score);
 }
 
-[[maybe_unused]] [[nodiscard]] inline stl::size_type
+MNI stl::size_type
 assignment_type::FlipStat(const cnf_type* cnf, variable_type variable) noexcept
 {
   auto sign = *assign.At(variable);
@@ -154,13 +154,13 @@ assignment_type::FlipStat(const cnf_type* cnf, variable_type variable) noexcept
   return stat;
 }
 
-[[maybe_unused]] [[nodiscard]] inline stl::i8_type*
+MNI stl::i8_type*
 assignment_type::begin() noexcept
 {
   return assign.begin();
 }
 
-[[maybe_unused]] [[nodiscard]] inline stl::i8_type*
+MNI stl::i8_type*
 assignment_type::end() noexcept
 {
   return assign.end();
@@ -172,7 +172,7 @@ assignment_type::end() noexcept
 // | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
 
-[[maybe_unused]] inline void
+MI void
 Assignment(assignment_type* assignment, const cnf_type* cnf) noexcept
 {
   assignment->loop_offset = stl::Size(0);
@@ -186,14 +186,14 @@ Assignment(assignment_type* assignment, const cnf_type* cnf) noexcept
   assignment->satisfied_counts.Count(cnf->num_clauses);
   assignment->satisfied_counts.View().MemSet(stl::I32(0));
 #else
-    assignment->assign.View().MemSet(stl::I32(0));
-    assignment->satisfied_counts.View().MemSet(stl::I32(0));
+  assignment->assign.View().MemSet(stl::I32(0));
+  assignment->satisfied_counts.View().MemSet(stl::I32(0));
 #endif
 
   assignment->UpdateStats(cnf);
 }
 
-[[maybe_unused]] [[nodiscard]] inline assignment_type
+MNI assignment_type
 Assignment(const cnf_type* cnf) noexcept
 {
 #ifdef SLS_STATIC_ASSIGNMENT
@@ -205,7 +205,7 @@ Assignment(const cnf_type* cnf) noexcept
   return assignment;
 }
 
-[[maybe_unused]] inline void
+MI void
 Assignment(assignment_type* assignment, const cnf_type* cnf, stl::random_type* random) noexcept
 {
   assignment->loop_offset = stl::Size(0);
@@ -221,7 +221,7 @@ Assignment(assignment_type* assignment, const cnf_type* cnf, stl::random_type* r
   assignment->RandomReset(cnf, random);
 }
 
-[[maybe_unused]] [[nodiscard]] inline assignment_type
+MNI assignment_type
 Assignment(const cnf_type* cnf, stl::random_type* random) noexcept
 {
 #ifdef SLS_STATIC_ASSIGNMENT

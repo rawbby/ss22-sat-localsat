@@ -1,56 +1,58 @@
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=windows-1252">
-<title>SATLIB - Benchmark Problems</title>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+    <title>SATLIB - Benchmark Problems</title>
 </head>
 
-<body data-new-gr-c-s-check-loaded="8.899.0" data-gr-ext-installed="" vlink="#551A8B" text="black" link="#0000FF" bgcolor="white" alink="#FF0000">
+<body data-new-gr-c-s-check-loaded="8.899.0" data-gr-ext-installed="" vlink="#551A8B" text="black" link="#0000FF" bgcolor="white"
+      alink="#FF0000">
 
 <h1>SAT-encoded "Morphed" Graph Colouring Problems</h1>
 
 The Graph Colouring problem (GCP) is a well-known combinatorial
 problem from graph theory: Given a graph <i>G=(V,E)</i>, where
-<i>V={v_1,v_2,...,v_n}</i> is the set of vertices and 
-<i>E</i> the set of edges connecting the vertices, find 
+<i>V={v_1,v_2,...,v_n}</i> is the set of vertices and
+<i>E</i> the set of edges connecting the vertices, find
 a colouring <i>C: V -&gt; <b>N</b></i>, such that connected
 vertices always have different colours.
-Generally, there are two variants of the Graph Colouring Problem: 
-In the optimisation 
-variant, the goal is to find a colouring with a minimal 
+Generally, there are two variants of the Graph Colouring Problem:
+In the optimisation
+variant, the goal is to find a colouring with a minimal
 number of colours, whereas in the decision
-variant, the question is to decide whether for a particular 
-number of colours, a couloring of the given graph exists. 
-The two variants are tightly related, as optimal colourings can 
+variant, the question is to decide whether for a particular
+number of colours, a couloring of the given graph exists.
+The two variants are tightly related, as optimal colourings can
 be found by solving a series of decision problems, using, for instance,
 binary search to determine the minimal number of colours.
 In the context of SAT-encoded Graph Colouring problems,
 we focus on the decision variant.
 
 <p>
-An interesting class of Graph Colouring Problems is obtained
-by <i>morphing</i> regular ring lattices with random graphs
-[GHPW99]: A (type B) <i>p</i>-morph of two graphs <i>A=(V,E1)</i>
-and <i>B=(V,E2)</i> is a graph <i>C=(V,E)</i> where
-<i>E</i> contains all the edges common to <i>A</i> and <i>B</i>,
-a fraction <i>p</i> of the edges from <i>E1-E2</i> (the remaining
-edges of <i>A</i>), and a fraction <i>1-p</i> of the edges from <i>E2-E1</i>. 
-The test-sets considered here are obtained by morphing 
-regular ring lattices, where the vertices are ordered cyclically and
-each vertex is connected to its <i>k</i> closest in this ordering,
-and random graphs from the well-known class <i>Gnm</i>.
-The morphing ratio <i>p</i> controls the amount of structure in
-the problem instances, and by varying <i>p</i>, the behaviour 
-of various algorithms depending on the degree of structure and
-randomness can be studied [GHPW99].
+    An interesting class of Graph Colouring Problems is obtained
+    by <i>morphing</i> regular ring lattices with random graphs
+    [GHPW99]: A (type B) <i>p</i>-morph of two graphs <i>A=(V,E1)</i>
+    and <i>B=(V,E2)</i> is a graph <i>C=(V,E)</i> where
+    <i>E</i> contains all the edges common to <i>A</i> and <i>B</i>,
+    a fraction <i>p</i> of the edges from <i>E1-E2</i> (the remaining
+    edges of <i>A</i>), and a fraction <i>1-p</i> of the edges from <i>E2-E1</i>.
+    The test-sets considered here are obtained by morphing
+    regular ring lattices, where the vertices are ordered cyclically and
+    each vertex is connected to its <i>k</i> closest in this ordering,
+    and random graphs from the well-known class <i>Gnm</i>.
+    The morphing ratio <i>p</i> controls the amount of structure in
+    the problem instances, and by varying <i>p</i>, the behaviour
+    of various algorithms depending on the degree of structure and
+    randomness can be studied [GHPW99].
 
 </p><h4>SAT encoding</h4>
-Following earlier approaches in literature, we use a 
+Following earlier approaches in literature, we use a
 straightforward strategy for encoding GCP instances into SAT:
-Each assignment of a colour to a single vertex 
+Each assignment of a colour to a single vertex
 is represented by a propositional variable; each colouring constraint
 (edge of the graph) is represented by a set of clauses ensuring that
 the corresponding vertices have different colours,
-and two additional sets of clauses 
-ensure that valid SAT assignments assign exactly one colour 
+and two additional sets of clauses
+ensure that valid SAT assignments assign exactly one colour
 to each vertex.
 
 <h4>GCP test-sets</h4> The test-sets provided here (see Table 1) are
@@ -63,59 +65,164 @@ varies. Using a special graph colouring program provided by Joe Culberson,
 we filtered out all instances with <i>c!=5</i> colours (the regular ring
 lattice, i.e., the morphed graph for <i>p=0</i>, has chromatic number <i>5</i>).
 All instances are satisfiable.
-[GHPW99] show that that for small <i>p</i> (around 0.01), these 
+[GHPW99] show that that for small <i>p</i> (around 0.01), these
 instances are hardest for local search algorithms, such as WalkSAT,
 while for higher <i>p</i> (around 0.2), some of the instances are
 extremely hard for systematic search algorithms, such as Satz.
 
 <p>
 <table border="1">
-<tbody><tr>
-<td align="center"><b> test-set </b></td><td align="center"><b> instances
-</b></td><td align="center"><b> vertices </b></td><td align="center"><b> edges 
-</b></td><td align="center"><b> morphing ratio
-</b></td><td align="center"><b> colours
-</b></td><td align="center"><b> vars </b></td><td align="center"><b> clauses
-</b></td></tr><tr>
-<td align="right"> sw100-8-lp0-c5 </td><td align="right"> 100 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 1 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 310
-</td></tr><tr>
-<td align="right"> sw100-8-lp1-c5 </td><td align="right"> 100 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 0.5 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 3100
-</td></tr><tr>
-<td align="right"> sw100-8-lp2-c5 </td><td align="right"> 100 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 0.25 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 3100
-</td></tr><tr>
-<td align="right"> sw100-8-lp3-c5 </td><td align="right"> 100 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 0.125 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 3100
-</td></tr><tr>
-<td align="right"> sw100-8-lp4-c5 </td><td align="right"> 100 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 2^-4 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 3100
-</td></tr><tr>
-<td align="right"> sw100-8-lp5-c5 </td><td align="right"> 100 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 2^-5 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 3100
-</td></tr><tr>
-<td align="right"> sw100-8-lp6-c5 </td><td align="right"> 100 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 2^-6 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 3100
-</td></tr><tr>
-<td align="right"> sw100-8-lp7-c5 </td><td align="right"> 100 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 2^-7 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 3100
-</td></tr><tr>
-<td align="right"> sw100-8-lp8-c5 </td><td align="right"> 100 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 2^-8 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 3100
-</td></tr><tr>
-<td align="left"> sw100-8-p0-c5 </td><td align="right"> 1 </td><td align="right"> 100 </td><td align="right"> 400 </td><td align="right"> 0 </td><td align="right"> 5  </td><td align="right"> 500 </td><td align="right"> 3100
+    <tbody>
+    <tr>
+        <td align="center"><b> test-set </b></td>
+        <td align="center"><b> instances
+        </b></td>
+        <td align="center"><b> vertices </b></td>
+        <td align="center"><b> edges
+        </b></td>
+        <td align="center"><b> morphing ratio
+        </b></td>
+        <td align="center"><b> colours
+        </b></td>
+        <td align="center"><b> vars </b></td>
+        <td align="center"><b> clauses
+        </b></td>
+    </tr>
+    <tr>
+        <td align="right"> sw100-8-lp0-c5</td>
+        <td align="right"> 100</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 1</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 310
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> sw100-8-lp1-c5</td>
+        <td align="right"> 100</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 0.5</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 3100
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> sw100-8-lp2-c5</td>
+        <td align="right"> 100</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 0.25</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 3100
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> sw100-8-lp3-c5</td>
+        <td align="right"> 100</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 0.125</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 3100
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> sw100-8-lp4-c5</td>
+        <td align="right"> 100</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 2^-4</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 3100
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> sw100-8-lp5-c5</td>
+        <td align="right"> 100</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 2^-5</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 3100
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> sw100-8-lp6-c5</td>
+        <td align="right"> 100</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 2^-6</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 3100
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> sw100-8-lp7-c5</td>
+        <td align="right"> 100</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 2^-7</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 3100
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> sw100-8-lp8-c5</td>
+        <td align="right"> 100</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 2^-8</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 3100
+        </td>
+    </tr>
+    <tr>
+        <td align="left"> sw100-8-p0-c5</td>
+        <td align="right"> 1</td>
+        <td align="right"> 100</td>
+        <td align="right"> 400</td>
+        <td align="right"> 0</td>
+        <td align="right"> 5</td>
+        <td align="right"> 500</td>
+        <td align="right"> 3100
 
-</td></tr></tbody></table>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </p><p>
-<b>Table 1:</b> SAT-encoded "Morphed" Graph Colouring test-sets.
-All instances are satisfiable.
+    <b>Table 1:</b> SAT-encoded "Morphed" Graph Colouring test-sets.
+    All instances are satisfiable.
 
-</p><p><br>
+</p>
+<p><br>
 </p><h4>Bibliography</h4>
 
 <table>
-<tbody><tr>
-<td valign="top"><small>[GHPW99]
-</small></td><td><small> <i>Ian Gent, Holger H. Hoos, Patrick Prosser, and Toby Walsh</i>
-<strong>Morphing: Combining Structure and Randomness.</strong>
-<cite>Proc. of AAAI-99,</cite> pages 654-660, 1999<br>
-</small></td></tr>
-</tbody></table>
+    <tbody>
+    <tr>
+        <td valign="top"><small>[GHPW99]
+        </small></td>
+        <td><small> <i>Ian Gent, Holger H. Hoos, Patrick Prosser, and Toby Walsh</i>
+            <strong>Morphing: Combining Structure and Randomness.</strong>
+            <cite>Proc. of AAAI-99,</cite> pages 654-660, 1999<br>
+        </small></td>
+    </tr>
+    </tbody>
+</table>
 
 
-
-
-
-</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration></html>
+</body>
+<grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+</html>

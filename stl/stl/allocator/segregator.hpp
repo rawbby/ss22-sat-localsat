@@ -29,7 +29,6 @@ struct segregator_type
   MNI bool_type Owns(memory_type<type_type> memory) const;
 
 private:
-
   template<typename type_type = byte_type>
   MNCI bool_type UseSmall(size_type count) const noexcept;
 

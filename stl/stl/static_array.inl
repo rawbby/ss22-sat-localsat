@@ -56,14 +56,14 @@ static_array_type<type_type, capacity>::end() noexcept
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type&
+MNCI const type_type&
 static_array_type<type_type, capacity>::operator[](size_type index) const noexcept
 {
   return *At(index);
 }
 
 template<typename type_type, size_type capacity>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type&
+MNCI type_type&
 static_array_type<type_type, capacity>::operator[](size_type index) noexcept
 {
   return *At(index);

@@ -37,7 +37,8 @@ struct dynamic_vector_type
       allocator->Free(data);
   }
 
-  MI dynamic_vector_type<type_type, allocator_type>& operator=(dynamic_vector_type&& vector){
+  MI dynamic_vector_type<type_type, allocator_type>& operator=(dynamic_vector_type&& vector)
+  {
     std::swap(allocator, vector.allocator);
     std::swap(data, vector.data);
     std::swap(count, vector.count);

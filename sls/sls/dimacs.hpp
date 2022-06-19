@@ -5,7 +5,7 @@
 
 namespace sls {
 
-inline int32_t
+MNI int32_t
 ReadChar(FILE* f)
 {
   int32_t c = getc(f);
@@ -43,7 +43,7 @@ ParseDimacs(FILE* f)
     num_clauses += c - '0';
   }
 
-  cnf_type cnf{num_variables, num_clauses};
+  cnf_type cnf{ num_variables, num_clauses };
 
   int32_t literal;
   do {
@@ -62,8 +62,7 @@ ParseDimacs(FILE* f)
     [[unlikely]] if (!literal)
     {
       cnf.Push();
-      [[unlikely]] if (cnf.cnf_clauses.Count() - 1 >= num_clauses)
-        break;
+      [[unlikely]] if (cnf.cnf_clauses.Count() - 1 >= num_clauses) break;
     }
     else
     {

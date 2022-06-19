@@ -12,23 +12,23 @@ struct view_type
   size_type count;
 
   // satisfy the viewable concept
-  [[maybe_unused]] [[nodiscard]] constexpr inline size_type Count() const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* At(size_type index) const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* At(size_type index) noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type& operator[](size_type index) const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline type_type& operator[](size_type index) noexcept;
+  MNCI size_type Count() const noexcept;
+  MNCI const type_type* At(size_type index) const noexcept;
+  MNCI type_type* At(size_type index) noexcept;
+  MNCI const type_type& operator[](size_type index) const noexcept;
+  MNCI type_type& operator[](size_type index) noexcept;
 
   // satisfy the iterable concept
-  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* begin() const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline const type_type* end() const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* begin() noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline type_type* end() noexcept;
+  MNCI const type_type* begin() const noexcept;
+  MNCI const type_type* end() const noexcept;
+  MNCI type_type* begin() noexcept;
+  MNCI type_type* end() noexcept;
 
   // utilities
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> Range(size_type lower, size_type upper) const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> Range(size_type lower, size_type upper) noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type> Range(size_type upper) const noexcept;
-  [[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type> Range(size_type upper) noexcept;
+  MNCI view_type<const type_type> Range(size_type lower, size_type upper) const noexcept;
+  MNCI view_type<type_type> Range(size_type lower, size_type upper) noexcept;
+  MNCI view_type<const type_type> Range(size_type upper) const noexcept;
+  MNCI view_type<type_type> Range(size_type upper) noexcept;
   [[maybe_unused]] constexpr inline void MemSet(i32_type value) noexcept;
   [[maybe_unused]] constexpr inline void MemCopy(view_type<type_type> dst) const noexcept;
 };
@@ -69,19 +69,19 @@ concept viewable_concept = (
  */
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+MNCI view_type<const type_type>
 View(const type_type* data, size_type lower, size_type upper) noexcept;
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+MNCI view_type<type_type>
 View(type_type* data, size_type lower, size_type upper) noexcept;
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+MNCI view_type<const type_type>
 View(const type_type* data, size_type upper) noexcept;
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+MNCI view_type<type_type>
 View(type_type* data, size_type upper) noexcept;
 
 }

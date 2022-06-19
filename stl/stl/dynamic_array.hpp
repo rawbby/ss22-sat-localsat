@@ -38,7 +38,8 @@ struct dynamic_array_type
       allocator->Free(data);
   }
 
-  MI dynamic_array_type<type_type, allocator_type>& operator=(dynamic_array_type&& array){
+  MI dynamic_array_type<type_type, allocator_type>& operator=(dynamic_array_type&& array)
+  {
     std::swap(allocator, array.allocator);
     std::swap(data, array.data);
     return *this;

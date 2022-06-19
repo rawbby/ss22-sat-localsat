@@ -13,14 +13,14 @@ namespace stl {
  */
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline size_type
+MNCI size_type
 view_type<type_type>::Count() const noexcept
 {
   return count;
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
+MNCI const type_type*
 view_type<type_type>::At(size_type index) const noexcept
 {
   Assert(index >= Size(0), "View Can not be access with a negative Index!");
@@ -29,7 +29,7 @@ view_type<type_type>::At(size_type index) const noexcept
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+MNCI type_type*
 view_type<type_type>::At(size_type index) noexcept
 {
   Assert(index >= Size(0), "View Can not be access with a negative Index!");
@@ -38,14 +38,14 @@ view_type<type_type>::At(size_type index) noexcept
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type&
+MNCI const type_type&
 view_type<type_type>::operator[](size_type index) const noexcept
 {
   return *At(index);
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type&
+MNCI type_type&
 view_type<type_type>::operator[](size_type index) noexcept
 {
   return *At(index);
@@ -56,28 +56,28 @@ view_type<type_type>::operator[](size_type index) noexcept
  */
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
+MNCI const type_type*
 view_type<type_type>::begin() const noexcept
 {
   return &(data[0]);
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline const type_type*
+MNCI const type_type*
 view_type<type_type>::end() const noexcept
 {
   return &(data[Count()]);
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+MNCI type_type*
 view_type<type_type>::begin() noexcept
 {
   return &(data[0]);
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline type_type*
+MNCI type_type*
 view_type<type_type>::end() noexcept
 {
   return &(data[Count()]);
@@ -88,28 +88,28 @@ view_type<type_type>::end() noexcept
  */
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+MNCI view_type<const type_type>
 view_type<type_type>::Range(size_type lower, size_type upper) const noexcept
 {
   return { At(lower), upper - lower };
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+MNCI view_type<type_type>
 view_type<type_type>::Range(size_type lower, size_type upper) noexcept
 {
   return { At(lower), upper - lower };
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+MNCI view_type<const type_type>
 view_type<type_type>::Range(size_type upper) const noexcept
 {
   return { At(0), upper };
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+MNCI view_type<type_type>
 view_type<type_type>::Range(size_type upper) noexcept
 {
   return { At(0), upper };
@@ -151,28 +151,28 @@ view_type<type_type>::MemCopy(view_type<type_type> dst) const noexcept
  */
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+MNCI view_type<const type_type>
 View(const type_type* data, size_type upper) noexcept
 {
   return { data, upper };
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+MNCI view_type<type_type>
 View(type_type* data, size_type upper) noexcept
 {
   return { data, upper };
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<const type_type>
+MNCI view_type<const type_type>
 View(const type_type* data, size_type lower, size_type upper) noexcept
 {
   return { &(data[lower]), upper - lower };
 }
 
 template<typename type_type>
-[[maybe_unused]] [[nodiscard]] constexpr inline view_type<type_type>
+MNCI view_type<type_type>
 View(type_type* data, size_type lower, size_type upper) noexcept
 {
   return { &(data[lower]), upper - lower };
