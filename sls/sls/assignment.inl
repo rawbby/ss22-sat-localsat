@@ -50,22 +50,22 @@ assignment_type<allocator_type>::BestFlip(const cnf_type* cnf) noexcept
   // required to prove.
 
   ++loop_offset;
-  loop_offset = loop_offset < cnf->num_variables ? loop_offset : 1;
-
-  auto best_var = Var(0);
-  auto best_stat = FlipStat(cnf, best_var);
+  loop_offset = loop_offset < (cnf->num_variables - 1) ? loop_offset : 1;
 
   const auto n = Var(loop_offset);
   const auto m = Var(cnf->num_variables);
 
-  for (auto var : stl::Range(n, m)) {
+  auto best_var = Var(n);
+  auto best_stat = FlipStat(cnf, best_var);
+
+  for (auto var : stl::Range(Var(n + 1), m)) {
     auto stat = FlipStat(cnf, var);
     if (stat > best_stat) {
       best_var = var;
       best_stat = stat;
     }
   }
-  for (auto var : stl::Range(Var(1), n)) {
+  for (auto var : stl::Range(Var(0), n)) {
     auto stat = FlipStat(cnf, var);
     if (stat > best_stat) {
       best_var = var;
@@ -84,20 +84,21 @@ assignment_type<allocator_type>::BestFlip(const cnf_type* cnf, stl::random_type*
   // so less loops occur. this seems to
   // be very important!
 
-  auto best_var = Var(0);
-  auto best_stat = FlipStat(cnf, best_var);
-
-  const auto n = Var(random->RandInt(1, cnf->num_variables));
+  // last clause i never chosen for first assign...
+  const auto n = Var(random->RandInt(cnf->num_variables));
   const auto m = Var(cnf->num_variables);
 
-  for (auto var : stl::Range(n, m)) {
+  auto best_var = Var(n);
+  auto best_stat = FlipStat(cnf, best_var);
+
+  for (auto var : stl::Range(Var(n + 1), m)) {
     auto stat = FlipStat(cnf, var);
     if (stat > best_stat) {
       best_var = var;
       best_stat = stat;
     }
   }
-  for (auto var : stl::Range(Var(1), n)) {
+  for (auto var : stl::Range(Var(0), n)) {
     auto stat = FlipStat(cnf, var);
     if (stat > best_stat) {
       best_var = var;
@@ -151,20 +152,20 @@ template<typename allocator_type>
 MNI stl::size_type
 assignment_type<allocator_type>::FlipStat(const cnf_type* cnf, variable_type variable) noexcept
 {
-//  auto sign = assign[variable];
-//
-//  auto sat_clauses = cnf->ResolvingClauses(Lit(variable, sign));
-//  auto unsat_clauses = cnf->ResolvingClauses(Lit(variable, stl::Not(sign)));
-//
-//  auto stat = stl::Size(0);
-//
-//  for (auto index : sat_clauses)
-//    stat -= satisfied_counts[index] == 1 ? 1 : 0;
-//
-//  for (auto index : unsat_clauses)
-//    stat += satisfied_counts[index] == 0 ? 1 : 0;
-//
-//  return stat;
+  //  auto sign = assign[variable];
+  //
+  //  auto sat_clauses = cnf->ResolvingClauses(Lit(variable, sign));
+  //  auto unsat_clauses = cnf->ResolvingClauses(Lit(variable, stl::Not(sign)));
+  //
+  //  auto stat = stl::Size(0);
+  //
+  //  for (auto index : sat_clauses)
+  //    stat -= satisfied_counts[index] == 1 ? 1 : 0;
+  //
+  //  for (auto index : unsat_clauses)
+  //    stat += satisfied_counts[index] == 0 ? 1 : 0;
+  //
+  //  return stat;
 
   auto stat = stl::Size(0);
 

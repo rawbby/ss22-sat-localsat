@@ -12,6 +12,7 @@ SLS(assignment_type<decltype(global_allocator)>* result, const cnf_type* cnf) no
   volatile bool found = false;
 
   omp_set_num_threads(omp_get_max_threads());
+  // omp_set_num_threads(1);
 #pragma omp parallel default(none) shared(cnf, found, result, std::cout)
   {
     auto id = omp_get_thread_num();
@@ -27,6 +28,7 @@ SLS(assignment_type<decltype(global_allocator)>* result, const cnf_type* cnf) no
       for (auto i = stl::I32(0); (!found && i < n); ++i) {
 
         assign.BestFlip(cnf, &random);
+        // assign.BestFlip(cnf);
 
         [[unlikely]] if (!assign.Score())
         {
@@ -37,7 +39,9 @@ SLS(assignment_type<decltype(global_allocator)>* result, const cnf_type* cnf) no
             // *result = assign;
             // TODO find a more idiomatic copy
             memcpy(result->assign.data.data, assign.assign.data.data, assign.assign.data.count * sizeof(stl::b8_type));
-            memcpy(result->satisfied_counts.data.data, assign.satisfied_counts.data.data, assign.satisfied_counts.data.count * sizeof(stl::size_type));
+            memcpy(result->satisfied_counts.data.data,
+                   assign.satisfied_counts.data.data,
+                   assign.satisfied_counts.data.count * sizeof(stl::size_type));
           }
           break;
         }
