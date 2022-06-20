@@ -1,9 +1,9 @@
 #ifndef SLS_DEF_HPP
 #define SLS_DEF_HPP
 
+#include <stl/allocator/allocator.hpp>
 #include <stl/random.hpp>
 #include <stl/stl.hpp>
-#include <stl/allocator/allocator.hpp>
 
 namespace sls {
 

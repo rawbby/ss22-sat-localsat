@@ -1,7 +1,7 @@
 #include "test_util.hpp"
 
-#include <stl/static_array.hpp>
 #include <stl/dynamic_array.hpp>
+#include <stl/static_array.hpp>
 #include <stl/view.hpp>
 
 using type_type = stl::size_type;
