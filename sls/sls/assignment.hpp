@@ -54,21 +54,14 @@ struct assignment_type
     return *this;
   }
 
-  template<typename cnf_allocator_type>
-  MI void Flip(const cnf_type<cnf_allocator_type>* cnf, variable_type variable) noexcept;
-  template<typename cnf_allocator_type>
-  MI void RandomFlip(const cnf_type<cnf_allocator_type>* cnf, stl::random_type random) noexcept;
-  template<typename cnf_allocator_type>
-  MI void BestFlip(const cnf_type<cnf_allocator_type>* cnf) noexcept;
-  template<typename cnf_allocator_type>
-  MI void BestFlip(const cnf_type<cnf_allocator_type>* cnf, stl::random_type* random) noexcept;
-  template<typename cnf_allocator_type>
-  MI void RandomReset(const cnf_type<cnf_allocator_type>* cnf, stl::random_type* random) noexcept;
-  template<typename cnf_allocator_type>
-  MI void UpdateStats(const cnf_type<cnf_allocator_type>* cnf) noexcept;
+  MI void Flip(const cnf_type* cnf, variable_type variable) noexcept;
+  MI void RandomFlip(const cnf_type* cnf, stl::random_type random) noexcept;
+  MI void BestFlip(const cnf_type* cnf) noexcept;
+  MI void BestFlip(const cnf_type* cnf, stl::random_type* random) noexcept;
+  MI void RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept;
+  MI void UpdateStats(const cnf_type* cnf) noexcept;
   MNI float Score() noexcept;
-  template<typename cnf_allocator_type>
-  MNI stl::size_type FlipStat(const cnf_type<cnf_allocator_type>* cnf, variable_type variable) noexcept;
+  MNI stl::size_type FlipStat(const cnf_type* cnf, variable_type variable) noexcept;
 
   // === iterator support ===
   MNI stl::i8_type* begin() noexcept;

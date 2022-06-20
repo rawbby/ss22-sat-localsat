@@ -5,12 +5,6 @@
 
 namespace stl {
 
-//  __  __   _____   _____   _   _    ___    ____    ____
-// |  \/  | | ____| |_   _| | | | |  / _ \  |  _ \  / ___|
-// | |\/| | |  _|     | |   | |_| | | | | | | | | | \___ \
-// | |  | | | |___    | |   |  _  | | |_| | | |_| |  ___) |
-// |_|  |_| |_____|   |_|   |_| |_|  \___/  |____/  |____/
-
 MNI bool
 random_type::RandBool() noexcept
 {
@@ -34,19 +28,6 @@ random_type::RandInt(i32_type lower, i32_type upper) noexcept
   return distribution(engine);
 }
 
-//   ____    ___    _   _   ____    _____   ____    _   _    ____   _____    ___    ____    ____
-//  / ___|  / _ \  | \ | | / ___|  |_   _| |  _ \  | | | |  / ___| |_   _|  / _ \  |  _ \  / ___|
-// | |     | | | | |  \| | \___ \    | |   | |_) | | | | | | |       | |   | | | | | |_) | \___ \
-// | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
-//  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
-
-MNI random_type
-Random() noexcept
-{
-  random_type random;
-  random.engine = std::mt19937(std::random_device{}());
-  return random;
-}
 MNI random_type
 Random(i32_type seed) noexcept
 {

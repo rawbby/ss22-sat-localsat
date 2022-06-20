@@ -21,8 +21,8 @@ struct dynamic_array_type
 
   MI dynamic_array_type(allocator_type* allocator, size_type count)
     : allocator(allocator)
-    , data(allocator->template Allocate<type_type>(count))
   {
+    data = count ? allocator->template Allocate<type_type>(count) : memory_type<type_type>(nullptr, 0);
   }
 
   MI dynamic_array_type(dynamic_array_type&& array)

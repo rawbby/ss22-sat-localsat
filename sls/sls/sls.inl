@@ -2,31 +2,28 @@
 #define SLS_SLS_INL
 
 #include "sls.hpp"
+#include <iostream>
 
 namespace sls {
 
-template<typename allocator_type>
 MI void
-SLS(assignment_type<allocator_type>* result, const cnf_type<allocator_type>* cnf) noexcept
+SLS(assignment_type<decltype(global_allocator)>* result, const cnf_type* cnf) noexcept
 {
   volatile bool found = false;
 
   omp_set_num_threads(omp_get_max_threads());
-#pragma omp parallel default(none) shared(cnf, found, result)
+#pragma omp parallel default(none) shared(cnf, found, result, std::cout)
   {
     auto id = omp_get_thread_num();
     auto random = stl::Random(id);
 
-    stl::fallback_allocator_type<stl::stack_allocator_type<0x4000, stl::alignment_page_tag>,
-                                 stl::heap_allocator_type<stl::alignment_cache_line_tag>>
-      allocator;
-
+    auto allocator = CreateThreadLocalAllocator();
     assignment_type assign{ &allocator, cnf->num_variables, cnf->num_clauses };
 
     do {
       assign.RandomReset(cnf, &random);
 
-      const auto n = (stl::I32(cnf->num_variables) + stl::I32(cnf->num_clauses)) << 1;
+      const auto n = stl::I32(cnf->num_variables) + stl::I32(cnf->num_clauses);
       for (auto i = stl::I32(0); (!found && i < n); ++i) {
 
         assign.BestFlip(cnf, &random);
@@ -45,11 +42,10 @@ SLS(assignment_type<allocator_type>* result, const cnf_type<allocator_type>* cnf
   }
 }
 
-template<typename allocator_type>
-MI assignment_type<allocator_type>
-SLS(allocator_type* allocator, const cnf_type<allocator_type>* cnf) noexcept
+MI assignment_type<decltype(global_allocator)>
+SLS(const cnf_type* cnf) noexcept
 {
-  assignment_type<allocator_type> result{ allocator, 0, 0 };
+  assignment_type<decltype(global_allocator)> result{ &global_allocator, cnf->num_variables, cnf->num_clauses };
   SLS(&result, cnf);
   return result;
 }

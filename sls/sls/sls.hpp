@@ -10,13 +10,11 @@
 
 namespace sls {
 
-template<typename allocator_type>
 MI void
-SLS(assignment_type<allocator_type>* assignment, const cnf_type<allocator_type>* cnf) noexcept;
+SLS(assignment_type<decltype(global_allocator)>* assignment, const cnf_type* cnf) noexcept;
 
-template<typename allocator_type>
-MI assignment_type<allocator_type>
-SLS(allocator_type* allocator, const cnf_type<allocator_type>* cnf) noexcept;
+MI assignment_type<decltype(global_allocator)>
+SLS(const cnf_type* cnf) noexcept;
 
 }
 

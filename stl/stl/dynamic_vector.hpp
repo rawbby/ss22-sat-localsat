@@ -4,6 +4,7 @@
 #include "allocator/alignment.hpp"
 #include "allocator/allocator.hpp"
 #include "stl.hpp"
+#include "vector.hpp"
 #include "view.hpp"
 
 namespace stl {
@@ -15,35 +16,11 @@ struct dynamic_vector_type
   memory_type<type_type> data;
   size_type count;
 
-  MI dynamic_vector_type(allocator_type* allocator)
-    : allocator(allocator)
-    , data()
-    , count(Size(0))
-  {
-  }
-
-  MI dynamic_vector_type(dynamic_vector_type&& vector)
-    : allocator(vector.allocator)
-    , data(vector.data)
-    , count(vector.count)
-  {
-    vector.data = memory_type<type_type>();
-    vector.count = Size(0);
-  }
-
-  MI ~dynamic_vector_type() noexcept
-  {
-    if (data.data)
-      allocator->Free(data);
-  }
-
-  MI dynamic_vector_type<type_type, allocator_type>& operator=(dynamic_vector_type&& vector)
-  {
-    std::swap(allocator, vector.allocator);
-    std::swap(data, vector.data);
-    std::swap(count, vector.count);
-    return *this;
-  }
+  // initializer
+  MI dynamic_vector_type(allocator_type* allocator) noexcept;
+  MI dynamic_vector_type(dynamic_vector_type&& vector) noexcept;
+  MI ~dynamic_vector_type() noexcept;
+  MI dynamic_vector_type<type_type, allocator_type>& operator=(dynamic_vector_type&& vector) noexcept;
 
   // satisfy the viewable concept
   MNI size_type Count() const noexcept;

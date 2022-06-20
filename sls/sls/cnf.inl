@@ -2,8 +2,8 @@
 #define SLS_CNF_INL
 
 #include "cnf.hpp"
-#include <stl/dynamic_vector.hpp>
 #include <stl/dynamic_array.hpp>
+#include <stl/dynamic_vector.hpp>
 #include <stl/range.hpp>
 
 #include <iostream>
@@ -63,24 +63,21 @@ view_iter_type<type_type>::operator!=(const view_iter_type& other) const noexcep
  *
  */
 
-template<typename allocator_type>
 MI void
-cnf_type<allocator_type>::Push(literal_type literal) noexcept
+cnf_type::Push(literal_type literal) noexcept
 {
   cnf_buffer.Push(literal);
   ++literal_num_clauses[stl::Size(literal)];
 }
 
-template<typename allocator_type>
 MI void
-cnf_type<allocator_type>::Push() noexcept
+cnf_type::Push() noexcept
 {
   cnf_clauses.Push(cnf_buffer.Count());
 }
 
-template<typename allocator_type>
 MI void
-cnf_type<allocator_type>::PostProcess() noexcept
+cnf_type::PostProcess() noexcept
 {
   stl::Assert(num_clauses == cnf_clauses.Count() - stl::Size(1), "Cnf was initialized with an invalid Number of Clauses!");
 
@@ -100,7 +97,7 @@ cnf_type<allocator_type>::PostProcess() noexcept
   const auto clauses = cnf_clauses.Count() - 1;
 
   // for each sub vector create an index counter
-  auto i = stl::dynamic_array_type<stl::size_type, allocator_type>(allocator, num_literals);
+  auto i = stl::dynamic_array_type<stl::size_type, decltype(global_allocator)>(&global_allocator, num_literals);
   i.View().MemSet(stl::I32(0));
 
   for (auto c = stl::Size(0); c < clauses; ++c) {
@@ -119,46 +116,40 @@ cnf_type<allocator_type>::PostProcess() noexcept
   }
 }
 
-template<typename allocator_type>
 MNI stl::size_type
-cnf_type<allocator_type>::NumResolvingClauses(literal_type literal) const noexcept
+cnf_type::NumResolvingClauses(literal_type literal) const noexcept
 {
   return literal_num_clauses[literal];
 }
 
-template<typename allocator_type>
 MNI stl::view_type<const stl::size_type>
-cnf_type<allocator_type>::ResolvingClauses(literal_type literal) const noexcept
+cnf_type::ResolvingClauses(literal_type literal) const noexcept
 {
-  auto lower = literal_clauses[literal];
-  auto upper = literal_clauses[literal + 1];
-  return clause_index_buffer.View().Range(lower, upper);
+  const auto lower = literal_clauses[literal];
+  const auto upper = literal_clauses[literal + 1];
+  return { &(clause_index_buffer[lower]), upper - lower };
 }
 
-template<typename allocator_type>
 MNI view_iterable_type<const literal_type>
-cnf_type<allocator_type>::ClauseIterable() const noexcept
+cnf_type::ClauseIterable() const noexcept
 {
   return { { cnf_buffer.begin(), cnf_clauses.begin() }, { cnf_buffer.begin(), cnf_clauses.end() - 1 } };
 }
 
-template<typename allocator_type>
 MNI view_iterable_type<literal_type>
-cnf_type<allocator_type>::ClauseIterable() noexcept
+cnf_type::ClauseIterable() noexcept
 {
   return { { cnf_buffer.begin(), cnf_clauses.begin() }, { cnf_buffer.begin(), cnf_clauses.end() - 1 } };
 }
 
-template<typename allocator_type>
 MNI view_iterable_type<const stl::size_type>
-cnf_type<allocator_type>::LiteralClausesIterable() const noexcept
+cnf_type::LiteralClausesIterable() const noexcept
 {
   return { { clause_index_buffer.begin(), literal_clauses.begin() }, { clause_index_buffer.begin(), literal_clauses.end() - 1 } };
 }
 
-template<typename allocator_type>
 MNI view_iterable_type<stl::size_type>
-cnf_type<allocator_type>::LiteralClausesIterable() noexcept
+cnf_type::LiteralClausesIterable() noexcept
 {
   return { { clause_index_buffer.begin(), literal_clauses.begin() }, { clause_index_buffer.begin(), literal_clauses.end() - 1 } };
 }

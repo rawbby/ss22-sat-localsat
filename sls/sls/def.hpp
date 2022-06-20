@@ -42,6 +42,23 @@ Lit(variable_type var, stl::i8_type sign) noexcept
   return literal;
 }
 
+MNCI auto CreateGlobalAllocator()
+{
+  using P = stl::stack_allocator_type<0x100000, stl::alignment_cache_line_tag>;
+  using S = stl::heap_allocator_type<stl::alignment_page_tag>;
+  return stl::fallback_allocator_type<P, S>{};
+}
+
+auto global_allocator = CreateGlobalAllocator();
+
+MNCI auto
+CreateThreadLocalAllocator()
+{
+  using P = stl::stack_allocator_type<0x10000, stl::alignment_cache_line_tag>;
+  using S = stl::heap_allocator_type<stl::alignment_page_tag>;
+  return stl::fallback_allocator_type<P, S>{};
+}
+
 }
 
 #endif

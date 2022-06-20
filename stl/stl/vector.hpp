@@ -8,6 +8,28 @@
 
 namespace stl {
 
+namespace detail {
+
+/*
+ * The initial capacity for dynamic container
+ */
+
+template<typename type_type>
+constexpr inline size_type initial_capacity = []() {
+  constexpr auto lcm = [](size_type l, size_type u) {
+    size_type i = 1;
+    while ((u * ++i) % l)
+      ;
+    return u * i;
+  };
+
+  constexpr auto a = sizeof(type_type);
+  constexpr auto b = Size(alignment_cache_line_tag::alignment);
+  return a > b ? lcm(a, b) : lcm(b, a);
+}();
+
+}
+
 template<typename vector_type, typename type_type>
 concept vector_concept = (
   // clang-format off

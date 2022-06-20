@@ -5,28 +5,40 @@
 
 namespace stl {
 
-namespace detail {
-
-MNCI size_type
-InitialCapacity(size_type type_bytes)
+template<typename type_type, typename allocator_type>
+MI
+dynamic_vector_type<type_type, allocator_type>::dynamic_vector_type(allocator_type* allocator) noexcept
+  : allocator(allocator)
+  , data()
+  , count(Size(0))
 {
-  auto lcm = [](auto l, auto u) {
-    auto lcm = u;
-    auto i = Size(2);
-    while (lcm % l)
-      lcm = u * i++;
-    return lcm;
-  };
-
-  const auto a = type_bytes;
-  const auto b = Size(alignment_cache_line_tag::alignment);
-
-  if (a > b)
-    return lcm(a, b);
-  else
-    return lcm(b, a);
 }
 
+template<typename type_type, typename allocator_type>
+MI
+dynamic_vector_type<type_type, allocator_type>::dynamic_vector_type(dynamic_vector_type&& vector) noexcept
+  : allocator(nullptr)
+  , data()
+  , count(0)
+{
+  *this = std::move(vector);
+}
+
+template<typename type_type, typename allocator_type>
+MI dynamic_vector_type<type_type, allocator_type>::~dynamic_vector_type() noexcept
+{
+  if (data.data)
+    allocator->Free(data);
+}
+
+template<typename type_type, typename allocator_type>
+MI dynamic_vector_type<type_type, allocator_type>&
+dynamic_vector_type<type_type, allocator_type>::operator=(dynamic_vector_type&& vector) noexcept
+{
+  std::swap(allocator, vector.allocator);
+  std::swap(data, vector.data);
+  std::swap(count, vector.count);
+  return *this;
 }
 
 /*
@@ -37,34 +49,39 @@ template<typename type_type, typename allocator_type>
 MNI size_type
 dynamic_vector_type<type_type, allocator_type>::Count() const noexcept
 {
-  return View().Count();
+  return count;
 }
 
 template<typename type_type, typename allocator_type>
 MNI const type_type*
 dynamic_vector_type<type_type, allocator_type>::At(size_type index) const noexcept
 {
-  return View().At(index);
+  stl::Assert(index >= 0 && index < count, "Can not access Vector out of Bounds!");
+  return &(data.data[index]);
 }
 
 template<typename type_type, typename allocator_type>
 MNI type_type*
 dynamic_vector_type<type_type, allocator_type>::At(size_type index) noexcept
 {
-  return View().At(index);
+  stl::Assert(index >= 0 && index < count, "Can not access Vector out of Bounds!");
+  return &(data.data[index]);
 }
 
 template<typename type_type, typename allocator_type>
 MNI const type_type&
 dynamic_vector_type<type_type, allocator_type>::operator[](size_type index) const noexcept
 {
-  return *At(index);
+  stl::Assert(index >= 0 && index < count, "Can not access Vector out of Bounds!");
+  return data.data[index];
 }
+
 template<typename type_type, typename allocator_type>
 MNI type_type&
 dynamic_vector_type<type_type, allocator_type>::operator[](size_type index) noexcept
 {
-  return *At(index);
+  stl::Assert(index >= 0 && index < count, "Can not access Vector out of Bounds!");
+  return data.data[index];
 }
 
 /*
@@ -75,28 +92,28 @@ template<typename type_type, typename allocator_type>
 MNI const type_type*
 dynamic_vector_type<type_type, allocator_type>::begin() const noexcept
 {
-  return View().begin();
+  return &(data.data[0]);
 }
 
 template<typename type_type, typename allocator_type>
 MNI const type_type*
 dynamic_vector_type<type_type, allocator_type>::end() const noexcept
 {
-  return View().end();
+  return &(data.data[count]);
 }
 
 template<typename type_type, typename allocator_type>
 MNI type_type*
 dynamic_vector_type<type_type, allocator_type>::begin() noexcept
 {
-  return View().begin();
+  return &(data.data[0]);
 }
 
 template<typename type_type, typename allocator_type>
 MNI type_type*
 dynamic_vector_type<type_type, allocator_type>::end() noexcept
 {
-  return View().end();
+  return &(data.data[count]);
 }
 
 /*
@@ -132,22 +149,28 @@ template<typename type_type, typename allocator_type>
 [[maybe_unused]] inline void
 dynamic_vector_type<type_type, allocator_type>::Capacity(size_type new_count) noexcept
 {
-  constexpr auto init_cap = detail::InitialCapacity(sizeof(type_type));
+  constexpr auto initial_capacity = detail::initial_capacity<type_type>;
 
   if (data.count < new_count) {
 
-    // maybe initialize count and
-    // double the count until new_count is satisfied
-    auto the_count = data.count ? data.count : init_cap;
-    while (the_count < new_count)
-      the_count <<= 1;
+    if (!data.count) {
 
-    if (data.count)
-      data = allocator->template ReAllocate<type_type>(data, the_count);
-    else
+      auto the_count = initial_capacity;
+      while (the_count < new_count)
+        the_count <<= 1;
+
       data = allocator->template Allocate<type_type>(the_count);
 
-    Assert(data.data, "Failed to re allocate dynamic Vector!");
+    } else {
+
+      auto the_count = data.count;
+      while (the_count < new_count)
+        the_count <<= 1;
+
+      data = allocator->template ReAllocate<type_type>(data, the_count);
+    }
+
+    Assert(data.data, "Failed to (re) allocate dynamic Vector!");
   }
 }
 
@@ -163,37 +186,42 @@ template<typename type_type, typename allocator_type>
 [[maybe_unused]] inline void
 dynamic_vector_type<type_type, allocator_type>::Push(type_type type) noexcept
 {
-  Count(Count() + Size(1));
-  *Peak() = type;
+  Capacity(count + 1);
+  data.data[count] = type;
+  ++count;
 }
 
 template<typename type_type, typename allocator_type>
 [[maybe_unused]] inline void
 dynamic_vector_type<type_type, allocator_type>::Pop() noexcept
 {
-  Count(Count() - Size(1));
+  stl::Assert(count, "Can not pop from empty Vector!");
+  --count;
 }
 
 template<typename type_type, typename allocator_type>
 MNI const type_type*
 dynamic_vector_type<type_type, allocator_type>::Peak() const noexcept
 {
-  return At(Count() - Size(1));
+  stl::Assert(count, "Can not peak on empty Vector!");
+  return &(data.data[count - 1]);
 }
 
 template<typename type_type, typename allocator_type>
 MNI type_type*
 dynamic_vector_type<type_type, allocator_type>::Peak() noexcept
 {
-  return At(Count() - Size(1));
+  stl::Assert(count, "Can not peak on empty Vector!");
+  return &(data.data[count - 1]);
 }
 
 template<typename type_type, typename allocator_type>
 [[maybe_unused]] inline void
 dynamic_vector_type<type_type, allocator_type>::Remove(size_type index) noexcept
 {
-  *At(index) = *Peak();
-  Pop();
+  stl::Assert(count, "Can not remove from empty Vector!");
+  stl::Assert(index >= 0 && index < count, "Can not remove Vector out of Bounds!");
+  data.data[index] = data.data[--count];
 }
 
 }
