@@ -33,7 +33,11 @@ SLS(assignment_type<decltype(global_allocator)>* result, const cnf_type* cnf) no
 #pragma omp critical
           {
             found = true;
-            *result = assign;
+
+            // *result = assign;
+            // TODO find a more idiomatic copy
+            memcpy(result->assign.data.data, assign.assign.data.data, assign.assign.data.count * sizeof(stl::b8_type));
+            memcpy(result->satisfied_counts.data.data, assign.satisfied_counts.data.data, assign.satisfied_counts.data.count * sizeof(stl::size_type));
           }
           break;
         }

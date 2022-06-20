@@ -1,18 +1,4 @@
-//#define OPTION_PAIRWISE
-//#define OPTION_SLS_SOLVE
-//#define OPTION_VERBOSE
-
-#ifdef OPTION_SLS_SOLVE
-#ifndef OPTION_SLS_SMALL
-// expect hidoku max 10x10
-// good luck for bigger problems ...
-// (might work, might fail)
-#define SLS_OPTION_ALLOCATE_HEAP
-#define SLS_OPTION_NO_FREE
-#define SLS_OPTION_MAX_VARIABLES 19'900
-#define SLS_OPTION_MAX_CLAUSES 39'402
-#define SLS_OPTION_MAX_CNF_LITERALS 157'904
-#endif
+#ifdef SLS_OPTION_SOLVE
 #include <sls/sls.hpp>
 #endif
 
@@ -58,11 +44,11 @@ struct hidoku_type
         else
         {
           num_clauses += 1; // trivial at least once
-#ifndef OPTION_PAIRWISE
+#ifdef SLS_OPTION_PAIRWISE
+          num_clauses += (n & 1 ? n : n - 1) * (n >> 1); // pairwise at most once encoding
+#else
           num_variables += n - 1;         // sequential at most once encoding
           num_clauses += (n - 2) * 3 + 2; // sequential at most once encoding
-#else
-          num_clauses += (n & 1 ? n : n - 1) * (n >> 1); // pairwise at most once encoding
 #endif
           num_clauses += (n - 1); // neighbor constraint
         }
@@ -72,7 +58,7 @@ struct hidoku_type
     sls::cnf_type cnf{ num_variables, num_clauses };
 
     // cnf_buffer for temporary / generated variables
-    auto tmp_vars = stl::StaticVector<sls::literal_type, sls::SLS_MAX_LITERALS>();
+    auto tmp_vars = stl::dynamic_vector_type<sls::literal_type, decltype(sls::global_allocator)>(&sls::global_allocator);
 
     // at least every number
     for (auto i : stl::Range(0, n)) {
@@ -134,15 +120,15 @@ struct hidoku_type
             Push(cnf, x, y, i);
           Push(cnf);
 
-#ifdef OPTION_PAIRWISE
+#ifdef SLS_OPTION_PAIRWISE
 
           // === pairwise encoder for at most once constraint ===
 
-          for (auto i : Range(0, n)) {
-            for (auto j : Range(i + 1, n)) {
-              PushNot(x, y, i);
-              PushNot(x, y, j);
-              Push();
+          for (auto i : stl::Range<stl::size_type>(0, n)) {
+            for (auto j : stl::Range<stl::size_type>(i + 1, n)) {
+              PushNot(cnf, x, y, i);
+              PushNot(cnf, x, y, j);
+              Push(cnf);
             }
           }
 #else
@@ -237,7 +223,7 @@ struct hidoku_type
     cnf.Push();
   }
 
-  void InterpretAssignment(sls::assignment_type* assign)
+  void InterpretAssignment(sls::assignment_type<decltype(sls::global_allocator)>* assign)
   {
     std::cout << "sol:" << w << ',' << h << ':';
 
@@ -323,14 +309,14 @@ main(int argc, char** argv)
   auto hidoku = Hidoku(argv[1]);
   auto cnf = hidoku.PostProcess();
 
-#ifdef OPTION_SLS_SOLVE
+#ifdef SLS_OPTION_SOLVE
   auto assign = SLS(&cnf);
 #endif
 
-#ifdef OPTION_VERBOSE
+#ifdef SLS_OPTION_VERBOSE
   std::cout << "p cnf " << cnf.num_variables << ' ' << cnf.num_clauses << '\n';
 
-#ifdef OPTION_SLS_SOLVE
+#ifdef SLS_OPTION_SOLVE
   std::cout << "s SATISFIABLE\n";
   std::cout << "v ";
   {
@@ -351,7 +337,7 @@ main(int argc, char** argv)
   }
 #endif
 
-#ifdef OPTION_SLS_SOLVE
+#ifdef SLS_OPTION_SOLVE
   hidoku.InterpretAssignment(&assign);
 #endif
 }
