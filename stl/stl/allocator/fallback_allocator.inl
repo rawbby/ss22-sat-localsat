@@ -32,10 +32,23 @@ template<typename T>
 MNI memory_type<T>
 fallback_allocator_type<P, S>::ReAllocate(memory_type<T> memory, size_type count) noexcept
 {
-  if (P::Owns(memory))
-    return P::template ReAllocate<T>(memory, count);
-  else
+  if (P::Owns(memory)) {
+
+    auto new_memory = P::template ReAllocate<T>(memory, count);
+    if (new_memory.data)
+      return new_memory;
+
+    new_memory = S::template Allocate<T>(count);
+    if (new_memory.data) {
+      auto smaller_count = memory.count < count ? memory.count : count;
+      memcpy(new_memory.data, memory.data, smaller_count * sizeof(T));
+      P::template Free<T>(memory);
+    }
+
+    return new_memory;
+  } else {
     return S::template ReAllocate<T>(memory, count);
+  }
 }
 
 template<typename P, typename S>

@@ -53,15 +53,11 @@ template<typename type_type>
 MNCI memory_type<type_type>
 stack_allocator_type<capacity, alignment_tag>::ReAllocate(memory_type<type_type> memory, size_type count) noexcept
 {
-  // sanitize
-  [[maybe_unused]] const auto top_ = (void*)alignment_tag::align(top);
-  [[maybe_unused]] const auto end_ = (void*)alignment_tag::align(&(memory.data[memory.count * sizeof(type_type)]));
-
-  if ((void*)&(memory.data[count * sizeof(type_type)]) > (void*)data.end())
+  if ((void*)&(memory.data[count]) > (void*)data.end())
     return {};
 
   memory.count = count;
-  top = (byte_type*)&(memory.data[count * sizeof(type_type)]);
+  top = (byte_type*)&(memory.data[count]);
 
   return memory;
 }
