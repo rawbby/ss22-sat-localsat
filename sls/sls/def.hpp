@@ -3,12 +3,15 @@
 
 #include <stl/random.hpp>
 #include <stl/stl.hpp>
+#include <stl/allocator/allocator.hpp>
 
 namespace sls {
 
 #ifndef SLS_OPTION_STATIC_MEMORY
 #ifndef SLS_OPTION_DYNAMIC_MEMORY
+#ifndef SLS_OPTION_HYBRID_MEMORY
 #define SLS_OPTION_HYBRID_MEMORY
+#endif
 #endif
 #endif
 
