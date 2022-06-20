@@ -30,9 +30,11 @@ struct random_type
 // | |___  | |_| | | |\  |  ___) |   | |   |  _ <  | |_| | | |___    | |   | |_| | |  _ <   ___) |
 //  \____|  \___/  |_| \_| |____/    |_|   |_| \_\  \___/   \____|   |_|    \___/  |_| \_\ |____/
 
+template<bool deterministic = false>
 MNI random_type
 Random() noexcept;
 
+template<bool deterministic = false>
 MNI random_type
 Random(i32_type seed) noexcept;
 

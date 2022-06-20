@@ -20,7 +20,7 @@ aligned_alloc(size_type count, size_type alignment)
 #ifdef WIN32
   return (T*)_aligned_malloc(count * sizeof(T), alignment);
 #else
-  return (T*)std::aligned_alloc(alignment, count * sizeof(T));
+  return (this_type*)std::aligned_alloc(alignment, count * sizeof(this_type));
 #endif
 }
 
@@ -42,7 +42,7 @@ aligned_realloc(T* data, size_type count, size_type alignment)
 #ifdef WIN32
   return (T*)_aligned_realloc(data, count * sizeof(T), alignment);
 #else
-  return (T*)std::realloc(data, count * sizeof(T)); // TODO is alignment lost?
+  return (this_type*)std::realloc(data, count * sizeof(this_type)); // TODO is alignment lost?
 #endif
 }
 

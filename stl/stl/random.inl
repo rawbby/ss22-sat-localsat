@@ -2,6 +2,7 @@
 #define STL_RANDOM_INL
 
 #include "random.hpp"
+#include <chrono>
 
 namespace stl {
 
@@ -28,15 +29,58 @@ random_type::RandInt(i32_type lower, i32_type upper) noexcept
   return distribution(engine);
 }
 
+template<bool deterministic>
+MNI random_type
+Random() noexcept
+{
+  if constexpr (deterministic) {
+    auto ssq = std::seed_seq{ 1 };
+    return { std::mt19937{ ssq } };
+  }
+
+  u64_type stack_address;
+  stack_address = U64(&stack_address);
+
+  auto dev = std::random_device{};
+  auto ssq = std::seed_seq{ 1,
+                            static_cast<i32_type>(stack_address),
+                            static_cast<i32_type>(stack_address >> 32),
+                            static_cast<i32_type>(std::chrono::high_resolution_clock::now().time_since_epoch().count()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()) };
+  return { std::mt19937{ ssq } };
+}
+
+template<bool deterministic>
 MNI random_type
 Random(i32_type seed) noexcept
 {
-  random_type random;
-  random.engine = std::mt19937(std::random_device{}());
+  if constexpr (deterministic) {
+    auto ssq = std::seed_seq{ seed };
+    return { std::mt19937{ ssq } };
+  }
 
-  auto ssq = std::seed_seq{ seed };
-  random.engine.seed(ssq);
-  return random;
+  u64_type stack_address;
+  stack_address = U64(&stack_address);
+
+  auto dev = std::random_device{};
+  auto ssq = std::seed_seq{ seed,
+                            static_cast<i32_type>(stack_address),
+                            static_cast<i32_type>(stack_address >> 32),
+                            static_cast<i32_type>(std::chrono::high_resolution_clock::now().time_since_epoch().count()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()),
+                            static_cast<i32_type>(dev()) };
+  return { std::mt19937{ ssq } };
 }
 
 }
