@@ -28,9 +28,22 @@ test_vector(stl::vector_concept<type_type> auto& vec)
     stl::Assert(index == i++, TEST_FAILURE_MESSAGE());
 }
 
+template<typename vector_type>
+void
+test_vector_requirements()
+{
+  static_assert(stl::vector_concept<vector_type, type_type>);
+  static_assert(std::is_move_assignable_v<vector_type>);
+  static_assert(std::is_move_constructible_v<vector_type>);
+  static_assert(std::ranges::range<vector_type>);
+}
+
 int
 main()
 {
+  test_vector_requirements<stl::static_vector_type<type_type, 0x1000>>();
+  test_vector_requirements<stl::dynamic_vector_type<type_type>>();
+
   stl::static_vector_type<type_type, 0x4000> static_vec{};
   test_vector(static_vec);
 
