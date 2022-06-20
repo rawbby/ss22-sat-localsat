@@ -4,25 +4,7 @@
 
 #define InStack(stack, p) ((((void*)(stack).data.begin()) <= ((void*)(p))) && (((void*)(p)) < ((void*)(stack).data.end())))
 
-struct type_type
-{
-  stl::byte_type _[0x1000];
-
-  [[maybe_unused]] [[nodiscard]] bool operator==(const type_type& other) const { return memcmp(_, other._, 0x1000) == 0; }
-};
-
-const auto sig = []() {
-  type_type sig{};
-  sig._[0x1000 - 1] = stl::Byte(1);
-  sig._[0x1000 - 2] = stl::Byte(2);
-  sig._[0x1000 - 3] = stl::Byte(3);
-  sig._[0x1000 - 4] = stl::Byte(4);
-  sig._[0x1000 - 5] = stl::Byte(5);
-  sig._[0x1000 - 6] = stl::Byte(6);
-  sig._[0x1000 - 7] = stl::Byte(7);
-  sig._[0x1000 - 8] = stl::Byte(8);
-  return sig;
-}();
+using type_type = stl::byte_type[0x1000];
 
 void
 test_allocator_requirements()
@@ -147,6 +129,62 @@ test_allocator_requirements()
 }
 
 void
+test_heap_allocator_alignment()
+{
+  auto allocator = stl::heap_allocator_type<stl::alignment_cache_line_tag>();
+
+  auto memory0 = allocator.Allocate(0x1000);
+  stl::Assert(memory0.data != nullptr, TEST_FAILURE_MESSAGE());
+  stl::Assert(!(stl::U64(memory0.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
+
+  auto memory1 = allocator.Allocate(0x1000);
+  stl::Assert(memory1.data != nullptr, TEST_FAILURE_MESSAGE());
+  stl::Assert(!(stl::U64(memory1.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
+
+  auto memory2 = allocator.Allocate(0x1000);
+  stl::Assert(memory2.data != nullptr, TEST_FAILURE_MESSAGE());
+  stl::Assert(!(stl::U64(memory2.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
+
+  auto memory3 = allocator.ReAllocate(memory2, 0x2000);
+  stl::Assert(memory3.data != nullptr, TEST_FAILURE_MESSAGE());
+  stl::Assert(!(stl::U64(memory3.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
+
+  allocator.Free(memory0);
+  allocator.Free(memory1);
+  allocator.Free(memory3);
+}
+
+void
+test_stack_allocator_alignment()
+{
+  auto allocator = stl::stack_allocator_type<0x4000, stl::alignment_cache_line_tag>();
+
+  auto memory0 = allocator.Allocate(0x1000);
+  stl::Assert(memory0.data != nullptr, TEST_FAILURE_MESSAGE());
+  stl::Assert(!(stl::U64(memory0.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
+
+  auto memory1 = allocator.Allocate(0x1000);
+  stl::Assert(memory1.data != nullptr, TEST_FAILURE_MESSAGE());
+  stl::Assert(!(stl::U64(memory1.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
+
+  auto memory2 = allocator.Allocate(0x1000);
+  stl::Assert(memory2.data != nullptr, TEST_FAILURE_MESSAGE());
+  stl::Assert(!(stl::U64(memory2.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
+
+  auto memory3 = allocator.ReAllocate(memory2, 0x2000);
+  stl::Assert(memory3.data != nullptr, TEST_FAILURE_MESSAGE());
+  stl::Assert(!(stl::U64(memory3.data) & stl::alignment_cache_line_tag::lo_mask), TEST_FAILURE_MESSAGE());
+
+  auto memory4 = allocator.Allocate(0x1000);
+  stl::Assert(!memory4.data, TEST_FAILURE_MESSAGE());
+  stl::Assert(!memory4.count, TEST_FAILURE_MESSAGE());
+
+  allocator.Free(memory3);
+  allocator.Free(memory1);
+  allocator.Free(memory0);
+}
+
+void
 test_fallback_allocator()
 {
   using stack_alloc_t = stl::stack_allocator_type<0x4000, stl::alignment_cache_line_tag>;
@@ -236,6 +274,8 @@ int
 main()
 {
   test_allocator_requirements();
+  test_heap_allocator_alignment();
+  test_stack_allocator_alignment();
   test_fallback_allocator();
   test_fallback_allocator_realloc();
 }
