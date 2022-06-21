@@ -17,14 +17,16 @@ template<typename type_type, size_type capacity>
 constexpr const type_type*
 static_array_type<type_type, capacity>::At(size_type index) const noexcept
 {
-  return View().At(index);
+  stl::Assert(index >= 0 && index < capacity, "Can not access Array out of Bounds!");
+  return &(data[index]);
 }
 
 template<typename type_type, size_type capacity>
 constexpr type_type*
 static_array_type<type_type, capacity>::At(size_type index) noexcept
 {
-  return View().At(index);
+  stl::Assert(index >= 0 && index < capacity, "Can not access Array out of Bounds!");
+  return &(data[index]);
 }
 
 template<typename type_type, size_type capacity>
@@ -59,14 +61,16 @@ template<typename type_type, size_type capacity>
 MNCI const type_type&
 static_array_type<type_type, capacity>::operator[](size_type index) const noexcept
 {
-  return *At(index);
+  stl::Assert(index >= 0 && index < capacity, "Can not access Array out of Bounds!");
+  return data[index];
 }
 
 template<typename type_type, size_type capacity>
 MNCI type_type&
 static_array_type<type_type, capacity>::operator[](size_type index) noexcept
 {
-  return *At(index);
+  stl::Assert(index >= 0 && index < capacity, "Can not access Array out of Bounds!");
+  return data[index];
 }
 
 /*

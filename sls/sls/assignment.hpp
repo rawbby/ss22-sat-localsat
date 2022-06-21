@@ -58,6 +58,7 @@ struct assignment_type
   MI void RandomFlip(const cnf_type* cnf, stl::random_type random) noexcept;
   MI void BestFlip(const cnf_type* cnf) noexcept;
   MI void BestFlip(const cnf_type* cnf, stl::random_type* random) noexcept;
+  MI void FirstGoodFlip(const cnf_type* cnf, stl::random_type* random) noexcept;
   MI void RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept;
   MI void UpdateStats(const cnf_type* cnf) noexcept;
   MNI float Score() noexcept;

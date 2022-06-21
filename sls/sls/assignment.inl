@@ -111,6 +111,47 @@ assignment_type<allocator_type>::BestFlip(const cnf_type* cnf, stl::random_type*
 
 template<typename allocator_type>
 MI void
+assignment_type<allocator_type>::FirstGoodFlip(const cnf_type* cnf, stl::random_type* random) noexcept
+{
+  // use random to start at new position
+  // so less loops occur. this seems to
+  // be very important!
+
+  // last clause i never chosen for first assign...
+  const auto n = Var(random->RandInt(cnf->num_variables));
+  const auto m = Var(cnf->num_variables);
+
+  auto best_var = Var(n);
+  auto best_stat = FlipStat(cnf, best_var);
+
+  for (auto var : stl::Range(Var(n + 1), m)) {
+    auto stat = FlipStat(cnf, var);
+    if (stat > best_stat) {
+      best_var = var;
+      best_stat = stat;
+      if (stat > 0) {
+        Flip(cnf, best_var);
+        return;
+      }
+    }
+  }
+  for (auto var : stl::Range(Var(0), n)) {
+    auto stat = FlipStat(cnf, var);
+    if (stat > best_stat) {
+      best_var = var;
+      best_stat = stat;
+      if (stat > 0) {
+        Flip(cnf, best_var);
+        return;
+      }
+    }
+  }
+
+  Flip(cnf, best_var);
+}
+
+template<typename allocator_type>
+MI void
 assignment_type<allocator_type>::RandomReset(const cnf_type* cnf, stl::random_type* random) noexcept
 {
   for (auto& sign : assign)

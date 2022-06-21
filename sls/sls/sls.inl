@@ -2,7 +2,6 @@
 #define SLS_SLS_INL
 
 #include "sls.hpp"
-#include <iostream>
 
 namespace sls {
 
@@ -13,7 +12,7 @@ SLS(assignment_type<decltype(global_allocator)>* result, const cnf_type* cnf) no
 
   omp_set_num_threads(omp_get_max_threads());
   // omp_set_num_threads(1);
-#pragma omp parallel default(none) shared(cnf, found, result, std::cout)
+#pragma omp parallel default(none) shared(cnf, found, result)
   {
     auto id = omp_get_thread_num();
     auto random = stl::Random(id);
@@ -24,11 +23,11 @@ SLS(assignment_type<decltype(global_allocator)>* result, const cnf_type* cnf) no
     do {
       assign.RandomReset(cnf, &random);
 
-      const auto n = stl::I32(cnf->num_variables) + stl::I32(cnf->num_clauses);
-      for (auto i = stl::I32(0); (!found && i < n); ++i) {
+      const auto n = (stl::I32(cnf->num_variables) << 1) + (stl::I32(cnf->num_clauses) >> 3);
+      for (auto i = stl::I32(0); !found && i < n; ++i) {
 
+        // assign.FirstGoodFlip(cnf, &random);
         assign.BestFlip(cnf, &random);
-        // assign.BestFlip(cnf);
 
         [[unlikely]] if (!assign.Score())
         {
