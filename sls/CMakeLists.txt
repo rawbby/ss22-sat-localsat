@@ -27,6 +27,17 @@ set_target_properties(${TARGET_NAME} PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON)
 
+set(TARGET_NAME ${PROJECT_NAME}cli_bench)
+add_executable(${TARGET_NAME})
+target_sources(${TARGET_NAME} PRIVATE main.cpp)
+target_compile_definitions(${TARGET_NAME} PRIVATE SLS_OPTION_BENCH)
+target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_link_libraries(${TARGET_NAME} PRIVATE sls)
+set_target_properties(${TARGET_NAME} PROPERTIES
+        LINKER_LANGUAGE CXX
+        CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED ON)
+
 set(TARGET_NAME ${PROJECT_NAME}cli_static)
 add_executable(${TARGET_NAME})
 target_sources(${TARGET_NAME} PRIVATE main.cpp)

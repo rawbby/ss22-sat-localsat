@@ -5,6 +5,10 @@
 
 #include <iostream>
 
+#ifdef SLS_OPTION_BENCH
+#include <chrono>
+#endif
+
 int
 main(int argc, char** argv)
 {
@@ -20,7 +24,17 @@ main(int argc, char** argv)
   auto cnf = sls::ParseDimacs(f);
   cnf.PostProcess();
 
+#ifdef SLS_OPTION_BENCH
+  const auto bench_begin = std::chrono::high_resolution_clock::now();
+#endif
+
   auto assign = SLS(&cnf);
+
+#ifdef SLS_OPTION_BENCH
+  const auto bench_end = std::chrono::high_resolution_clock::now();
+  const auto bench_duration = bench_end - bench_begin;
+  std::cout << "Found Solution after " << duration_cast<std::chrono::microseconds>(bench_duration).count() << "ms" << std::endl;
+#endif
 
   std::cout << "p cnf " << cnf.num_variables << ' ' << cnf.num_clauses << '\n';
   std::cout << "s SATISFIABLE\n";

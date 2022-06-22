@@ -8,7 +8,7 @@
 
 struct hidoku_type
 {
-  stl::static_vector_type<sls::literal_type, 256> data;
+  stl::dynamic_vector_type<sls::literal_type> data;
   stl::size_type w;
   stl::size_type h;
   stl::size_type n;
@@ -17,6 +17,17 @@ struct hidoku_type
 
   stl::size_type num_variables;
   stl::size_type num_clauses;
+
+  inline hidoku_type()
+    : data(&stl::detail::global_heap_allocator)
+    , w()
+    , h()
+    , n()
+    , si()
+    , num_variables()
+    , num_clauses()
+  {
+  }
 
   sls::literal_type At(stl::size_type x, stl::size_type y) const { return *data.At(y * w + x); }
 
@@ -261,7 +272,7 @@ struct hidoku_type
 hidoku_type
 Hidoku(char* arg)
 {
-  hidoku_type hidoku;
+  hidoku_type hidoku{};
 
   auto c = stl::I32(0);
 
@@ -280,7 +291,6 @@ Hidoku(char* arg)
   hidoku.n = hidoku.w * hidoku.h;
   hidoku.si = 0;
 
-  StaticVector<sls::literal_type, 256>(&hidoku.data);
   hidoku.data.Count(hidoku.w * hidoku.h);
 
   for (auto y : stl::Range(0, hidoku.h)) {

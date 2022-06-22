@@ -20,6 +20,12 @@ struct heap_allocator_type
   MNI memory_type<type_type> ReAllocate(memory_type<type_type> memory, size_type count) const noexcept;
 };
 
+namespace detail {
+
+auto global_heap_allocator = heap_allocator_type<>();
+
+}
+
 }
 
 // include implementation
