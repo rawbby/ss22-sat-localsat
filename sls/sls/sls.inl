@@ -11,7 +11,6 @@ SLS(assignment_type<decltype(global_allocator)>* result, const cnf_type* cnf) no
   volatile bool found = false;
 
   omp_set_num_threads(omp_get_max_threads());
-  // omp_set_num_threads(1);
 #pragma omp parallel default(none) shared(cnf, found, result)
   {
     auto id = omp_get_thread_num();

@@ -33,7 +33,7 @@ main(int argc, char** argv)
 #ifdef SLS_OPTION_BENCH
   const auto bench_end = std::chrono::high_resolution_clock::now();
   const auto bench_duration = bench_end - bench_begin;
-  std::cout << "Found Solution after " << duration_cast<std::chrono::microseconds>(bench_duration).count() << "ms" << std::endl;
+  std::cout << "Found Solution after " << duration_cast<std::chrono::milliseconds>(bench_duration).count() / 1000.0 << "s" << std::endl;
 #endif
 
   std::cout << "p cnf " << cnf.num_variables << ' ' << cnf.num_clauses << '\n';
