@@ -15,6 +15,7 @@ namespace stl {
 #define MCI [[maybe_unused]] constexpr inline
 #define MNI [[maybe_unused]] [[nodiscard]] inline
 #define MI [[maybe_unused]] inline
+#define M [[maybe_unused]]
 
 #define STL_DEFINE_INTEGRAL_CONSTRUCTOR(base_type, integral_type, name)                                                                        \
   typedef base_type integral_type;                                                                                                             \

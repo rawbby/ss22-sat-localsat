@@ -46,6 +46,26 @@ range_iter_type<integral_type>::operator!=(const range_iter_type<integral_type>&
 }
 
 /*
+ * utilities
+ */
+
+template<typename integral_type>
+MNCI size_type
+range_type<integral_type>::Count() const noexcept
+{
+  return upper - lower;
+}
+
+template<typename integral_type>
+MNCI integral_type
+range_type<integral_type>::operator[](size_type index) const noexcept
+{
+  Assert(index >= 0, "Index out of Bounds!");
+  Assert(index < Count(), "Index out of Bounds!");
+  return lower + index;
+}
+
+/*
  * satisfy the iterable concept
  */
 

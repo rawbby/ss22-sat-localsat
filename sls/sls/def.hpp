@@ -29,9 +29,9 @@ MNCI auto
 CreateGlobalAllocator()
 {
 #if defined(SLS_OPTION_STATIC_MEMORY)
-  return stl::stack_allocator_type<0x100000, stl::alignment_cache_line_tag>{};
+  return stl::primary_allocator_type<0x100000, stl::alignment_cache_line_tag>{};
 #elif defined(SLS_OPTION_DYNAMIC_MEMORY)
-  return stl::heap_allocator_type<stl::alignment_page_tag>{};
+  return stl::secondary_allocator_type<stl::alignment_page_tag>{};
 #elif defined(SLS_OPTION_HYBRID_MEMORY)
   using P = stl::stack_allocator_type<0x100000, stl::alignment_cache_line_tag>;
   using S = stl::heap_allocator_type<stl::alignment_page_tag>;
@@ -45,9 +45,9 @@ MNCI auto
 CreateThreadLocalAllocator()
 {
 #if defined(SLS_OPTION_STATIC_MEMORY)
-  return stl::stack_allocator_type<0x10000, stl::alignment_cache_line_tag>{};
+  return stl::primary_allocator_type<0x10000, stl::alignment_cache_line_tag>{};
 #elif defined(SLS_OPTION_DYNAMIC_MEMORY)
-  return stl::heap_allocator_type<stl::alignment_page_tag>{};
+  return stl::secondary_allocator_type<stl::alignment_page_tag>{};
 #elif defined(SLS_OPTION_HYBRID_MEMORY)
   using P = stl::stack_allocator_type<0x10000, stl::alignment_cache_line_tag>;
   using S = stl::heap_allocator_type<stl::alignment_page_tag>;

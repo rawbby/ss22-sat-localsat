@@ -41,6 +41,9 @@ struct range_type
   integral_type lower;
   integral_type upper;
 
+  MNCI size_type Count() const noexcept;
+  MNCI integral_type operator[](size_type index) const noexcept;
+
   // satisfy the iterable concept
   MNCI range_iter_type<integral_type> begin() const noexcept;
   MNCI range_iter_type<integral_type> end() const noexcept;

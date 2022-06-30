@@ -16,6 +16,7 @@ project(localsat LANGUAGES CXX)
 add_subdirectory(stl)
 add_subdirectory(sls)
 add_subdirectory(hidoku)
+add_subdirectory(monogram)
 
 # add test directory only if enabled
 option(BUILD_TESTING "Build Tests" OFF)
